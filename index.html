@@ -29,8 +29,29 @@
 
 
 
+
+
     <button onclick="undo()">Undo</button> <!-- Add Undo button -->
 
+
+
+
+
+
+
+
+    <div>
+        <label for="text">Text:</label>
+        <input type="text" id="text" placeholder="Enter text">
+
+        <label for="textColor">Text Color:</label>
+        <input type="color" id="textColor" value="#000000" onchange="updateTextColor(this.value)">
+
+        <label for="fontSize">Font Size:</label>
+        <input type="number" id="fontSize" min="1" max="100" value="16" onchange="updateFontSize(this.value)">
+
+        <button onclick="addTextAtMousePosition()">Add Text at Mouse Position</button>
+    </div>
 
 
 
@@ -58,6 +79,10 @@
         let penSize = 10;
         let drawingActions = []; // Array to store drawing actions
 
+
+        let text = '';
+        let textColor = '#000000';
+        let fontSize = 16;
 
         imageInput.addEventListener('change', handleImage);
 
@@ -346,6 +371,34 @@
             penSize = parseInt(size);
         }
 
+        function addTextAtMousePosition() {
+            text = document.getElementById('text').value;
+            canvas.addEventListener('click', addTextOnClick);
+        }
+
+        function addTextOnClick(event) {
+            let x = event.clientX - canvas.offsetLeft;
+            let y = event.clientY - canvas.offsetTop;
+            drawText(x, y);
+            saveSnapshot();
+            canvas.removeEventListener('click', addTextOnClick);
+        }
+
+        function drawText(x, y) {
+            ctx.font = fontSize + 'px Arial';
+            ctx.fillStyle = textColor;
+            ctx.fillText(text, x, y);
+        }
+
+        function updateTextColor(color) {
+            textColor = color;
+            saveSnapshot();
+        }
+
+        function updateFontSize(size) {
+            fontSize = parseInt(size);
+            saveSnapshot();
+        }
 
 
 
