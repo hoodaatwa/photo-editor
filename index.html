@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Photo Editor</title>
+</head>
+<body>
+    <input type="file" id="imageInput" accept="image/*">
+    <canvas id="canvas"></canvas>
+
+    <button onclick="applyFilter('grayscale')">Grayscale</button>
+    <button onclick="applyFilter('sepia')">Sepia</button>
+    <button onclick="applyFilter('invert')">Invert Colors</button>
+    <button onclick="applyFilter('brightness')">Adjust Brightness</button>
+    <button onclick="applyFilter('blur')">Blur</button>
+
+    <button onclick="flipImage('horizontal')">Flip Horizontal</button>
+    <button onclick="flipImage('vertical')">Flip Vertical</button>
+
+    <button onclick="activatePen()">Pen</button>
+    <button onclick="undo()">Undo</button> <!-- Add Undo button -->
+
+
+    <button onclick="resetImage()">Reset</button>
+    <button onclick="downloadImage()">Download Image</button>
+    <script>
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let imageInput = document.getElementById('imageInput');
+        let img = new Image();
+        let originalImageData;
+        let dynamicBrightness = 0;
+        let dynamicBlur = 0;
+        let dynamicBrightnessIncrement = 20;
+        let dynamicBlurIncrement = 2;
+        let penActive = false;
+        let eraseActive = false;
+        let brushActive = false;
+        let textActive = false;
+        let penColor = '#000000';
+        let penSize = 10;
+        let drawingActions = []; // Array to store drawing actions
+
+
+        imageInput.addEventListener('change', handleImage);
+
+
+
+
+
+
+        function handleImage(e) {
+            let reader = new FileReader();
+
+            reader.onload = function (event) {
+                img.onload = function () {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                }
+                img.src = event.target.result;
+            }
+
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+
+
+
+
+
+        function applyFilter(filterType) {
+            // Apply the selected filter with gradual increase
+            switch (filterType) {
+                case 'grayscale':
+                    applyGrayscale();
+                    break;
+                case 'sepia':
+                    applySepia();
+                    break;
+                case 'invert':
+                    applyInvert();
+                    break;
+                case 'brightness':
+                    dynamicBrightness += dynamicBrightnessIncrement;
+                    applyBrightness(dynamicBrightness);
+                    break;
+                case 'blur':
+                    dynamicBlur += dynamicBlurIncrement;
+                    applyBlur(dynamicBlur);
+                    break;
+                // Add more cases for additional filters
+                default:
+                    break;
+            }
+        }
+
+        function applyGrayscale() {
+            // Grayscale filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = avg;
+                data[i + 1] = avg;
+                data[i + 2] = avg;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applySepia() {
+            // Sepia filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                let red = data[i];
+                let green = data[i + 1];
+                let blue = data[i + 2];
+
+                data[i] = Math.min(255, 0.393 * red + 0.769 * green + 0.189 * blue);
+                data[i + 1] = Math.min(255, 0.349 * red + 0.686 * green + 0.168 * blue);
+                data[i + 2] = Math.min(255, 0.272 * red + 0.534 * green + 0.131 * blue);
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applyInvert() {
+            // Invert colors filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = 255 - data[i];       // Invert red
+                data[i + 1] = 255 - data[i + 1]; // Invert green
+                data[i + 2] = 255 - data[i + 2]; // Invert blue
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applyBrightness(adjustment) {
+            // Brightness filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] += adjustment;       // Adjust red
+                data[i + 1] += adjustment;   // Adjust green
+                data[i + 2] += adjustment;   // Adjust blue
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applyBlur(blurRadius) {
+            // Blur filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    let redTotal = 0;
+                    let greenTotal = 0;
+                    let blueTotal = 0;
+                    let pixelCount = 0;
+
+                    for (let dy = -blurRadius; dy <= blurRadius; dy++) {
+                        for (let dx = -blurRadius; dx <= blurRadius; dx++) {
+                            let nx = x + dx;
+                            let ny = y + dy;
+
+                            if (nx >= 0 && nx < canvas.width && ny >= 0 && ny < canvas.height) {
+                                let index = (ny * canvas.width + nx) * 4;
+                                redTotal += data[index];
+                                greenTotal += data[index + 1];
+                                blueTotal += data[index + 2];
+                                pixelCount++;
+                            }
+                        }
+                    }
+
+                    let currentIndex = (y * canvas.width + x) * 4;
+                    data[currentIndex] = redTotal / pixelCount;
+                    data[currentIndex + 1] = greenTotal / pixelCount;
+                    data[currentIndex + 2] = blueTotal / pixelCount;
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function flipImage(direction) {
+            // Flip image logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            if (direction === 'horizontal') {
+                for (let y = 0; y < canvas.height; y++) {
+                    for (let x = 0; x < canvas.width / 2; x++) {
+                        let index1 = (y * canvas.width + x) * 4;
+                        let index2 = (y * canvas.width + canvas.width - x - 1) * 4;
+
+                        // Swap pixel colors for horizontal flip
+                        for (let i = 0; i < 4; i++) {
+                            let temp = data[index1 + i];
+                            data[index1 + i] = data[index2 + i];
+                            data[index2 + i] = temp;
+                        }
+                    }
+                }
+            } else if (direction === 'vertical') {
+                for (let y = 0; y < canvas.height / 2; y++) {
+                    for (let x = 0; x < canvas.width; x++) {
+                        let index1 = (y * canvas.width + x) * 4;
+                        let index2 = ((canvas.height - y - 1) * canvas.width + x) * 4;
+
+                        // Swap pixel colors for vertical flip
+                        for (let i = 0; i < 4; i++) {
+                            let temp = data[index1 + i];
+                            data[index1 + i] = data[index2 + i];
+                            data[index2 + i] = temp;
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        
+ function resetImage() {
+            ctx.putImageData(originalImageData, 0, 0);
+            dynamicBrightness = 0;
+            dynamicBlur = 0;
+        }
+
+
+
+       <!-- ... Existing code ... -->
+
+        function downloadImage() {
+            let downloadLink = document.createElement('a');
+            downloadLink.href = canvas.toDataURL("image/png");
+            downloadLink.download = 'edited_image.png';
+            downloadLink.click();
+        }
+
+        let drawing = false;
+        let lastX, lastY;
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        canvas.addEventListener('touchstart', startPosition);
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', draw);
+
+        function startPosition(e) {
+            if (penActive || eraseActive || brushActive) {
+                drawing = true;
+                draw(e);
+            }
+        }
+
+        function endPosition() {
+            drawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+    if (!drawing) return;
+
+    ctx.lineWidth = penSize;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = penColor;
+
+    if (eraseActive) {
+        ctx.globalCompositeOperation = 'destination-out';
+    } else {
+        ctx.globalCompositeOperation = 'source-over';
+    }
+
+    let clientX, clientY;
+
+    if (e.type.startsWith('touch')) {
+        clientX = e.touches[0].clientX - canvas.offsetLeft;
+        clientY = e.touches[0].clientY - canvas.offsetTop;
+    } else {
+        clientX = e.clientX - canvas.offsetLeft;
+        clientY = e.clientY - canvas.offsetTop;
+    }
+
+    if (penActive || eraseActive || brushActive) {
+        ctx.beginPath();
+        ctx.arc(clientX, clientY, penSize / 2, 0, Math.PI * 2); // Draw a circle at the touch/mouse position
+        ctx.fillStyle = penColor;
+        ctx.fill();
+        ctx.stroke();
+    }
+}
+
+
+
+        function activatePen() {
+            if (!penActive) {
+                penActive = true;
+                canvas.removeEventListener('mousedown', startBrush);
+                canvas.removeEventListener('touchstart', startBrush);
+            } else {
+                // Toggle off if it was the same button
+                penActive = false;
+            }
+        }
+
+
+
+ let undoStack = [];
+        let lastSnapshot;
+
+        function saveSnapshot() {
+            // Save the current canvas state to the undo stack
+            undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        }
+
+        function undo() {
+            // Undo the last change
+            if (undoStack.length > 0) {
+                // Pop the last snapshot from the stack
+                lastSnapshot = undoStack.pop();
+                ctx.putImageData(lastSnapshot, 0, 0);
+            }
+        }
+
+        canvas.addEventListener('mousedown', function() {
+            // Save a snapshot before making a change
+            saveSnapshot();
+        });
+
+        canvas.addEventListener('touchstart', function() {
+            // Save a snapshot before making a change
+            saveSnapshot();
+        });
+
+        canvas.addEventListener('mouseup', function() {
+            // Save a snapshot when the mouse is released after using any tool
+            saveSnapshot();
+        });
+
+        canvas.addEventListener('touchend', function() {
+            // Save a snapshot when the touch ends after using any tool
+            saveSnapshot();
+        });
+
+        // ... Additional functionalities for Erase can be added here.
+
+    </script>
+</body>
+</html>
