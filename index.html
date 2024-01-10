@@ -19,6 +19,16 @@
     <button onclick="flipImage('vertical')">Flip Vertical</button>
 
     <button onclick="activatePen()">Pen</button>
+
+
+    <label for="colorPicker">Color:</label>
+    <input type="color" id="colorPicker" value="#000000" onchange="updatePenColor(this.value)">
+
+    <label for="sizeSlider">Size:</label>
+    <input type="range" id="sizeSlider" min="1" max="50" value="10" onchange="updatePenSize(this.value)">
+
+
+
     <button onclick="undo()">Undo</button> <!-- Add Undo button -->
 
 
@@ -324,6 +334,19 @@
                 penActive = false;
             }
         }
+
+
+
+
+        function updatePenColor(color) {
+            penColor = color;
+        }
+
+        function updatePenSize(size) {
+            penSize = parseInt(size);
+        }
+
+
 
 
 
