@@ -100,6 +100,51 @@ input[type="number"] {
 input[type="file"] {
     margin: 8px;
 }
+.fixed-tools-container {
+    position: fixed;
+    bottom: 0px;
+    top: -15px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: none;
+    z-index: 1000;
+    padding: 50px;
+    overflow: auto;
+    height: auto;
+    margin: 20px auto;
+    max-width: 100%;
+}
+
+        /* Style for the button that shows/hides tools */
+        #toggleToolsButton {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            margin: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #toggleToolsButton:hover {
+            background-color: #1565C0;
+        }
+        /* Style for the close button */
+        .close-button {
+            background-color: #f44336; /* Red color for close button */
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .close-button:hover {
+            background-color: #d32f2f; /* Darker red on hover */
+        }
     </style>
 </head>
 
@@ -107,6 +152,23 @@ input[type="file"] {
     <div class="container">
         <input type="file" id="imageInput" accept="image/*">
         <canvas id="canvas"></canvas>
+ <!-- Toggle button for showing/hiding tools -->
+
+
+
+        <div style="border: 1px solid #ddd;padding: 20px;">
+<h2>Image Manipulation</h2>
+        <button id="toggleToolsButton" onclick="toggleTools()">ALL Tools</button>
+            <button onclick="undo()">Undo</button>
+            <button onclick="resetImage()">Reset</button>
+            <button onclick="downloadImage()">Download Image</button>
+        </div>
+
+
+
+        <!-- Fixed tools container at the bottom -->
+        <div class="fixed-tools-container">
+            <button class="close-button" onclick="toggleTools()">Close</button>
 <h2>Image Filters</h2>
         <div style="border: 1px solid #ddd;padding: 20px;">
             <button onclick="applyFilter('grayscale')">Grayscale</button>
@@ -123,7 +185,6 @@ input[type="file"] {
             <input type="color" id="colorPicker" value="#000000" onchange="updatePenColor(this.value)">
             <label for="sizeSlider">Size:</label>
             <input type="range" id="sizeSlider" min="1" max="50" value="10" onchange="updatePenSize(this.value)">
-            <button onclick="undo()">Undo</button>
         </div>
 
 <h2>Text Options</h2>
@@ -137,18 +198,15 @@ input[type="file"] {
             <button onclick="addTextAtMousePosition()">Add Text at Mouse Position</button>
         </div>
 
-<h2>Image Manipulation</h2>
-        <div style="border: 1px solid #ddd;padding: 20px;">
-            <button onclick="resetImage()">Reset</button>
-            <button onclick="downloadImage()">Download Image</button>
-        </div>
 
 <h2>Crop Image</h2>
 <div class="fixed-fullwidth-container">
     <img id="cropperImage" style="max-width: 100%;" />
-    <button onclick="cancelCrop()">Cancel Crop</button>
+    <button onclick="cancelCrop()">SHOW/Cancel Crop</button>
     <button onclick="cropImage()">Crop Image</button>
 </div>
+        </div>
+
     </div>
 
     <script src="https://unpkg.com/cropperjs@1.5.11/dist/cropper.min.js"></script>
@@ -218,6 +276,14 @@ input[type="file"] {
 
             reader.readAsDataURL(e.target.files[0]);
         }
+
+
+        // Function to toggle the visibility of tools
+        function toggleTools() {
+            let toolsContainer = document.querySelector('.fixed-tools-container');
+            toolsContainer.style.display = toolsContainer.style.display === 'none' ? 'block' : 'none';
+        }
+
 
 
         function cropImage() {
