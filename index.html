@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enhanced Photo Editor</title>
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.11/dist/cropper.min.css">
+
 </head>
 <body>
     <input type="file" id="imageInput" accept="image/*">
@@ -61,6 +63,39 @@
 
     <button onclick="resetImage()">Reset</button>
     <button onclick="downloadImage()">Download Image</button>
+
+
+
+
+
+
+
+
+
+
+
+
+   <!-- Add cropper container -->
+    <div>
+        <img id="cropperImage" style="max-width: 100%;" />
+        <button onclick="cropImage()">Crop Image</button>
+    </div>
+
+
+
+
+
+
+  <!-- Include cropper.js library -->
+    <script src="https://unpkg.com/cropperjs@1.5.11/dist/cropper.min.js"></script>
+
+
+
+
+
+
+
+
     <script>
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -84,6 +119,23 @@
         let textColor = '#000000';
         let fontSize = 16;
 
+
+
+
+
+
+
+        // Initialize cropper
+        let cropper;
+
+
+
+
+
+
+
+
+
         imageInput.addEventListener('change', handleImage);
 
 
@@ -100,12 +152,51 @@
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
                     originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    saveSnapshot();
+
+                    // Set up cropper
+                    document.getElementById('cropperImage').src = event.target.result;
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    cropper = new Cropper(document.getElementById('cropperImage'), {
+                        viewMode: 1,
+                        autoCropArea: 1, // Adjust the initial crop area size
+                        crop(event) {
+                            // Crop event handling
+                        },
+                        movable: false,
+                        rotatable: false,
+                        scalable: false,
+                        zoomable: false,
+                        autoCrop: false,
+                        autoCropArea: 1,
+                        resizable: false, // Make the cropping area resizable from all points
+                    });
                 }
                 img.src = event.target.result;
             }
 
             reader.readAsDataURL(e.target.files[0]);
         }
+
+
+
+
+
+
+
+        function cropImage() {
+            // Get the cropped data
+            let croppedImageData = cropper.getCroppedCanvas().toDataURL();
+            
+            // Clear the canvas and draw the cropped image
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            img.src = croppedImageData;
+        }
+
+
+
 
 
 
