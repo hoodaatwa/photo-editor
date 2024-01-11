@@ -54,7 +54,8 @@ body {
         </div>
 
         <div style="margin-top: 16px;">
-            <button onclick="activatePen()">Pen</button>
+                <button onclick="activatePen()">Toggle Pen</button>
+                <span id="penStatus">Pen is disabled</span>
             <label for="colorPicker">Color:</label>
             <input type="color" id="colorPicker" value="#000000" onchange="updatePenColor(this.value)">
             <label for="sizeSlider">Size:</label>
@@ -79,10 +80,11 @@ body {
             <button onclick="downloadImage()">Download Image</button>
         </div>
 
-        <div style="margin-top: 16px;">
-            <img id="cropperImage" style="max-width: 100%;" />
-            <button onclick="cropImage()">Crop Image</button>
-        </div>
+<div style="margin-top: 16px;">
+    <img id="cropperImage" style="max-width: 100%;" />
+    <button onclick="cancelCrop()">Cancel Crop</button>
+    <button onclick="cropImage()">Crop Image</button>
+</div>
     </div>
 
     <script src="https://unpkg.com/cropperjs@1.5.11/dist/cropper.min.js"></script>
@@ -189,7 +191,29 @@ body {
 
 
 
-
+function cancelCrop() {
+    // Clear the canvas and redraw the original image
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+    // Also reset the cropper
+    if (cropper) {
+        cropper.destroy();
+        cropper = new Cropper(document.getElementById('cropperImage'), {
+            viewMode: 1,
+            autoCropArea: 1,
+            crop(event) {
+                // Crop event handling
+            },
+            movable: false,
+            rotatable: false,
+            scalable: false,
+            zoomable: false,
+            autoCrop: false,
+            autoCropArea: 1,
+            resizable: false,
+        });
+    }
+}
 
 
 
@@ -428,6 +452,16 @@ body {
         ctx.fill();
         ctx.stroke();
     }
+}
+
+
+
+
+
+
+function togglePenStatus() {
+    let penStatusElement = document.getElementById('penStatus');
+    penStatusElement.textContent = penActive ? 'Pen is enabled' : 'Pen is disabled';
 }
 
 
