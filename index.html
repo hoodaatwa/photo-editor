@@ -172,33 +172,14 @@ input[type="file"] {
         let penSize = 10;
         let drawingActions = []; // Array to store drawing actions
 
-
         let text = '';
         let textColor = '#000000';
         let fontSize = 16;
 
-
-
-
-
-
-
         // Initialize cropper
         let cropper;
 
-
-
-
-
-
-
-
-
         imageInput.addEventListener('change', handleImage);
-
-
-
-
 
 
         function handleImage(e) {
@@ -239,11 +220,6 @@ input[type="file"] {
         }
 
 
-
-
-
-
-
         function cropImage() {
             // Get the cropped data
             let croppedImageData = cropper.getCroppedCanvas().toDataURL();
@@ -251,9 +227,10 @@ input[type="file"] {
             // Clear the canvas and draw the cropped image
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             img.src = croppedImageData;
+
+            // Scroll back to the top
+             window.scrollTo(0, 0);
         }
-
-
 
 function cancelCrop() {
     // Clear the canvas and redraw the original image
@@ -278,10 +255,6 @@ function cancelCrop() {
         });
     }
 }
-
-
-
-
 
         function applyFilter(filterType) {
             // Apply the selected filter with gradual increase
@@ -452,8 +425,6 @@ function cancelCrop() {
             dynamicBlur = 0;
         }
 
-
-
        <!-- ... Existing code ... -->
 
         function downloadImage() {
@@ -518,14 +489,6 @@ function cancelCrop() {
     }
 }
 
-
-
-
-
-
-
-
-
         function activatePen() {
     let toggleButton = document.getElementById('penToggleButton');
     toggleButton.textContent = penActive ? 'Pen is disabled' : 'Pen is enabled'; 
@@ -540,11 +503,6 @@ function cancelCrop() {
                 penActive = false;
             }
         }
-
-
-
-
-
 
         function updatePenColor(color) {
             penColor = color;
@@ -582,9 +540,6 @@ function cancelCrop() {
             fontSize = parseInt(size);
             saveSnapshot();
         }
-
-
-
 
  let undoStack = [];
         let lastSnapshot;
