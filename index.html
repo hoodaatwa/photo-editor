@@ -54,8 +54,7 @@ body {
         </div>
 
         <div style="margin-top: 16px;">
-                <button onclick="activatePen()">Toggle Pen</button>
-                <span id="penStatus">Pen is disabled</span>
+            <button id="penToggleButton" onclick="activatePen()">Toggle Pen</button>
             <label for="colorPicker">Color:</label>
             <input type="color" id="colorPicker" value="#000000" onchange="updatePenColor(this.value)">
             <label for="sizeSlider">Size:</label>
@@ -459,23 +458,25 @@ function cancelCrop() {
 
 
 
-function togglePenStatus() {
-    let penStatusElement = document.getElementById('penStatus');
-    penStatusElement.textContent = penActive ? 'Pen is enabled' : 'Pen is disabled';
-}
 
 
 
         function activatePen() {
+    let toggleButton = document.getElementById('penToggleButton');
+    toggleButton.textContent = penActive ? 'Pen is disabled' : 'Pen is enabled'; 
             if (!penActive) {
                 penActive = true;
-                canvas.removeEventListener('mousedown', startBrush);
+              canvas.removeEventListener('mousedown', startBrush);
                 canvas.removeEventListener('touchstart', startBrush);
+ 
             } else {
+
                 // Toggle off if it was the same button
                 penActive = false;
             }
         }
+
+
 
 
 
