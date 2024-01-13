@@ -460,7 +460,10 @@ button#download-btn {
 
 
 
-
+<h2>Magical Eraser</h2>
+<div style="border: 1px solid #ddd; padding: 20px;">
+    <button id="magicalEraserToggleButton" onclick="activateMagicalEraser()">Toggle Magical Eraser</button>
+</div>
 
 
 
@@ -710,6 +713,91 @@ button#download-btn {
         }
 
 
+
+
+
+
+
+
+
+
+        let magicalEraserActive = false;
+
+function activateMagicalEraser() {
+    let toggleButton = document.getElementById('magicalEraserToggleButton');
+    toggleButton.textContent = magicalEraserActive ? 'Magical Eraser is disabled' : 'Magical Eraser is enabled';
+
+    if (!magicalEraserActive) {
+        magicalEraserActive = true;
+        canvas.addEventListener('mousedown', startMagicalEraser);
+        canvas.addEventListener('touchstart', startMagicalEraser);
+    } else {
+        magicalEraserActive = false;
+        canvas.removeEventListener('mousedown', startMagicalEraser);
+        canvas.removeEventListener('touchstart', startMagicalEraser);
+    }
+}
+
+function startMagicalEraser(e) {
+    if (magicalEraserActive) {
+        let clientX, clientY;
+
+        if (e.type.startsWith('touch')) {
+            clientX = e.touches[0].clientX - canvas.offsetLeft;
+            clientY = e.touches[0].clientY - canvas.offsetTop;
+        } else {
+            clientX = e.clientX - canvas.offsetLeft;
+            clientY = e.clientY - canvas.offsetTop;
+        }
+
+        // Get the color of the pixel at the clicked position
+        let pixelColor = getPixelColor(clientX, clientY);
+
+        // Apply the magical eraser by removing pixels of the same color
+        applyMagicalEraser(pixelColor);
+    }
+}
+
+function getPixelColor(x, y) {
+    let pixel = ctx.getImageData(x, y, 1, 1).data;
+    return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+}
+
+function applyMagicalEraser(targetColor) {
+    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        let pixelColor = `rgb(${data[i]}, ${data[i + 1]}, ${data[i + 2]})`;
+
+        // Check if the pixel color matches the target color
+        if (pixelColor === targetColor) {
+            // Make the pixel transparent
+            data[i + 3] = 0;
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    saveSnapshot();
+}
+
+// Add a button to toggle the magical eraser
+let magicalEraserButton = document.createElement('button');
+magicalEraserButton.textContent = 'Toggle Magical Eraser';
+magicalEraserButton.onclick = activateMagicalEraser;
+document.body.appendChild(magicalEraserButton);
+
+
+
+
+
+
+
+
+
+
+
+        
         function cropImage() {
             // Get the cropped data
             let croppedImageData = cropper.getCroppedCanvas().toDataURL();
