@@ -971,11 +971,10 @@ function cancelCrop() {
 
 
 
-// Add this global variable
-let magicalEraserActive = false;
 
-// Update the draw function
-function draw(e) {
+
+
+        function draw(e) {
     if (!drawing) return;
 
     if (magicalEraserActive) {
@@ -983,11 +982,11 @@ function draw(e) {
         let clientX, clientY;
 
         if (e.type.startsWith('touch')) {
-            clientX = e.touches[0].clientX - canvas.offsetLeft;
-            clientY = e.touches[0].clientY - canvas.offsetTop;
+            clientX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+            clientY = e.touches[0].clientY - canvas.getBoundingClientRect().top;
         } else {
-            clientX = e.clientX - canvas.offsetLeft;
-            clientY = e.clientY - canvas.offsetTop;
+            clientX = e.clientX - canvas.getBoundingClientRect().left;
+            clientY = e.clientY - canvas.getBoundingClientRect().top;
         }
 
         // Get the color of the pixel at the current position
@@ -1005,28 +1004,38 @@ function draw(e) {
         ctx.stroke();
     } else {
         // Your existing drawing logic for other tools
-        // ...
+        ctx.lineWidth = penSize;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = penColor;
+
+        if (eraseActive) {
+            ctx.globalCompositeOperation = 'destination-out';
+        } else {
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        let clientX, clientY;
+
+        if (e.type.startsWith('touch')) {
+            clientX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+            clientY = e.touches[0].clientY - canvas.getBoundingClientRect().top;
+        } else {
+            clientX = e.clientX - canvas.getBoundingClientRect().left;
+            clientY = e.clientY - canvas.getBoundingClientRect().top;
+        }
+
+        if (penActive || eraseActive || brushActive) {
+            ctx.lineTo(clientX, clientY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(clientX, clientY, penSize / 2, 0, Math.PI * 2);
+            ctx.fillStyle = penColor;
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(clientX, clientY);
+        }
     }
 }
-
-// Add this function to toggle the magical eraser
-function toggleMagicalEraser() {
-    magicalEraserActive = !magicalEraserActive;
-    let toggleButton = document.getElementById('magicalEraserToggleButton');
-    toggleButton.textContent = magicalEraserActive ? 'Magical Eraser is active' : 'Activate Magical Eraser';
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
