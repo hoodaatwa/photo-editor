@@ -457,6 +457,18 @@ button#download-btn {
             <button onclick="applyFilter('blur')">Blur</button>
         </div>
 
+
+
+
+<h2>Magical Eraser</h2>
+<div style="border: 1px solid #ddd; padding: 20px;">
+    <button id="magicalEraserToggleButton" onclick="toggleMagicalEraser()">Activate Magical Eraser</button>
+</div>
+
+
+
+            
+
 <h2>Drawing Tools</h2>
         <div style="border: 1px solid #ddd;padding: 20px;">
             <button id="penToggleButton" onclick="activatePen()">Toggle Pen</button>
@@ -959,49 +971,59 @@ function cancelCrop() {
 
 
 
+// Add this global variable
+let magicalEraserActive = false;
 
-
-
-
-
-
-
-
-
+// Update the draw function
 function draw(e) {
     if (!drawing) return;
 
-    ctx.lineWidth = penSize;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = penColor;
+    if (magicalEraserActive) {
+        // Get the mouse/touch position
+        let clientX, clientY;
 
-    if (eraseActive) {
+        if (e.type.startsWith('touch')) {
+            clientX = e.touches[0].clientX - canvas.offsetLeft;
+            clientY = e.touches[0].clientY - canvas.offsetTop;
+        } else {
+            clientX = e.clientX - canvas.offsetLeft;
+            clientY = e.clientY - canvas.offsetTop;
+        }
+
+        // Get the color of the pixel at the current position
+        let pixel = ctx.getImageData(clientX, clientY, 1, 1).data;
+        let pixelColor = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+
+        // Set the global composite operation to 'destination-out' for erasing
         ctx.globalCompositeOperation = 'destination-out';
-    } else {
-        ctx.globalCompositeOperation = 'source-over';
-    }
 
-    let clientX, clientY;
-
-    if (e.type.startsWith('touch')) {
-        clientX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-        clientY = e.touches[0].clientY - canvas.getBoundingClientRect().top;
-    } else {
-        clientX = e.clientX - canvas.getBoundingClientRect().left;
-        clientY = e.clientY - canvas.getBoundingClientRect().top;
-    }
-
-    if (penActive || eraseActive || brushActive) {
-        ctx.lineTo(clientX, clientY);
-        ctx.stroke();
+        // Draw a circle with the color of the pixel at the current position
         ctx.beginPath();
         ctx.arc(clientX, clientY, penSize / 2, 0, Math.PI * 2);
-        ctx.fillStyle = penColor;
+        ctx.fillStyle = pixelColor;
         ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(clientX, clientY);
+        ctx.stroke();
+    } else {
+        // Your existing drawing logic for other tools
+        // ...
     }
 }
+
+// Add this function to toggle the magical eraser
+function toggleMagicalEraser() {
+    magicalEraserActive = !magicalEraserActive;
+    let toggleButton = document.getElementById('magicalEraserToggleButton');
+    toggleButton.textContent = magicalEraserActive ? 'Magical Eraser is active' : 'Activate Magical Eraser';
+}
+
+
+
+
+
+
+
+
+
 
 
 
