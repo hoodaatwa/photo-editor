@@ -34,6 +34,8 @@
     align-items: flex-start;
     width: max-content;
     margin: 70px auto 0;
+    position: absolute;
+    left: 71px;
 }
 
 
@@ -108,7 +110,7 @@ input[type="file"] {
 .fixed-tools-container {
     position: fixed;
     bottom: 0px;
-    top: -15px;
+    top: 55px;
     background-color: #ffffff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -117,9 +119,8 @@ input[type="file"] {
     padding: 10px;
     overflow: auto;
     height: auto;
-    margin: 20px auto;
-    width: 100%;
-    left: 0px;
+    margin: 2px auto;
+    left: 68px;
 }
 
         /* Style for the button that shows/hides tools */
@@ -182,7 +183,8 @@ button#download-btn {
             padding: 0px;
 
             background-color: #446FAA1A;
-
+    overflow-y: scroll; /* Vertical scrollbar on the left side */
+    overflow-x: scroll; /* Horizontal scrollbar on the top side */
         }
 
 
@@ -405,6 +407,35 @@ button#download-btn {
       margin: 10px;
 
     }
+.sidebar {
+    position: fixed;
+    top: 55px;
+    left: 0;
+    height: 100%;
+    width: 66px;
+    background-color: #fff;
+    padding-top: 0px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    align-items: center;
+
+        /* Style for the buttons in the sidebar */
+        .sidebar button {
+            background-color: #555; /* Button background color */
+            color: white;
+            padding: 10px;
+            margin: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .sidebar button:hover {
+            background-color: #777; /* Darker shade on hover */
+        }
     </style>
 </head>
 
@@ -436,14 +467,17 @@ button#download-btn {
 
 
 
-        <div style="border: 1px solid #ddd;padding: 10px;display: flex;flex-wrap:wrap;">
-<!-- Fullscreen button -->
-            <button class="fullscreen-button" onclick="toggleFullscreen()">Fullscreen</button>
-        <button id="toggleToolsButton" onclick="toggleTools()">ALL Tools</button>
-            <button onclick="undo()">Undo</button>
-            <button onclick="resetImage()">Reset</button>
-            <button id="download-btn" onclick="downloadImage()">Download Image</button>
-        </div>
+
+    <div class="sidebar">
+        <button onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
+        <button id="toggleToolsButton" onclick="toggleTools()"><i class="fas fa-tools"></i></button>
+        <button onclick="undo()"><i class="fas fa-undo"></i></button>
+        <button onclick="resetImage()"><i class="fas fa-sync-alt"></i></button>
+        <button id="download-btn" onclick="downloadImage()"><i class="fas fa-download"></i></button>
+    </div>
+
+
+
 
 
         <!-- Fixed tools container at the bottom -->
