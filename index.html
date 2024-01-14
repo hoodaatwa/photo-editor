@@ -121,6 +121,7 @@ input[type="file"] {
     height: auto;
     margin: 2px auto;
     left: 68px;
+    right: 0;
 }
 
         /* Style for the button that shows/hides tools */
@@ -152,21 +153,8 @@ input[type="file"] {
         .close-button:hover {
             background-color: #d32f2f; /* Darker red on hover */
         }
-        /* Style for the fullscreen button */
-.fullscreen-button {
-    background-color: #777777;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 8px;
-    font-weight: 600;
-}
 
-.fullscreen-button:hover {
-    background-color: #777777bf;
-}
+
 button#download-btn:hover {
     background-color: #45a049;
 }
@@ -460,6 +448,13 @@ button#download-btn {
   </div>
 
 
+
+
+
+
+
+
+
     <div class="container">
         <input type="file" id="imageInput" accept="image/*">
         <canvas id="canvas"></canvas>
@@ -469,13 +464,11 @@ button#download-btn {
 
 
     <div class="sidebar">
-        <button onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
         <button id="toggleToolsButton" onclick="toggleTools()"><i class="fas fa-tools"></i></button>
         <button onclick="undo()"><i class="fas fa-undo"></i></button>
         <button onclick="resetImage()"><i class="fas fa-sync-alt"></i></button>
         <button id="download-btn" onclick="downloadImage()"><i class="fas fa-download"></i></button>
     </div>
-
 
 
 
@@ -865,18 +858,7 @@ function cancelCrop() {
     }
 }
 
-        // Function to toggle fullscreen mode
-        function toggleFullscreen() {
-            let container = document.querySelector('.container');
 
-            if (!document.fullscreenElement) {
-                container.requestFullscreen().catch(err => {
-                    console.error(`Error attempting to enable full-screen mode: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
 
 
         function applyFilter(filterType) {
