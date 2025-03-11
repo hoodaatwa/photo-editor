@@ -98,6 +98,7 @@
 <button id=delete-object><i class="fas fa-trash-alt"></i> Delete</button>
 </div>
 <script>
+      
 let canvas;
 let isBoxToolActive = false;
 let isBrushActive = false;
@@ -111,361 +112,426 @@ let historyIndex = -1;
 let originalImage = null;
 let undoStack = [];
 let redoStack = [];
-let layers = []; // To keep track of additional image layers
+let layers = [];
+let canvasWidth = 800;
+let canvasHeight = 600;
+let canvasBackgroundColor = '#FFFFFF';
 
 const fontFamilies = ['Cairo', 'Tajawal', 'Almarai', 'Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald'];
 
 function initCanvas() {
-  canvas = new fabric.Canvas('canvas', {
-    width: 800,
-    height: 600,
-    backgroundColor: '#FFFFFF',
-    preserveObjectStacking: true
-  });
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-  setupEventListeners();
-  loadGoogleFonts();
-  saveCanvasState();
+    canvas = new fabric.Canvas('canvas', {
+        width: canvasWidth,
+        height: canvasHeight,
+        backgroundColor: canvasBackgroundColor,
+        preserveObjectStacking: true
+    });
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    setupEventListeners();
+    loadGoogleFonts();
+    setupCanvasControls();
+    saveCanvasState();
+}
+
+function setupCanvasControls() {
+    // Create a new tool group for canvas settings
+    const toolbarElement = document.querySelector('.toolbar');
+    
+    const canvasControlsGroup = document.createElement('div');
+    canvasControlsGroup.className = 'tool-group';
+    canvasControlsGroup.id = 'canvas-controls';
+    
+    canvasControlsGroup.innerHTML = `
+        <div class="tool-group-title">Canvas Settings</div>
+        <div class="controls">
+            <div class="control-item">
+                <label for="canvas-width">Width:</label>
+                <input type="number" id="canvas-width" min="50" max="3000" value="${canvasWidth}" style="width:70px">
+            </div>
+            <div class="control-item">
+                <label for="canvas-height">Height:</label>
+                <input type="number" id="canvas-height" min="50" max="3000" value="${canvasHeight}" style="width:70px">
+            </div>
+            <div class="control-item">
+                <label for="canvas-bg-color">Background:</label>
+                <input type="text" id="canvas-bg-color" class="jscolor color-picker" value="${canvasBackgroundColor}">
+            </div>
+            <button id="apply-canvas-settings">Apply Settings</button>
+        </div>
+    `;
+    
+    toolbarElement.appendChild(canvasControlsGroup);
+    
+    // Setup event listeners for the new controls
+    document.getElementById('apply-canvas-settings').addEventListener('click', applyCanvasSettings);
+    
+    // Initialize color picker
+    jscolor.install();
+}
+
+function applyCanvasSettings() {
+    const newWidth = parseInt(document.getElementById('canvas-width').value);
+    const newHeight = parseInt(document.getElementById('canvas-height').value);
+    const newColor = document.getElementById('canvas-bg-color').value;
+    
+    // Validate inputs
+    if (isNaN(newWidth) || isNaN(newHeight) || newWidth < 50 || newHeight < 50 || newWidth > 3000 || newHeight > 3000) {
+        alert('Please enter valid dimensions (between 50 and 3000 pixels)');
+        return;
+    }
+    
+    // Update canvas size and background
+    canvasWidth = newWidth;
+    canvasHeight = newHeight;
+    canvasBackgroundColor = newColor;
+    
+    // Apply changes to canvas
+    canvas.setWidth(canvasWidth);
+    canvas.setHeight(canvasHeight);
+    canvas.setBackgroundColor(canvasBackgroundColor, canvas.renderAll.bind(canvas));
+    
+    // Resize canvas to fit container
+    resizeCanvas();
+    
+    // Save state
+    saveCanvasState();
 }
 
 function loadGoogleFonts() {
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap';
-  document.head.appendChild(link);
-  const fontFamilySelect = document.getElementById('font-family');
-  fontFamilySelect.innerHTML = '';
-  fontFamilies.forEach(font => {
-    const option = document.createElement('option');
-    option.value = font;
-    option.textContent = font;
-    option.style.fontFamily = font;
-    fontFamilySelect.appendChild(option);
-  });
-  fontFamilySelect.addEventListener('change', function() {
-    // Just update the display but don't apply to the text object
-    const selectedFont = this.value;
-    // No need to call updateTextSettings() here
-  });
-  setupAddFontButton();
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap';
+    document.head.appendChild(link);
+
+    const fontFamilySelect = document.getElementById('font-family');
+    fontFamilySelect.innerHTML = '';
+    fontFamilies.forEach(font => {
+        const option = document.createElement('option');
+        option.value = font;
+        option.textContent = font;
+        option.style.fontFamily = font;
+        fontFamilySelect.appendChild(option);
+    });
+
+    fontFamilySelect.addEventListener('change', function() {
+        const selectedFont = this.value;
+    });
+
+    setupAddFontButton();
 }
 
 function setupAddFontButton() {
-  document.getElementById('add-font-family').addEventListener('click', addNewFont);
+    document.getElementById('add-font-family').addEventListener('click', addNewFont);
 }
 
 function addNewFont() {
-  const fontName = prompt("Enter Google Font name (e.g. 'Poppins', 'Playfair Display'):");
-  if (!fontName) return;
-  const fontFamilySelect = document.getElementById('font-family');
-  for (let i = 0; i < fontFamilySelect.options.length; i++) {
-    if (fontFamilySelect.options[i].value.toLowerCase() === fontName.toLowerCase()) {
-      alert("This font is already in the list.");
-      return;
+    const fontName = prompt("Enter Google Font name (e.g. 'Poppins', 'Playfair Display'):");
+    if (!fontName) return;
+
+    const fontFamilySelect = document.getElementById('font-family');
+    for (let i = 0; i < fontFamilySelect.options.length; i++) {
+        if (fontFamilySelect.options[i].value.toLowerCase() === fontName.toLowerCase()) {
+            alert("This font is already in the list.");
+            return;
+        }
     }
-  }
-  try {
-    const formattedFontName = fontName.replace(/\s+/g, '+');
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `https://fonts.googleapis.com/css2?family=${formattedFontName}&display=swap`;
-    document.head.appendChild(link);
-    const option = document.createElement('option');
-    option.value = fontName;
-    option.textContent = fontName;
-    option.style.fontFamily = fontName;
-    fontFamilySelect.appendChild(option);
-    fontFamilySelect.value = fontName;
-  } catch (error) {
-    console.error("Error adding font:", error);
-    alert("There was an error adding the font. Please try again.");
-  }
+
+    try {
+        const formattedFontName = fontName.replace(/\s+/g, '+');
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = `https://fonts.googleapis.com/css2?family=${formattedFontName}:wght@400;700&display=swap`;
+        document.head.appendChild(link);
+
+        const option = document.createElement('option');
+        option.value = fontName;
+        option.textContent = fontName;
+        option.style.fontFamily = fontName;
+        fontFamilySelect.appendChild(option);
+        fontFamilySelect.value = fontName;
+    } catch (error) {
+        console.error("Error adding font:", error);
+        alert("There was an error adding the font. Please try again.");
+    }
 }
 
 function resizeCanvas() {
-  const container = document.querySelector('.canvas-container');
-  const containerWidth = container.clientWidth - 40;
-  if (containerWidth < canvas.width) {
-    const scale = containerWidth / canvas.width;
-    canvas.setZoom(scale);
-    canvas.setWidth(canvas.width * scale);
-    canvas.setHeight(canvas.height * scale);
-  }
+    const container = document.querySelector('.canvas-container');
+    const containerWidth = container.clientWidth - 40;
+    if (containerWidth < canvas.width) {
+        const scale = containerWidth / canvas.width;
+        canvas.setZoom(scale);
+        canvas.setWidth(canvas.width * scale);
+        canvas.setHeight(canvas.height * scale);
+    }
 }
 
 function setupEventListeners() {
-  document.getElementById('add-text').addEventListener('click', toggleTextTool);
-  document.getElementById('brush-tool').addEventListener('click', toggleBrushTool);
-  document.getElementById('color-pick').addEventListener('click', toggleColorPickTool);
-  document.getElementById('select-tool').addEventListener('click', enableSelectTool);
-  document.getElementById('undo-action').addEventListener('click', undoAction);
-  document.getElementById('download-image').addEventListener('click', downloadImage);
-  document.getElementById('brush-color').addEventListener('change', function() {
-    // Just update the display but don't apply to the brush yet
-    // Update will happen when the button is clicked
-  });
-  document.getElementById('brush-width').addEventListener('input', function() {
-    // Update the display value
-    document.getElementById('brush-width-value').textContent = this.value;
-  });
-  document.getElementById('brush-opacity').addEventListener('input', function() {
-    // Update the display value
-    document.getElementById('brush-opacity-value').textContent = parseFloat(this.value).toFixed(1);
-  });
-  document.getElementById('text-color').addEventListener('change', function() {
-    // Just update the color picker but don't apply to the text object
-    // No need to call updateTextSettings() here
-  });
-  document.getElementById('font-size').addEventListener('input', function() {
-    // Update the display value
-    document.getElementById('font-size-value').textContent = this.value;
-  });
-  document.getElementById('image-upload').addEventListener('change', handleImageUpload);
-  document.getElementById('clone-object').addEventListener('click', cloneSelectedObject);
-  document.getElementById('flip-h-object').addEventListener('click', flipHorizontally);
-  document.getElementById('flip-v-object').addEventListener('click', flipVertically);
-  document.getElementById('delete-object').addEventListener('click', deleteSelectedObject);
-  
-  // Add Layer functionality
-  document.getElementById('add-layer-btn').addEventListener('click', function() {
-    document.getElementById('layer-upload').click();
-  });
-  document.getElementById('layer-upload').addEventListener('change', handleLayerUpload);
-  document.getElementById('layer-opacity').addEventListener('input', updateLayerOpacity);
-  document.getElementById('bring-forward').addEventListener('click', bringLayerForward);
-  document.getElementById('send-backward').addEventListener('click', sendLayerBackward);
-  
-  canvas.on('mouse:down', handleCanvasMouseDown);
-  canvas.on('mouse:move', handleCanvasMouseMove);
-  canvas.on('mouse:up', handleCanvasMouseUp);
-  canvas.on('selection:created', handleSelectionChange);
-  canvas.on('selection:updated', handleSelectionChange);
-  canvas.on('selection:cleared', function() {
-    hideAllControls();
-    hideObjectActions();
-  });
-  canvas.on('object:modified', function() {
-    saveCanvasState();
-    updateObjectActions();
-  });
-  canvas.on('object:added', function() {
-    saveCanvasState();
-  });
-  canvas.on('object:removed', function() {
-    saveCanvasState();
-    hideObjectActions();
-  });
-  canvas.on('mouse:move', function() {
-    updateObjectActions();
-  });
-
-  const brushControls = document.getElementById('brush-controls');
-  const brushControlsDiv = brushControls.querySelector('.controls');
-  const updateBrushButton = document.createElement('button');
-  updateBrushButton.id = 'update-brush';
-  updateBrushButton.textContent = 'Update Brush';
-  updateBrushButton.addEventListener('click', updateSelectedBrush);
-  brushControlsDiv.appendChild(updateBrushButton);
-
-  const textControls = document.getElementById('text-controls');
-  const textControlsDiv = textControls.querySelector('.controls');
-  const updateTextButton = document.createElement('button');
-  updateTextButton.id = 'update-text';
-  updateTextButton.textContent = 'Update Text';
-  updateTextButton.addEventListener('click', updateSelectedText);
-  textControlsDiv.appendChild(updateTextButton);
+    document.getElementById('add-text').addEventListener('click', toggleTextTool);
+    document.getElementById('brush-tool').addEventListener('click', toggleBrushTool);
+    document.getElementById('color-pick').addEventListener('click', toggleColorPickTool);
+    document.getElementById('select-tool').addEventListener('click', enableSelectTool);
+    document.getElementById('undo-action').addEventListener('click', undoAction);
+    document.getElementById('download-image').addEventListener('click', downloadImage);
+    
+    document.getElementById('brush-color').addEventListener('change', function() {
+    });
+    
+    document.getElementById('brush-width').addEventListener('input', function() {
+        document.getElementById('brush-width-value').textContent = this.value;
+    });
+    
+    document.getElementById('brush-opacity').addEventListener('input', function() {
+        document.getElementById('brush-opacity-value').textContent = parseFloat(this.value).toFixed(1);
+    });
+    
+    document.getElementById('text-color').addEventListener('change', function() {
+    });
+    
+    document.getElementById('font-size').addEventListener('input', function() {
+        document.getElementById('font-size-value').textContent = this.value;
+    });
+    
+    document.getElementById('image-upload').addEventListener('change', handleImageUpload);
+    document.getElementById('clone-object').addEventListener('click', cloneSelectedObject);
+    document.getElementById('flip-h-object').addEventListener('click', flipHorizontally);
+    document.getElementById('flip-v-object').addEventListener('click', flipVertically);
+    document.getElementById('delete-object').addEventListener('click', deleteSelectedObject);
+    
+    document.getElementById('add-layer-btn').addEventListener('click', function() {
+        document.getElementById('layer-upload').click();
+    });
+    
+    document.getElementById('layer-upload').addEventListener('change', handleLayerUpload);
+    document.getElementById('layer-opacity').addEventListener('input', updateLayerOpacity);
+    document.getElementById('bring-forward').addEventListener('click', bringLayerForward);
+    document.getElementById('send-backward').addEventListener('click', sendLayerBackward);
+    
+    canvas.on('mouse:down', handleCanvasMouseDown);
+    canvas.on('mouse:move', handleCanvasMouseMove);
+    canvas.on('mouse:up', handleCanvasMouseUp);
+    canvas.on('selection:created', handleSelectionChange);
+    canvas.on('selection:updated', handleSelectionChange);
+    canvas.on('selection:cleared', function() {
+        hideAllControls();
+        hideObjectActions();
+    });
+    
+    canvas.on('object:modified', function() {
+        saveCanvasState();
+        updateObjectActions();
+    });
+    
+    canvas.on('object:added', function() {
+        saveCanvasState();
+    });
+    
+    canvas.on('object:removed', function() {
+        saveCanvasState();
+        hideObjectActions();
+    });
+    
+    canvas.on('mouse:move', function() {
+        updateObjectActions();
+    });
+    
+    const brushControls = document.getElementById('brush-controls');
+    const brushControlsDiv = brushControls.querySelector('.controls');
+    const updateBrushButton = document.createElement('button');
+    updateBrushButton.id = 'update-brush';
+    updateBrushButton.textContent = 'Update Brush';
+    updateBrushButton.addEventListener('click', updateSelectedBrush);
+    brushControlsDiv.appendChild(updateBrushButton);
+    
+    const textControls = document.getElementById('text-controls');
+    const textControlsDiv = textControls.querySelector('.controls');
+    const updateTextButton = document.createElement('button');
+    updateTextButton.id = 'update-text';
+    updateTextButton.textContent = 'Update Text';
+    updateTextButton.addEventListener('click', updateSelectedText);
+    textControlsDiv.appendChild(updateTextButton);
 }
 
-// Function to handle layer uploads
 function handleLayerUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const imgObj = new Image();
-    imgObj.src = event.target.result;
-    imgObj.onload = function() {
-      const image = new fabric.Image(imgObj, {
-        opacity: 1,
-        selectable: true,
-        hasControls: true,
-        hasBorders: true,
-        isLayer: true  // Custom property to identify layers
-      });
-      
-      // Resize image to fit within canvas while maintaining aspect ratio
-      const canvasWidth = canvas.width / canvas.getZoom();
-      const canvasHeight = canvas.height / canvas.getZoom();
-      const imgRatio = image.width / image.height;
-      const canvasRatio = canvasWidth / canvasHeight;
-      let scale;
-      
-      if (imgRatio > canvasRatio) {
-        scale = canvasWidth / image.width * 0.8;
-      } else {
-        scale = canvasHeight / image.height * 0.8;
-      }
-      
-      image.scale(scale);
-      canvas.centerObject(image);
-      canvas.add(image);
-      
-      // Add to layers array
-      layers.push(image);
-      
-      // Select the layer to show controls
-      canvas.setActiveObject(image);
-      showLayerControls();
-      saveCanvasState();
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const imgObj = new Image();
+        imgObj.src = event.target.result;
+        imgObj.onload = function() {
+            const image = new fabric.Image(imgObj, {
+                opacity: 1,
+                selectable: true,
+                hasControls: true,
+                hasBorders: true,
+                isLayer: true
+            });
+            
+            const canvasWidth = canvas.width / canvas.getZoom();
+            const canvasHeight = canvas.height / canvas.getZoom();
+            const imgRatio = image.width / image.height;
+            const canvasRatio = canvasWidth / canvasHeight;
+            let scale;
+            
+            if (imgRatio > canvasRatio) {
+                scale = canvasWidth / image.width * 0.8;
+            } else {
+                scale = canvasHeight / image.height * 0.8;
+            }
+            
+            image.scale(scale);
+            canvas.centerObject(image);
+            canvas.add(image);
+            layers.push(image);
+            canvas.setActiveObject(image);
+            showLayerControls();
+            saveCanvasState();
+        };
     };
-  };
-  reader.readAsDataURL(file);
-  e.target.value = null; // Reset the input to allow reselecting the same file
+    reader.readAsDataURL(file);
+    e.target.value = null;
 }
 
-// Show layer controls when a layer is selected
 function showLayerControls() {
-  const selectedObject = canvas.getActiveObject();
-  if (selectedObject && selectedObject.isLayer) {
-    document.getElementById('layer-controls').style.display = 'block';
-    document.getElementById('layer-opacity').value = selectedObject.opacity;
-    document.getElementById('layer-opacity-value').textContent = selectedObject.opacity.toFixed(1);
-  } else {
-    document.getElementById('layer-controls').style.display = 'none';
-  }
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.isLayer) {
+        document.getElementById('layer-controls').style.display = 'block';
+        document.getElementById('layer-opacity').value = selectedObject.opacity;
+        document.getElementById('layer-opacity-value').textContent = selectedObject.opacity.toFixed(1);
+    } else {
+        document.getElementById('layer-controls').style.display = 'none';
+    }
 }
 
-// Update layer opacity
 function updateLayerOpacity() {
-  const selectedObject = canvas.getActiveObject();
-  if (selectedObject && selectedObject.isLayer) {
-    const opacity = parseFloat(document.getElementById('layer-opacity').value);
-    document.getElementById('layer-opacity-value').textContent = opacity.toFixed(1);
-    selectedObject.set('opacity', opacity);
-    canvas.renderAll();
-    saveCanvasState();
-  }
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.isLayer) {
+        const opacity = parseFloat(document.getElementById('layer-opacity').value);
+        document.getElementById('layer-opacity-value').textContent = opacity.toFixed(1);
+        selectedObject.set('opacity', opacity);
+        canvas.renderAll();
+        saveCanvasState();
+    }
 }
 
-// Bring layer forward
 function bringLayerForward() {
-  const selectedObject = canvas.getActiveObject();
-  if (selectedObject) {
-    canvas.bringForward(selectedObject);
-    canvas.renderAll();
-    saveCanvasState();
-  }
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        canvas.bringForward(selectedObject);
+        canvas.renderAll();
+        saveCanvasState();
+    }
 }
 
-// Send layer backward
 function sendLayerBackward() {
-  const selectedObject = canvas.getActiveObject();
-  if (selectedObject) {
-    canvas.sendBackwards(selectedObject);
-    canvas.renderAll();
-    saveCanvasState();
-  }
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        canvas.sendBackwards(selectedObject);
+        canvas.renderAll();
+        saveCanvasState();
+    }
 }
 
 function updateSelectedBrush() {
-  const selectedObject = canvas.getActiveObject();
-  if (!selectedObject || selectedObject.type !== 'path') return;
-  
-  const brushColor = document.getElementById('brush-color').value;
-  const brushWidth = parseInt(document.getElementById('brush-width').value);
-  const brushOpacity = parseFloat(document.getElementById('brush-opacity').value);
-  
-  selectedObject.set({
-    stroke: brushColor,
-    strokeWidth: brushWidth,
-    opacity: brushOpacity
-  });
-  
-  canvas.renderAll();
-  saveCanvasState();
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject || selectedObject.type !== 'path') return;
+    
+    const brushColor = document.getElementById('brush-color').value;
+    const brushWidth = parseInt(document.getElementById('brush-width').value);
+    const brushOpacity = parseFloat(document.getElementById('brush-opacity').value);
+    
+    selectedObject.set({
+        stroke: brushColor,
+        strokeWidth: brushWidth,
+        opacity: brushOpacity
+    });
+    
+    canvas.renderAll();
+    saveCanvasState();
 }
 
 function updateSelectedText() {
-  const selectedObject = canvas.getActiveObject();
-  if (!selectedObject || selectedObject.type !== 'i-text') return;
-  
-  const textColor = document.getElementById('text-color').value;
-  const fontSize = parseInt(document.getElementById('font-size').value);
-  const fontFamily = document.getElementById('font-family') ? document.getElementById('font-family').value : 'Arial';
-  
-  selectedObject.set({
-    fill: textColor,
-    fontSize: fontSize,
-    fontFamily: fontFamily
-  });
-  
-  canvas.renderAll();
-  saveCanvasState();
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject || selectedObject.type !== 'i-text') return;
+    
+    const textColor = document.getElementById('text-color').value;
+    const fontSize = parseInt(document.getElementById('font-size').value);
+    const fontFamily = document.getElementById('font-family') ? document.getElementById('font-family').value : 'Arial';
+    
+    selectedObject.set({
+        fill: textColor,
+        fontSize: fontSize,
+        fontFamily: fontFamily
+    });
+    
+    canvas.renderAll();
+    saveCanvasState();
 }
 
 function saveCanvasState() {
-  if (historyIndex < canvasHistory.length - 1) {
-    canvasHistory = canvasHistory.slice(0, historyIndex + 1);
-  }
-  
-  const json = JSON.stringify(canvas.toJSON(['selectable', 'evented', 'isLayer']));
-  canvasHistory.push(json);
-  historyIndex = canvasHistory.length - 1;
-  updateHistoryButtons();
+    if (historyIndex < canvasHistory.length - 1) {
+        canvasHistory = canvasHistory.slice(0, historyIndex + 1);
+    }
+    
+    const json = JSON.stringify(canvas.toJSON(['selectable', 'evented', 'isLayer']));
+    canvasHistory.push(json);
+    historyIndex = canvasHistory.length - 1;
+    updateHistoryButtons();
 }
 
 function updateHistoryButtons() {
-  const undoBtn = document.getElementById('undo-action');
-  undoBtn.disabled = historyIndex <= 0;
-  undoBtn.style.opacity = undoBtn.disabled ? "0.5" : "1";
+    const undoBtn = document.getElementById('undo-action');
+    undoBtn.disabled = historyIndex <= 0;
+    undoBtn.style.opacity = undoBtn.disabled ? "0.5" : "1";
 }
 
 function undoAction() {
-  if (historyIndex > 0) {
-    historyIndex--;
-    loadCanvasState();
-  }
+    if (historyIndex > 0) {
+        historyIndex--;
+        loadCanvasState();
+    }
 }
 
 function loadCanvasState() {
-  canvas.loadFromJSON(canvasHistory[historyIndex], function() {
-    canvas.renderAll();
-    updateHistoryButtons();
-    
-    // Rebuild layers array
-    layers = [];
-    canvas.forEachObject(function(obj) {
-      if (obj.isLayer) {
-        layers.push(obj);
-      }
+    canvas.loadFromJSON(canvasHistory[historyIndex], function() {
+        canvas.renderAll();
+        updateHistoryButtons();
+        
+        layers = [];
+        canvas.forEachObject(function(obj) {
+            if (obj.isLayer) {
+                layers.push(obj);
+            }
+        });
     });
-  });
 }
 
 function downloadImage() {
-  const quality = 10;
-  const dataURL = canvas.toDataURL({
-    format: 'png',
-    quality: 1,
-    multiplier: quality
-  });
-  
-  const link = document.createElement('a');
-  link.href = dataURL;
-  link.download = 'image-editor-' + new Date().getTime() + '.png';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    const quality = 10;
+    const dataURL = canvas.toDataURL({
+        format: 'png',
+        quality: 1,
+        multiplier: quality
+    });
+    
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = 'image-editor-' + new Date().getTime() + '.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 function handleCanvasMouseDown(event) {
-  if (isTextToolActive) {
-    createText(event.pointer.x, event.pointer.y);
-  } else if (isColorPickActive) {
-    pickColorFromPoint(event.pointer.x, event.pointer.y);
-  }
+    if (isTextToolActive) {
+        createText(event.pointer.x, event.pointer.y);
+    } else if (isColorPickActive) {
+        pickColorFromPoint(event.pointer.x, event.pointer.y);
+    }
 }
 
 function handleCanvasMouseMove(event) {}
@@ -473,335 +539,328 @@ function handleCanvasMouseMove(event) {}
 function handleCanvasMouseUp(event) {}
 
 function toggleTextTool() {
-  resetAllTools();
-  isTextToolActive = !isTextToolActive;
-  document.getElementById('add-text').classList.toggle('active', isTextToolActive);
-  
-  if (isTextToolActive) {
-    canvas.defaultCursor = 'text';
-    document.getElementById('text-controls').style.display = 'block';
-  }
+    resetAllTools();
+    isTextToolActive = !isTextToolActive;
+    document.getElementById('add-text').classList.toggle('active', isTextToolActive);
+    
+    if (isTextToolActive) {
+        canvas.defaultCursor = 'text';
+        document.getElementById('text-controls').style.display = 'block';
+    }
 }
 
 function toggleBrushTool() {
-  resetAllTools();
-  isBrushActive = !isBrushActive;
-  document.getElementById('brush-tool').classList.toggle('active', isBrushActive);
-  
-  if (isBrushActive) {
-    enableBrushMode();
-    document.getElementById('brush-controls').style.display = 'block';
-  } else {
-    canvas.isDrawingMode = false;
-  }
+    resetAllTools();
+    isBrushActive = !isBrushActive;
+    document.getElementById('brush-tool').classList.toggle('active', isBrushActive);
+    
+    if (isBrushActive) {
+        enableBrushMode();
+        document.getElementById('brush-controls').style.display = 'block';
+    } else {
+        canvas.isDrawingMode = false;
+    }
 }
 
 function toggleColorPickTool() {
-  resetAllTools();
-  isColorPickActive = !isColorPickActive;
-  document.getElementById('color-pick').classList.toggle('active', isColorPickActive);
-  
-  if (isColorPickActive) {
-    canvas.defaultCursor = 'crosshair';
-    canvas.getElement().classList.add('eyedropper-cursor');
-  } else {
-    canvas.getElement().classList.remove('eyedropper-cursor');
-  }
+    resetAllTools();
+    isColorPickActive = !isColorPickActive;
+    document.getElementById('color-pick').classList.toggle('active', isColorPickActive);
+    
+    if (isColorPickActive) {
+        canvas.defaultCursor = 'crosshair';
+        canvas.getElement().classList.add('eyedropper-cursor');
+    } else {
+        canvas.getElement().classList.remove('eyedropper-cursor');
+    }
 }
 
 function enableSelectTool() {
-  resetAllTools();
-  document.getElementById('select-tool').classList.add('active');
-  canvas.defaultCursor = 'default';
-  canvas.isDrawingMode = false;
+    resetAllTools();
+    document.getElementById('select-tool').classList.add('active');
+    canvas.defaultCursor = 'default';
+    canvas.isDrawingMode = false;
 }
 
 function resetAllTools() {
-  isBoxToolActive = false;
-  isTextToolActive = false;
-  isBrushActive = false;
-  isColorPickActive = false;
-  
-  document.getElementById('add-text').classList.remove('active');
-  document.getElementById('brush-tool').classList.remove('active');
-  document.getElementById('color-pick').classList.remove('active');
-  document.getElementById('select-tool').classList.remove('active');
-  
-  canvas.defaultCursor = 'default';
-  canvas.isDrawingMode = false;
-  canvas.getElement().classList.remove('eyedropper-cursor');
-  
-  hideAllControls();
-  hideObjectActions();
+    isBoxToolActive = false;
+    isTextToolActive = false;
+    isBrushActive = false;
+    isColorPickActive = false;
+    
+    document.getElementById('add-text').classList.remove('active');
+    document.getElementById('brush-tool').classList.remove('active');
+    document.getElementById('color-pick').classList.remove('active');
+    document.getElementById('select-tool').classList.remove('active');
+    
+    canvas.defaultCursor = 'default';
+    canvas.isDrawingMode = false;
+    canvas.getElement().classList.remove('eyedropper-cursor');
+    
+    hideAllControls();
+    hideObjectActions();
 }
 
 function pickColorFromPoint(x, y) {
-  const context = canvas.getContext('2d');
-  const canvasZoom = canvas.getZoom();
-  const adjustedX = x / canvasZoom;
-  const adjustedY = y / canvasZoom;
-  
-  try {
-    const pixelData = context.getImageData(adjustedX, adjustedY, 1, 1).data;
-    const color = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
-    updateColorPickers(color);
-    enableSelectTool();
-  } catch (error) {
-    console.error('Error picking color:', error);
-    alert('Could not pick color. This may happen with external images due to security restrictions.');
-    enableSelectTool();
-  }
+    const context = canvas.getContext('2d');
+    const canvasZoom = canvas.getZoom();
+    const adjustedX = x / canvasZoom;
+    const adjustedY = y / canvasZoom;
+    
+    try {
+        const pixelData = context.getImageData(adjustedX, adjustedY, 1, 1).data;
+        const color = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
+        updateColorPickers(color);
+        enableSelectTool();
+    } catch (error) {
+        console.error('Error picking color:', error);
+        alert('Could not pick color. This may happen with external images due to security restrictions.');
+        enableSelectTool();
+    }
 }
 
 function rgbToHex(r, g, b) {
-  return '#' + [r, g, b].map(x => {
-    const hex = x.toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  }).join('');
+    return '#' + [r, g, b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    }).join('');
 }
 
 function updateColorPickers(color) {
-  document.getElementById('brush-color').value = color;
-  jscolor.install();
-  document.getElementById('brush-color').jscolor.fromString(color);
-  lastBrushColor = color;
-  
-  document.getElementById('text-color').value = color;
-  document.getElementById('text-color').jscolor.fromString(color);
+    document.getElementById('brush-color').value = color;
+    jscolor.install();
+    document.getElementById('brush-color').jscolor.fromString(color);
+    lastBrushColor = color;
+    
+    document.getElementById('text-color').value = color;
+    document.getElementById('text-color').jscolor.fromString(color);
 }
 
 function hideAllControls() {
-  document.getElementById('brush-controls').style.display = 'none';
-  document.getElementById('text-controls').style.display = 'none';
-  document.getElementById('layer-controls').style.display = 'none';
+    document.getElementById('brush-controls').style.display = 'none';
+    document.getElementById('text-controls').style.display = 'none';
+    document.getElementById('layer-controls').style.display = 'none';
 }
 
 function handleSelectionChange() {
-  const selectedObject = canvas.getActiveObject();
-  
-  if (selectedObject) {
-    if (selectedObject.type === 'i-text') {
-      document.getElementById('text-controls').style.display = 'block';
-      
-      if (selectedObject.fill) {
-        jscolor.install();
-        document.getElementById('text-color').jscolor.fromString(selectedObject.fill);
-      }
-      
-      document.getElementById('font-size').value = selectedObject.fontSize || 24;
-      document.getElementById('font-size-value').textContent = selectedObject.fontSize || 24;
-      
-      const fontFamilySelect = document.getElementById('font-family');
-      if (fontFamilySelect && selectedObject.fontFamily) {
-        for (let i = 0; i < fontFamilySelect.options.length; i++) {
-          if (fontFamilySelect.options[i].value === selectedObject.fontFamily) {
-            fontFamilySelect.selectedIndex = i;
-            break;
-          }
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        if (selectedObject.type === 'i-text') {
+            document.getElementById('text-controls').style.display = 'block';
+            
+            if (selectedObject.fill) {
+                jscolor.install();
+                document.getElementById('text-color').jscolor.fromString(selectedObject.fill);
+            }
+            
+            document.getElementById('font-size').value = selectedObject.fontSize || 24;
+            document.getElementById('font-size-value').textContent = selectedObject.fontSize || 24;
+            
+            const fontFamilySelect = document.getElementById('font-family');
+            if (fontFamilySelect && selectedObject.fontFamily) {
+                for (let i = 0; i < fontFamilySelect.options.length; i++) {
+                    if (fontFamilySelect.options[i].value === selectedObject.fontFamily) {
+                        fontFamilySelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        } else if (selectedObject.type === 'path') {
+            document.getElementById('brush-controls').style.display = 'block';
+            
+            if (selectedObject.stroke) {
+                document.getElementById('brush-color').value = selectedObject.stroke;
+                jscolor.install();
+                document.getElementById('brush-color').jscolor.fromString(selectedObject.stroke);
+            }
+            
+            if (selectedObject.strokeWidth) {
+                document.getElementById('brush-width').value = selectedObject.strokeWidth;
+                document.getElementById('brush-width-value').textContent = selectedObject.strokeWidth;
+            }
+            
+            if (selectedObject.opacity !== undefined) {
+                document.getElementById('brush-opacity').value = selectedObject.opacity;
+                document.getElementById('brush-opacity-value').textContent = selectedObject.opacity.toFixed(1);
+            }
+        } else if (selectedObject.isLayer) {
+            showLayerControls();
         }
-      }
-    } else if (selectedObject.type === 'path') {
-      document.getElementById('brush-controls').style.display = 'block';
-      
-      if (selectedObject.stroke) {
-        document.getElementById('brush-color').value = selectedObject.stroke;
-        jscolor.install();
-        document.getElementById('brush-color').jscolor.fromString(selectedObject.stroke);
-      }
-      
-      if (selectedObject.strokeWidth) {
-        document.getElementById('brush-width').value = selectedObject.strokeWidth;
-        document.getElementById('brush-width-value').textContent = selectedObject.strokeWidth;
-      }
-      
-      if (selectedObject.opacity !== undefined) {
-        document.getElementById('brush-opacity').value = selectedObject.opacity;
-        document.getElementById('brush-opacity-value').textContent = selectedObject.opacity.toFixed(1);
-      }
-    } else if (selectedObject.isLayer) {
-      // Show layer controls
-      showLayerControls();
+        
+        showObjectActions();
     }
-    
-    showObjectActions();
-  }
 }
 
 function showObjectActions() {
-  updateObjectActions();
-  document.getElementById('object-actions').style.display = 'flex';
+    updateObjectActions();
+    document.getElementById('object-actions').style.display = 'flex';
 }
 
 function hideObjectActions() {
-  document.getElementById('object-actions').style.display = 'none';
+    document.getElementById('object-actions').style.display = 'none';
 }
 
 function updateObjectActions() {
-  const selectedObject = canvas.getActiveObject();
-  
-  if (!selectedObject) {
-    hideObjectActions();
-    return;
-  }
-  
-  const zoom = canvas.getZoom();
-  const objectActions = document.getElementById('object-actions');
-  const boundingRect = selectedObject.getBoundingRect();
-  const canvasRect = canvas.getElement().getBoundingClientRect();
-  
-  const top = canvasRect.top + boundingRect.top - objectActions.offsetHeight - 10;
-  const left = canvasRect.left + boundingRect.left + boundingRect.width / 2 - objectActions.offsetWidth / 2;
-  
-  objectActions.style.top = `${top}px`;
-  objectActions.style.left = `${left}px`;
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) {
+        hideObjectActions();
+        return;
+    }
+    
+    const zoom = canvas.getZoom();
+    const objectActions = document.getElementById('object-actions');
+    const boundingRect = selectedObject.getBoundingRect();
+    const canvasRect = canvas.getElement().getBoundingClientRect();
+    
+    const top = canvasRect.top + boundingRect.top - objectActions.offsetHeight - 10;
+    const left = canvasRect.left + boundingRect.left + boundingRect.width / 2 - objectActions.offsetWidth / 2;
+    
+    objectActions.style.top = `${top}px`;
+    objectActions.style.left = `${left}px`;
 }
 
 function createText(x, y) {
-  const textColor = document.getElementById('text-color').value;
-  const fontSize = parseInt(document.getElementById('font-size').value);
-  const fontFamily = document.getElementById('font-family') ? document.getElementById('font-family').value : 'Cairo';
-  
-  const text = new fabric.IText('Type here', {
-    left: x,
-    top: y,
-    fill: textColor,
-    fontSize: fontSize,
-    fontFamily: fontFamily,
-    cornerColor: '#5cdaed',
-    cornerStrokeColor: '#2196f3',
-    cornerStyle: 'circle',
-    transparentCorners: false
-  });
-  
-  canvas.add(text);
-  canvas.setActiveObject(text);
-  toggleTextTool();
-  enableSelectTool();
+    const textColor = document.getElementById('text-color').value;
+    const fontSize = parseInt(document.getElementById('font-size').value);
+    const fontFamily = document.getElementById('font-family') ? document.getElementById('font-family').value : 'Cairo';
+    
+    const text = new fabric.IText('Type here', {
+        left: x,
+        top: y,
+        fill: textColor,
+        fontSize: fontSize,
+        fontFamily: fontFamily,
+        cornerColor: '#5cdaed',
+        cornerStrokeColor: '#2196f3',
+        cornerStyle: 'circle',
+        transparentCorners: false
+    });
+    
+    canvas.add(text);
+    canvas.setActiveObject(text);
+    toggleTextTool();
+    enableSelectTool();
 }
 
 function enableBrushMode() {
-  canvas.isDrawingMode = true;
-  
-  const brushColor = document.getElementById('brush-color').value;
-  const brushWidth = parseInt(document.getElementById('brush-width').value);
-  const brushOpacity = parseFloat(document.getElementById('brush-opacity').value);
-  
-  canvas.freeDrawingBrush.color = brushColor;
-  canvas.freeDrawingBrush.width = brushWidth;
-  
-  lastBrushColor = brushColor;
-  lastBrushWidth = brushWidth;
+    canvas.isDrawingMode = true;
+    
+    const brushColor = document.getElementById('brush-color').value;
+    const brushWidth = parseInt(document.getElementById('brush-width').value);
+    const brushOpacity = parseFloat(document.getElementById('brush-opacity').value);
+    
+    canvas.freeDrawingBrush.color = brushColor;
+    canvas.freeDrawingBrush.width = brushWidth;
+    
+    lastBrushColor = brushColor;
+    lastBrushWidth = brushWidth;
 }
 
 function deleteSelectedObject() {
-  const selectedObject = canvas.getActiveObject();
-  
-  if (selectedObject) {
-    // If it's a layer, remove from layers array
-    if (selectedObject.isLayer) {
-      const index = layers.indexOf(selectedObject);
-      if (index !== -1) {
-        layers.splice(index, 1);
-      }
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        if (selectedObject.isLayer) {
+            const index = layers.indexOf(selectedObject);
+            if (index !== -1) {
+                layers.splice(index, 1);
+            }
+        }
+        
+        canvas.remove(selectedObject);
+        hideAllControls();
+        hideObjectActions();
     }
-    
-    canvas.remove(selectedObject);
-    hideAllControls();
-    hideObjectActions();
-  }
 }
 
 function cloneSelectedObject() {
-  const selectedObject = canvas.getActiveObject();
-  if (!selectedObject) return;
-  
-  selectedObject.clone(function(cloned) {
-    cloned.set({
-      left: selectedObject.left + 20,
-      top: selectedObject.top + 20,
-      evented: true,
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) return;
+    
+    selectedObject.clone(function(cloned) {
+        cloned.set({
+            left: selectedObject.left + 20,
+            top: selectedObject.top + 20,
+            evented: true,
+        });
+        
+        if (cloned.type === 'i-text') {
+            cloned.set({
+                editable: true
+            });
+        }
+        
+        if (cloned.isLayer) {
+            layers.push(cloned);
+        }
+        
+        canvas.add(cloned);
+        canvas.setActiveObject(cloned);
+        canvas.renderAll();
     });
-    
-    if (cloned.type === 'i-text') {
-      cloned.set({
-        editable: true
-      });
-    }
-    
-    // If it's a layer, add to layers array
-    if (cloned.isLayer) {
-      layers.push(cloned);
-    }
-    
-    canvas.add(cloned);
-    canvas.setActiveObject(cloned);
-    canvas.renderAll();
-  });
 }
 
 function flipHorizontally() {
-  const selectedObject = canvas.getActiveObject();
-  if (!selectedObject) return;
-  
-  selectedObject.set('flipX', !selectedObject.flipX);
-  canvas.renderAll();
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) return;
+    
+    selectedObject.set('flipX', !selectedObject.flipX);
+    canvas.renderAll();
 }
 
 function flipVertically() {
-  const selectedObject = canvas.getActiveObject();
-  if (!selectedObject) return;
-  
-  selectedObject.set('flipY', !selectedObject.flipY);
-  canvas.renderAll();
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) return;
+    
+    selectedObject.set('flipY', !selectedObject.flipY);
+    canvas.renderAll();
 }
 
 function handleImageUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const imgObj = new Image();
-    imgObj.src = event.target.result;
-    imgObj.onload = function() {
-      const image = new fabric.Image(imgObj);
-      
-      const canvasWidth = canvas.width / canvas.getZoom();
-      const canvasHeight = canvas.height / canvas.getZoom();
-      const imgRatio = image.width / image.height;
-      const canvasRatio = canvasWidth / canvasHeight;
-      let scale;
-      
-      if (imgRatio > canvasRatio) {
-        scale = canvasWidth / image.width;
-      } else {
-        scale = canvasHeight / image.height;
-      }
-      
-      image.scale(scale);
-      canvas.centerObject(image);
-      canvas.clear();
-      canvas.add(image);
-      image.sendToBack();
-      
-      image.clone(function(cloned) {
-        originalImage = cloned;
-      });
-      
-      // Reset layers array since we're starting with a new base image
-      layers = [];
-      
-      saveCanvasState();
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const imgObj = new Image();
+        imgObj.src = event.target.result;
+        imgObj.onload = function() {
+            const image = new fabric.Image(imgObj);
+            
+            const canvasWidth = canvas.width / canvas.getZoom();
+            const canvasHeight = canvas.height / canvas.getZoom();
+            const imgRatio = image.width / image.height;
+            const canvasRatio = canvasWidth / canvasHeight;
+            let scale;
+            
+            if (imgRatio > canvasRatio) {
+                scale = canvasWidth / image.width;
+            } else {
+                scale = canvasHeight / image.height;
+            }
+            
+            image.scale(scale);
+            canvas.centerObject(image);
+            canvas.clear();
+            canvas.add(image);
+            image.sendToBack();
+            
+            image.clone(function(cloned) {
+                originalImage = cloned;
+            });
+            
+            layers = [];
+            saveCanvasState();
+        };
     };
-  };
-  reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
 }
 
 window.onload = function() {
-  initCanvas();
-  jscolor.install();
-  enableSelectTool();
+    initCanvas();
+    jscolor.install();
+    enableSelectTool();
 };
+  
 </script>
 </body>
   </html>
