@@ -1,1221 +1,809 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=en>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Photo Editor</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.11/dist/cropper.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mui/system/css/stack.css" />  
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
-
-    <style>
-::-webkit-scrollbar {
-    width: 12px; /* Set the width of the scrollbar */
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #2196F3; /* Set the color of the scrollbar thumb */
-}
-
-::-webkit-scrollbar-track {
-    background-color: #f4f4f4; /* Set the color of the scrollbar track */
-}
-.container {
-    display: flex;
-    flex-direction: column;
-    padding: 16px;
-    background-color: #ffffff;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    margin-top: 70px;
-    align-items: flex-start;
-    width: max-content;
-    margin: 70px auto 0;
-    position: absolute;
-    left: 71px;
-}
-
-
-        canvas {
-            margin-top: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-.fixed-fullwidth-container {
-    position: static;
-    width: auto;
-    background-color: #f4f4f4;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    margin: 15px;
-    padding: 16px;
-}
-/* Style for the buttons */
-button {
-    background-color: #2196F3; /* Material-UI primary color */
-    color: white;
-    padding: 10px 20px;
-    margin: 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #1565C0; /* Darker shade on hover */
-}
-/* Style for text input */
-input[type="text"] {
-    padding: 10px;
-    margin: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-/* Style for color input */
-input[type="color"] {
-    padding: 8px;
-    margin: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-/* Style for range input */
-input[type="range"] {
-    width: 100%;
-    padding: 8px;
-    margin: 8px;
-    box-sizing: border-box;
-}
-
-/* Style for number input */
-input[type="number"] {
-    padding: 10px;
-    margin: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-/* Style for file input */
-input[type="file"] {
-    margin: 8px;
-}
-.fixed-tools-container {
-    position: fixed;
-    bottom: 0px;
-    top: 55px;
-    background-color: #ffffff;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    display: none;
-    z-index: 1000;
-    padding: 10px;
-    overflow: auto;
-    height: auto;
-    margin: 2px auto;
-    left: 68px;
-    right: 0;
-}
-
-        /* Style for the button that shows/hides tools */
-        #toggleToolsButton {
-            background-color: #2196F3;
-            color: white;
-            padding: 10px 20px;
-            margin: 8px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        #toggleToolsButton:hover {
-            background-color: #1565C0;
-        }
-        /* Style for the close button */
-        .close-button {
-            background-color: #f44336; /* Red color for close button */
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .close-button:hover {
-            background-color: #d32f2f; /* Darker red on hover */
-        }
-
-
-button#download-btn:hover {
-    background-color: #45a049;
-}
-button#download-btn {
-    background-color: #4CAF50;
-    font-weight: 600;
-}
-   body {
-
-            font-family: 'Roboto', sans-serif;
-
-            margin: 0;
-
-            padding: 0px;
-
-            background-color: #446FAA1A;
-    overflow-y: scroll; /* Vertical scrollbar on the left side */
-    overflow-x: scroll; /* Horizontal scrollbar on the top side */
-        }
-
-
-    #navbar {
-
-      position: fixed;
-
-      top: 0px;
-
-      left: 0;
-
-      width: 100%;
-
-      background-color: white;
-
-      padding: 10px;
-
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-
-      z-index: 3;
-
-    }
-
-
-
-    #menuToggle {
-
-      cursor: pointer;
-
-      transition: transform 0.3s;
-
-      padding: 5px;
-
-      width: 20px;
-
-      box-sizing: content-box;
-
-    }
-
-
-
-    #menuIcon {
-
-      font-size: 24px;
-
-      color: #1976D2;
-
-    }
-
-
-
-    #menuIcon.close {
-
-      transform: rotate(180deg);
-
-    }
-
-
-
-    #menuOverlay {
-
-      position: fixed;
-
-      top: 0px;
-
-      left: 0;
-
-      width: 100%;
-
-      height: 100%;
-
-      background-color: rgba(0, 0, 0, 0.5);
-
-      display: none;
-
-      z-index: 2;
-
-      overflow-y: auto;
-
-    }
-
-
-
-    #repoList {
-
-      display: flex;
-
-      flex-wrap: wrap;
-
-      justify-content: space-around;
-
-      padding: 0;
-
-      max-width: 800px;
-
-      margin: 70px auto auto;
-
-    }
-
-
-
-    .repoCard {
-
-      background-color: white;
-
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-      margin: 10px;
-
-      padding: 20px;
-
-      width: 100%;
-
-      border-radius: 8px;
-
-      transition: box-shadow 0.3s;
-
-      cursor: pointer;
-
-    }
-
-
-
-    .repoCard:hover {
-
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-
-    }
-
-
-
-    .repoTitle {
-
-      font-size: 1.5rem;
-
-      color: #1976D2;
-
-      margin-bottom: 10px;
-
-    }
-
-
-
-    .repoDescription {
-
-      color: #555;
-
-      margin-bottom: 15px;
-
-    }
-
-
-
-    .repoLink {
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: flex-start;
-
-      margin-top: 15px;
-
-    }
-
-
-
-    .repoLink a {
-
-      color: white;
-
-      text-decoration: none;
-
-      background-color: #1976D2;
-
-      padding: 10px 15px;
-
-      border-radius: 5px;
-
-      display: inline-block;
-
-      transition: background-color 0.3s;
-
-    }
-
-
-
-    .repoLink a:hover {
-
-      background-color: #1565C0;
-
-    }
-
-
-
-    .repoLink i {
-
-      margin-left: 5px;
-
-    }
-
-
-
-    .center {
-
-      color: white;
-
-      text-decoration: none;
-
-      background-color: #1976D2;
-
-      padding: 10px 15px;
-
-      border-radius: 5px;
-
-      display: inline-block;
-
-      transition: background-color 0.3s;
-
-      margin: 10px;
-
-    }
-.sidebar {
-    position: fixed;
-    top: 55px;
-    left: 0;
-    height: 100%;
-    width: 66px;
-    background-color: #fff;
-    padding-top: 0px;
-    display: flex;
-    flex-direction: column;
-    z-index: 1;
-    align-items: center;
-
-        /* Style for the buttons in the sidebar */
-        .sidebar button {
-            background-color: #555; /* Button background color */
-            color: white;
-            padding: 10px;
-            margin: 8px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%;
-        }
-
-        .sidebar button:hover {
-            background-color: #777; /* Darker shade on hover */
-        }
-    </style>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width, initial-scale=1.0">
+<title>Modern Image Editor</title>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#f5f5f7;color:#333;padding:20px}.editor-container{max-width:1200px;margin:0 auto;background:white;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}.toolbar{padding:15px;display:flex;flex-wrap:wrap;gap:10px;background:#fff;border-bottom:1px solid #eaeaea}.canvas-container{width:100%;overflow:auto;padding:20px;display:flex;justify-content:center}.canvas-wrapper{box-shadow:0 4px 12px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden}button{padding:8px 12px;border:0;border-radius:6px;background:#f0f0f0;color:#333;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:5px}button:hover{background:#e0e0e0}button.active{background:#4caf50;color:white}input[type="range"]{width:100px}.tool-group{display:flex;flex-direction:column;padding:10px;border-radius:8px;background:#f9f9f9;margin-top:10px}.tool-group-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#555}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.control-item{display:flex;align-items:center;gap:4px}.color-picker{padding:5px;border:1px solid #ddd;border-radius:4px;width:80px}.upload-btn-wrapper{position:relative;overflow:hidden;display:inline-block}.upload-btn-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}.brush-controls,.text-controls{display:none;margin-top:10px;flex-wrap:wrap;gap:10px}label{font-size:12px;color:#666}.tool-section{margin-top:10px;padding-top:10px;border-top:1px solid #eee}.eyedropper-cursor{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12,auto}.object-actions{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:4px;display:none;z-index:100;flex-direction:row;}.object-actions button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}</style>
 </head>
-
 <body>
+<div class=editor-container>
+<div class=canvas-container>
+<div class=canvas-wrapper>
+<canvas id=canvas></canvas>
+</div>
+</div>
+<div class=toolbar>
+<div class=upload-btn-wrapper>
+<button id=upload-btn><i class="fas fa-upload"></i> Upload Image</button>
+<input type=file id=image-upload accept=image/* />
+</div>
 
-  <div id="navbar">
 
-    <div id="menuToggle" onclick="toggleMenu()">
+<div class="upload-btn-wrapper">
+  <button id="add-layer-btn"><i class="fas fa-layer-group"></i> Add Layer</button>
+  <input type="file" id="layer-upload" accept="image/*" />
+</div>
 
-      <i id="menuIcon" class="fas fa-bars"></i>
-
+<!-- Add this to your toolbar div, near the end before closing the toolbar div -->
+<div class="tool-group" id="layer-controls" style="display: none;">
+  <div class="tool-group-title">Layer Controls</div>
+  <div class="controls">
+    <div class="control-item">
+      <label for="layer-opacity">Opacity:</label>
+      <input type="range" id="layer-opacity" min="0.1" max="1" value="1" step="0.1">
+      <span id="layer-opacity-value">1.0</span>
     </div>
-
-  </div>
-
-
-
-  <div id="menuOverlay" onclick="toggleMenu()">
-
-    <div id="repoList"></div>
-
-  </div>
-
-
-
-
-
-
-
-
-
-    <div class="container">
-        <input type="file" id="imageInput" accept="image/*">
-        <canvas id="canvas"></canvas>
- <!-- Toggle button for showing/hiding tools -->
-
-
-
-
-    <div class="sidebar">
-        <button id="toggleToolsButton" onclick="toggleTools()"><i class="fas fa-tools"></i></button>
-        <button onclick="undo()"><i class="fas fa-undo"></i></button>
-        <button onclick="resetImage()"><i class="fas fa-sync-alt"></i></button>
-        <button id="download-btn" onclick="downloadImage()"><i class="fas fa-download"></i></button>
+    <div class="control-item">
+      <button id="bring-forward"><i class="fas fa-arrow-up"></i> Bring Forward</button>
+      <button id="send-backward"><i class="fas fa-arrow-down"></i> Send Backward</button>
     </div>
-
-
-
-
-        <!-- Fixed tools container at the bottom -->
-        <div class="fixed-tools-container">
-            <button class="close-button" onclick="toggleTools()">Close</button>
-<h2>Image Filters</h2>
-        <div style="border: 1px solid #ddd;padding: 20px;">
-            <button onclick="applyFilter('grayscale')">Grayscale</button>
-            <button onclick="applyFilter('sepia')">Sepia</button>
-            <button onclick="applyFilter('invert')">Invert Colors</button>
-            <button onclick="applyFilter('brightness')">Adjust Brightness</button>
-            <button onclick="applyFilter('blur')">Blur</button>
-        </div>
-
-
-<h2>Image Filp</h2>
-        <div style="border: 1px solid #ddd;padding: 20px;">
-    <button onclick="flipImage('horizontal')">Flip Horizontal</button>
-    <button onclick="flipImage('vertical')">Flip Vertical</button>
-        </div>
-
-            <h2>Magical Eraser</h2>
-<div style="border: 1px solid #ddd; padding: 20px;">
-    <button id="magicalEraserToggleButton" onclick="activateMagicalEraser()">Toggle Magical Eraser</button>
+  </div>
 </div>
 
 
 
-            
-
-<h2>Drawing Tools</h2>
-        <div style="border: 1px solid #ddd;padding: 20px;">
-            <button id="penToggleButton" onclick="activatePen()">Toggle Pen</button>
-            <label for="colorPicker">Color:</label>
-            <input type="color" id="colorPicker" value="#000000" onchange="updatePenColor(this.value)">
-            <label for="sizeSlider">Size:</label>
-            <input type="range" id="sizeSlider" min="1" max="50" value="10" onchange="updatePenSize(this.value)">
-        </div>
-
-<h2>Text Options</h2>
-        <div style="border: 1px solid #ddd;padding: 20px;">
-            <label for="text">Text:</label>
-            <input type="text" id="text" placeholder="Enter text">
-            <label for="textColor">Text Color:</label>
-            <input type="color" id="textColor" value="#000000" onchange="updateTextColor(this.value)">
-            <label for="fontSize">Font Size:</label>
-            <input type="number" id="fontSize" min="1" max="100" value="16" onchange="updateFontSize(this.value)">
-            <button onclick="addTextAtMousePosition()">Add Text at Mouse Position</button>
-        </div>
-
-
-<h2>Crop Image</h2>
-<div class="fixed-fullwidth-container">
-    <img id="cropperImage" style="max-width: 100%;" />
-    <button onclick="cancelCrop()">SHOW/Cancel Crop</button>
-    <button onclick="cropImage()">Crop Image</button>
+<button id=undo-action title=Undo><i class="fas fa-undo"></i> Undo</button>
+<button id=download-image title="Download Image"><i class="fas fa-download"></i> Download</button>
+<button id=add-text title="Add Text"><i class="fas fa-font"></i> Add Text</button>
+<button id=brush-tool title="Brush Tool"><i class="fas fa-paint-brush"></i> Brush</button>
+<button id=color-pick title="Color Pick Tool"><i class="fas fa-eye-dropper"></i> Color Pick</button>
+<button id=select-tool title="Select Tool"><i class="fas fa-mouse-pointer"></i> Select</button>
+<div class=tool-group id=brush-controls>
+<div class=tool-group-title>Brush Controls</div>
+<div class=controls>
+<div class=control-item>
+<label for=brush-color>Color:</label>
+<input type=text id=brush-color class="jscolor color-picker" value=#000000>
 </div>
-        </div>
-
-    </div>
-
-    <script src="https://unpkg.com/cropperjs@1.5.11/dist/cropper.min.js"></script>
-    <script>
-
-  const currentPageLocation = window.location.href;
-
-  let displayedRepos = 0; // Counter for displayed repositories
-
-
-
-  // Fetch data from GitHub API
-
-  fetch('https://api.github.com/users/hoodaatwa/repos')
-
-    .then(response => response.json())
-
-    .then(data => {
-
-      // Extract topics of the current repository
-
-      const currentRepoTopics = data
-
-        .filter(repo => repo.homepage === currentPageLocation)
-
-        .flatMap(repo => repo.topics || []);
-
-
-
-      // Create Material-UI card for each repository with the same topics
-
-      const repoList = document.getElementById('repoList');
-
-      data.forEach(repo => {
-
-        const repoTopics = repo.topics || [];
-
-
-
-        if (
-
-          displayedRepos >= 4 ||
-
-          repo.homepage === currentPageLocation ||
-
-          !repoTopics.some(topic => currentRepoTopics.includes(topic))
-
-        ) {
-
-          // Skip creating card if reached the limit, homepage matches current page location,
-
-          // or repository has no common topics
-
-          return;
-
-        }
-
-
-
-        const repoCard = document.createElement('div');
-
-        repoCard.classList.add('repoCard');
-
-        repoCard.innerHTML = `
-
-          <div class="repoTitle">${repo.name}</div>
-
-          <div class="repoDescription">${repo.description}</div>
-
-          <div class="repoLink">
-
-            <a href="${repo.homepage}" target="_blank">Homepage <i class="fas fa-external-link-alt"></i></a>
-
-          </div>
-
-        `;
-
-        repoList.appendChild(repoCard);
-
-
-
-        displayedRepos++;
-
-      });
-
-
-
-      // Find the "Main" repository and create a special card with a dynamic link
-
-      const mainRepo = data.find(repo => repo.name.toLowerCase() === 'main');
-
-      if (mainRepo) {
-
-        const mainRepoCard = document.createElement('div');
-
-
-
-        mainRepoCard.innerHTML = `
-
-          <a class="center" href="${mainRepo.homepage}" target="_blank">Go to Main Page <i class="fas fa-external-link-alt"></i></a>
-
-        `;
-
-        repoList.appendChild(mainRepoCard);
-
-      }
-
-    })
-
-    .catch(error => console.error('Error fetching data:', error));
-
-
-
-  function toggleMenu() {
-
-    const menuOverlay = document.getElementById('menuOverlay');
-
-    const body = document.body;
-
-    const menuIcon = document.getElementById('menuIcon');
-
-
-
-    if (menuOverlay.style.display === 'block') {
-
-      menuOverlay.style.display = 'none';
-
-      body.style.overflow = 'auto';
-
-      menuIcon.classList.replace('fa-times', 'fa-bars');
-
-    } else {
-
-      menuOverlay.style.display = 'block';
-
-      body.style.overflow = 'hidden';
-
-      menuIcon.classList.replace('fa-bars', 'fa-times');
-
+<div class=control-item>
+<label for=brush-width>Width:</label>
+<input type=range id=brush-width min=1 max=50 value=10>
+<span id=brush-width-value>10</span>
+</div>
+<div class=control-item>
+<label for=brush-opacity>Opacity:</label>
+<input type=range id=brush-opacity min=0.1 max=1 value=1 step=0.1>
+<span id=brush-opacity-value>1.0</span>
+</div>
+</div>
+</div>
+<div class=tool-group id=text-controls>
+<div class=tool-group-title>Text Controls</div>
+<div class=controls>
+<div class=control-item>
+<label for=text-color>Color:</label>
+<input type=text id=text-color class="jscolor color-picker" value=#000000>
+</div>
+<div class=control-item>
+<label for=font-size>Font Size:</label>
+<input type=range id=font-size min=10 max=80 value=24>
+<span id=font-size-value>24</span>
+</div>
+<div class=control-item id=font-family-container>
+<label for=font-family>Font:</label>
+<select id=font-family style="padding:4px;border-radius:4px;border:1px solid #ddd"></select>
+<button id=add-font-family class=add-font-btn title="Add New Font">+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id=object-actions class=object-actions>
+<button id=clone-object><i class="fas fa-clone"></i> Clone</button>
+<button id=flip-h-object><i class="fas fa-arrows-alt-h"></i> Flip H</button>
+<button id=flip-v-object><i class="fas fa-arrows-alt-v"></i> Flip V</button>
+<button id=delete-object><i class="fas fa-trash-alt"></i> Delete</button>
+</div>
+<script>
+let canvas;
+let isBoxToolActive = false;
+let isBrushActive = false;
+let isTextToolActive = false;
+let isColorPickActive = false;
+let currentColor = '#FF0000';
+let lastBrushColor = '#000000';
+let lastBrushWidth = 10;
+let canvasHistory = [];
+let historyIndex = -1;
+let originalImage = null;
+let undoStack = [];
+let redoStack = [];
+let layers = []; // To keep track of additional image layers
+
+const fontFamilies = ['Cairo', 'Tajawal', 'Almarai', 'Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald'];
+
+function initCanvas() {
+  canvas = new fabric.Canvas('canvas', {
+    width: 800,
+    height: 600,
+    backgroundColor: '#FFFFFF',
+    preserveObjectStacking: true
+  });
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+  setupEventListeners();
+  loadGoogleFonts();
+  saveCanvasState();
+}
+
+function loadGoogleFonts() {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap';
+  document.head.appendChild(link);
+  const fontFamilySelect = document.getElementById('font-family');
+  fontFamilySelect.innerHTML = '';
+  fontFamilies.forEach(font => {
+    const option = document.createElement('option');
+    option.value = font;
+    option.textContent = font;
+    option.style.fontFamily = font;
+    fontFamilySelect.appendChild(option);
+  });
+  fontFamilySelect.addEventListener('change', function() {
+    // Just update the display but don't apply to the text object
+    const selectedFont = this.value;
+    // No need to call updateTextSettings() here
+  });
+  setupAddFontButton();
+}
+
+function setupAddFontButton() {
+  document.getElementById('add-font-family').addEventListener('click', addNewFont);
+}
+
+function addNewFont() {
+  const fontName = prompt("Enter Google Font name (e.g. 'Poppins', 'Playfair Display'):");
+  if (!fontName) return;
+  const fontFamilySelect = document.getElementById('font-family');
+  for (let i = 0; i < fontFamilySelect.options.length; i++) {
+    if (fontFamilySelect.options[i].value.toLowerCase() === fontName.toLowerCase()) {
+      alert("This font is already in the list.");
+      return;
     }
-
   }
-
-</script>
-    <script>
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        let imageInput = document.getElementById('imageInput');
-        let img = new Image();
-        let originalImageData;
-        let dynamicBrightness = 0;
-        let dynamicBlur = 0;
-        let dynamicBrightnessIncrement = 20;
-        let dynamicBlurIncrement = 2;
-        let penActive = false;
-        let eraseActive = false;
-        let brushActive = false;
-        let textActive = false;
-        let penColor = '#000000';
-        let penSize = 10;
-        let drawingActions = []; // Array to store drawing actions
-
-        let text = '';
-        let textColor = '#000000';
-        let fontSize = 16;
-
-        // Initialize cropper
-        let cropper;
-
-        imageInput.addEventListener('change', handleImage);
-
-        function handleImage(e) {
-            let reader = new FileReader();
-
-            reader.onload = function (event) {
-                img.onload = function () {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    saveSnapshot();
-
-                    // Set up cropper
-                    document.getElementById('cropperImage').src = event.target.result;
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    cropper = new Cropper(document.getElementById('cropperImage'), {
-                        viewMode: 1,
-                        autoCropArea: 1, // Adjust the initial crop area size
-                        crop(event) {
-                            // Crop event handling
-                        },
-                        movable: false,
-                        rotatable: false,
-                        scalable: false,
-                        zoomable: true,
-                        autoCrop: false,
-                        autoCropArea: 1,
-                        resizable: false, // Make the cropping area resizable from all points
-                    });
-                }
-                img.src = event.target.result;
-            }
-
-            reader.readAsDataURL(e.target.files[0]);
-        }
-
-        // Function to toggle the visibility of tools
-        function toggleTools() {
-            let toolsContainer = document.querySelector('.fixed-tools-container');
-            toolsContainer.style.display = toolsContainer.style.display === 'none' ? 'block' : 'none';
-        }
-
-
-
-
-
-
-
-
-
-
-        let magicalEraserActive = false;
-
-function activateMagicalEraser() {
-    let toggleButton = document.getElementById('magicalEraserToggleButton');
-    toggleButton.textContent = magicalEraserActive ? 'Magical Eraser is disabled' : 'Magical Eraser is enabled';
-
-    if (!magicalEraserActive) {
-        magicalEraserActive = true;
-        canvas.addEventListener('mousedown', startMagicalEraser);
-        canvas.addEventListener('touchstart', startMagicalEraser);
-    } else {
-        magicalEraserActive = false;
-        canvas.removeEventListener('mousedown', startMagicalEraser);
-        canvas.removeEventListener('touchstart', startMagicalEraser);
-    }
+  try {
+    const formattedFontName = fontName.replace(/\s+/g, '+');
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${formattedFontName}&display=swap`;
+    document.head.appendChild(link);
+    const option = document.createElement('option');
+    option.value = fontName;
+    option.textContent = fontName;
+    option.style.fontFamily = fontName;
+    fontFamilySelect.appendChild(option);
+    fontFamilySelect.value = fontName;
+  } catch (error) {
+    console.error("Error adding font:", error);
+    alert("There was an error adding the font. Please try again.");
+  }
 }
 
-function startMagicalEraser(e) {
-    if (magicalEraserActive) {
-        let clientX, clientY;
-
-        if (e.type.startsWith('touch')) {
-            clientX = e.touches[0].clientX - canvas.offsetLeft;
-            clientY = e.touches[0].clientY - canvas.offsetTop;
-        } else {
-            clientX = e.clientX - canvas.offsetLeft;
-            clientY = e.clientY - canvas.offsetTop;
-        }
-
-        // Get the color of the pixel at the clicked position
-        let pixelColor = getPixelColor(clientX, clientY);
-
-        // Apply the magical eraser by removing pixels of the same color
-        applyMagicalEraser(pixelColor);
-    }
+function resizeCanvas() {
+  const container = document.querySelector('.canvas-container');
+  const containerWidth = container.clientWidth - 40;
+  if (containerWidth < canvas.width) {
+    const scale = containerWidth / canvas.width;
+    canvas.setZoom(scale);
+    canvas.setWidth(canvas.width * scale);
+    canvas.setHeight(canvas.height * scale);
+  }
 }
 
-function getPixelColor(x, y) {
-    let pixel = ctx.getImageData(x, y, 1, 1).data;
-    return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+function setupEventListeners() {
+  document.getElementById('add-text').addEventListener('click', toggleTextTool);
+  document.getElementById('brush-tool').addEventListener('click', toggleBrushTool);
+  document.getElementById('color-pick').addEventListener('click', toggleColorPickTool);
+  document.getElementById('select-tool').addEventListener('click', enableSelectTool);
+  document.getElementById('undo-action').addEventListener('click', undoAction);
+  document.getElementById('download-image').addEventListener('click', downloadImage);
+  document.getElementById('brush-color').addEventListener('change', function() {
+    // Just update the display but don't apply to the brush yet
+    // Update will happen when the button is clicked
+  });
+  document.getElementById('brush-width').addEventListener('input', function() {
+    // Update the display value
+    document.getElementById('brush-width-value').textContent = this.value;
+  });
+  document.getElementById('brush-opacity').addEventListener('input', function() {
+    // Update the display value
+    document.getElementById('brush-opacity-value').textContent = parseFloat(this.value).toFixed(1);
+  });
+  document.getElementById('text-color').addEventListener('change', function() {
+    // Just update the color picker but don't apply to the text object
+    // No need to call updateTextSettings() here
+  });
+  document.getElementById('font-size').addEventListener('input', function() {
+    // Update the display value
+    document.getElementById('font-size-value').textContent = this.value;
+  });
+  document.getElementById('image-upload').addEventListener('change', handleImageUpload);
+  document.getElementById('clone-object').addEventListener('click', cloneSelectedObject);
+  document.getElementById('flip-h-object').addEventListener('click', flipHorizontally);
+  document.getElementById('flip-v-object').addEventListener('click', flipVertically);
+  document.getElementById('delete-object').addEventListener('click', deleteSelectedObject);
+  
+  // Add Layer functionality
+  document.getElementById('add-layer-btn').addEventListener('click', function() {
+    document.getElementById('layer-upload').click();
+  });
+  document.getElementById('layer-upload').addEventListener('change', handleLayerUpload);
+  document.getElementById('layer-opacity').addEventListener('input', updateLayerOpacity);
+  document.getElementById('bring-forward').addEventListener('click', bringLayerForward);
+  document.getElementById('send-backward').addEventListener('click', sendLayerBackward);
+  
+  canvas.on('mouse:down', handleCanvasMouseDown);
+  canvas.on('mouse:move', handleCanvasMouseMove);
+  canvas.on('mouse:up', handleCanvasMouseUp);
+  canvas.on('selection:created', handleSelectionChange);
+  canvas.on('selection:updated', handleSelectionChange);
+  canvas.on('selection:cleared', function() {
+    hideAllControls();
+    hideObjectActions();
+  });
+  canvas.on('object:modified', function() {
+    saveCanvasState();
+    updateObjectActions();
+  });
+  canvas.on('object:added', function() {
+    saveCanvasState();
+  });
+  canvas.on('object:removed', function() {
+    saveCanvasState();
+    hideObjectActions();
+  });
+  canvas.on('mouse:move', function() {
+    updateObjectActions();
+  });
+
+  const brushControls = document.getElementById('brush-controls');
+  const brushControlsDiv = brushControls.querySelector('.controls');
+  const updateBrushButton = document.createElement('button');
+  updateBrushButton.id = 'update-brush';
+  updateBrushButton.textContent = 'Update Brush';
+  updateBrushButton.addEventListener('click', updateSelectedBrush);
+  brushControlsDiv.appendChild(updateBrushButton);
+
+  const textControls = document.getElementById('text-controls');
+  const textControlsDiv = textControls.querySelector('.controls');
+  const updateTextButton = document.createElement('button');
+  updateTextButton.id = 'update-text';
+  updateTextButton.textContent = 'Update Text';
+  updateTextButton.addEventListener('click', updateSelectedText);
+  textControlsDiv.appendChild(updateTextButton);
 }
 
-function applyMagicalEraser(targetColor) {
-    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let data = imageData.data;
-
-    for (let i = 0; i < data.length; i += 4) {
-        let pixelColor = `rgb(${data[i]}, ${data[i + 1]}, ${data[i + 2]})`;
-
-        // Check if the pixel color matches the target color
-        if (pixelColor === targetColor) {
-            // Make the pixel transparent
-            data[i + 3] = 0;
-        }
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-    saveSnapshot();
+// Function to handle layer uploads
+function handleLayerUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const imgObj = new Image();
+    imgObj.src = event.target.result;
+    imgObj.onload = function() {
+      const image = new fabric.Image(imgObj, {
+        opacity: 1,
+        selectable: true,
+        hasControls: true,
+        hasBorders: true,
+        isLayer: true  // Custom property to identify layers
+      });
+      
+      // Resize image to fit within canvas while maintaining aspect ratio
+      const canvasWidth = canvas.width / canvas.getZoom();
+      const canvasHeight = canvas.height / canvas.getZoom();
+      const imgRatio = image.width / image.height;
+      const canvasRatio = canvasWidth / canvasHeight;
+      let scale;
+      
+      if (imgRatio > canvasRatio) {
+        scale = canvasWidth / image.width * 0.8;
+      } else {
+        scale = canvasHeight / image.height * 0.8;
+      }
+      
+      image.scale(scale);
+      canvas.centerObject(image);
+      canvas.add(image);
+      
+      // Add to layers array
+      layers.push(image);
+      
+      // Select the layer to show controls
+      canvas.setActiveObject(image);
+      showLayerControls();
+      saveCanvasState();
+    };
+  };
+  reader.readAsDataURL(file);
+  e.target.value = null; // Reset the input to allow reselecting the same file
 }
 
-
-
-
-
-
-
-
-
-
-
-
-        
-        function cropImage() {
-            // Get the cropped data
-            let croppedImageData = cropper.getCroppedCanvas().toDataURL();
-            
-            // Clear the canvas and draw the cropped image
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            img.src = croppedImageData;
-
-            // Scroll back to the top
-             window.scrollTo(0, 0);
-        }
-
-function cancelCrop() {
-    // Clear the canvas and redraw the original image
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0);
-    // Also reset the cropper
-    if (cropper) {
-        cropper.destroy();
-        cropper = new Cropper(document.getElementById('cropperImage'), {
-            viewMode: 1,
-            autoCropArea: 1,
-            crop(event) {
-                // Crop event handling
-            },
-            movable: true,
-            rotatable: true,
-            scalable: false,
-            zoomable: true,
-            autoCrop: false,
-            autoCropArea: 1,
-            resizable: false,
-        });
-    }
+// Show layer controls when a layer is selected
+function showLayerControls() {
+  const selectedObject = canvas.getActiveObject();
+  if (selectedObject && selectedObject.isLayer) {
+    document.getElementById('layer-controls').style.display = 'block';
+    document.getElementById('layer-opacity').value = selectedObject.opacity;
+    document.getElementById('layer-opacity-value').textContent = selectedObject.opacity.toFixed(1);
+  } else {
+    document.getElementById('layer-controls').style.display = 'none';
+  }
 }
 
+// Update layer opacity
+function updateLayerOpacity() {
+  const selectedObject = canvas.getActiveObject();
+  if (selectedObject && selectedObject.isLayer) {
+    const opacity = parseFloat(document.getElementById('layer-opacity').value);
+    document.getElementById('layer-opacity-value').textContent = opacity.toFixed(1);
+    selectedObject.set('opacity', opacity);
+    canvas.renderAll();
+    saveCanvasState();
+  }
+}
 
+// Bring layer forward
+function bringLayerForward() {
+  const selectedObject = canvas.getActiveObject();
+  if (selectedObject) {
+    canvas.bringForward(selectedObject);
+    canvas.renderAll();
+    saveCanvasState();
+  }
+}
 
+// Send layer backward
+function sendLayerBackward() {
+  const selectedObject = canvas.getActiveObject();
+  if (selectedObject) {
+    canvas.sendBackwards(selectedObject);
+    canvas.renderAll();
+    saveCanvasState();
+  }
+}
 
-        function applyFilter(filterType) {
-            // Apply the selected filter with gradual increase
-            switch (filterType) {
-                case 'grayscale':
-                    applyGrayscale();
-                    break;
-                case 'sepia':
-                    applySepia();
-                    break;
-                case 'invert':
-                    applyInvert();
-                    break;
-                case 'brightness':
-                    dynamicBrightness += dynamicBrightnessIncrement;
-                    applyBrightness(dynamicBrightness);
-                    break;
-                case 'blur':
-                    dynamicBlur += dynamicBlurIncrement;
-                    applyBlur(dynamicBlur);
-                    break;
-                // Add more cases for additional filters
-                default:
-                    break;
-            }
-        }
+function updateSelectedBrush() {
+  const selectedObject = canvas.getActiveObject();
+  if (!selectedObject || selectedObject.type !== 'path') return;
+  
+  const brushColor = document.getElementById('brush-color').value;
+  const brushWidth = parseInt(document.getElementById('brush-width').value);
+  const brushOpacity = parseFloat(document.getElementById('brush-opacity').value);
+  
+  selectedObject.set({
+    stroke: brushColor,
+    strokeWidth: brushWidth,
+    opacity: brushOpacity
+  });
+  
+  canvas.renderAll();
+  saveCanvasState();
+}
 
-        function applyGrayscale() {
-            // Grayscale filter logic
-            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            let data = imageData.data;
+function updateSelectedText() {
+  const selectedObject = canvas.getActiveObject();
+  if (!selectedObject || selectedObject.type !== 'i-text') return;
+  
+  const textColor = document.getElementById('text-color').value;
+  const fontSize = parseInt(document.getElementById('font-size').value);
+  const fontFamily = document.getElementById('font-family') ? document.getElementById('font-family').value : 'Arial';
+  
+  selectedObject.set({
+    fill: textColor,
+    fontSize: fontSize,
+    fontFamily: fontFamily
+  });
+  
+  canvas.renderAll();
+  saveCanvasState();
+}
 
-            for (let i = 0; i < data.length; i += 4) {
-                let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                data[i] = avg;
-                data[i + 1] = avg;
-                data[i + 2] = avg;
-            }
+function saveCanvasState() {
+  if (historyIndex < canvasHistory.length - 1) {
+    canvasHistory = canvasHistory.slice(0, historyIndex + 1);
+  }
+  
+  const json = JSON.stringify(canvas.toJSON(['selectable', 'evented', 'isLayer']));
+  canvasHistory.push(json);
+  historyIndex = canvasHistory.length - 1;
+  updateHistoryButtons();
+}
 
-            ctx.putImageData(imageData, 0, 0);
-        }
+function updateHistoryButtons() {
+  const undoBtn = document.getElementById('undo-action');
+  undoBtn.disabled = historyIndex <= 0;
+  undoBtn.style.opacity = undoBtn.disabled ? "0.5" : "1";
+}
 
-        function applySepia() {
-            // Sepia filter logic
-            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            let data = imageData.data;
+function undoAction() {
+  if (historyIndex > 0) {
+    historyIndex--;
+    loadCanvasState();
+  }
+}
 
-            for (let i = 0; i < data.length; i += 4) {
-                let red = data[i];
-                let green = data[i + 1];
-                let blue = data[i + 2];
-
-                data[i] = Math.min(255, 0.393 * red + 0.769 * green + 0.189 * blue);
-                data[i + 1] = Math.min(255, 0.349 * red + 0.686 * green + 0.168 * blue);
-                data[i + 2] = Math.min(255, 0.272 * red + 0.534 * green + 0.131 * blue);
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-        }
-
-        function applyInvert() {
-            // Invert colors filter logic
-            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            let data = imageData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                data[i] = 255 - data[i];       // Invert red
-                data[i + 1] = 255 - data[i + 1]; // Invert green
-                data[i + 2] = 255 - data[i + 2]; // Invert blue
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-        }
-
-        function applyBrightness(adjustment) {
-            // Brightness filter logic
-            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            let data = imageData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                data[i] += adjustment;       // Adjust red
-                data[i + 1] += adjustment;   // Adjust green
-                data[i + 2] += adjustment;   // Adjust blue
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-        }
-
-        function applyBlur(blurRadius) {
-            // Blur filter logic
-            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            let data = imageData.data;
-
-            for (let y = 0; y < canvas.height; y++) {
-                for (let x = 0; x < canvas.width; x++) {
-                    let redTotal = 0;
-                    let greenTotal = 0;
-                    let blueTotal = 0;
-                    let pixelCount = 0;
-
-                    for (let dy = -blurRadius; dy <= blurRadius; dy++) {
-                        for (let dx = -blurRadius; dx <= blurRadius; dx++) {
-                            let nx = x + dx;
-                            let ny = y + dy;
-
-                            if (nx >= 0 && nx < canvas.width && ny >= 0 && ny < canvas.height) {
-                                let index = (ny * canvas.width + nx) * 4;
-                                redTotal += data[index];
-                                greenTotal += data[index + 1];
-                                blueTotal += data[index + 2];
-                                pixelCount++;
-                            }
-                        }
-                    }
-
-                    let currentIndex = (y * canvas.width + x) * 4;
-                    data[currentIndex] = redTotal / pixelCount;
-                    data[currentIndex + 1] = greenTotal / pixelCount;
-                    data[currentIndex + 2] = blueTotal / pixelCount;
-                }
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-        }
-
-        function flipImage(direction) {
-            // Flip image logic
-            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            let data = imageData.data;
-
-            if (direction === 'horizontal') {
-                for (let y = 0; y < canvas.height; y++) {
-                    for (let x = 0; x < canvas.width / 2; x++) {
-                        let index1 = (y * canvas.width + x) * 4;
-                        let index2 = (y * canvas.width + canvas.width - x - 1) * 4;
-
-                        // Swap pixel colors for horizontal flip
-                        for (let i = 0; i < 4; i++) {
-                            let temp = data[index1 + i];
-                            data[index1 + i] = data[index2 + i];
-                            data[index2 + i] = temp;
-                        }
-                    }
-                }
-            } else if (direction === 'vertical') {
-                for (let y = 0; y < canvas.height / 2; y++) {
-                    for (let x = 0; x < canvas.width; x++) {
-                        let index1 = (y * canvas.width + x) * 4;
-                        let index2 = ((canvas.height - y - 1) * canvas.width + x) * 4;
-
-                        // Swap pixel colors for vertical flip
-                        for (let i = 0; i < 4; i++) {
-                            let temp = data[index1 + i];
-                            data[index1 + i] = data[index2 + i];
-                            data[index2 + i] = temp;
-                        }
-                    }
-                }
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-        }
-
-        
- function resetImage() {
-            ctx.putImageData(originalImageData, 0, 0);
-            dynamicBrightness = 0;
-            dynamicBlur = 0;
-        }
-
-       <!-- ... Existing code ... -->
-
-        function downloadImage() {
-            let downloadLink = document.createElement('a');
-            downloadLink.href = canvas.toDataURL("image/png");
-            downloadLink.download = 'edited_image.png';
-            downloadLink.click();
-        }
-
-        let drawing = false;
-        let lastX, lastY;
-
-        canvas.addEventListener('mousedown', startPosition);
-        canvas.addEventListener('mouseup', endPosition);
-        canvas.addEventListener('mousemove', draw);
-
-        canvas.addEventListener('touchstart', startPosition);
-        canvas.addEventListener('touchend', endPosition);
-        canvas.addEventListener('touchmove', draw);
-
-        function startPosition(e) {
-            if (penActive || eraseActive || brushActive) {
-                drawing = true;
-                draw(e);
-            }
-        }
-
-        function endPosition() {
-            drawing = false;
-            ctx.beginPath();
-        }
-
+function loadCanvasState() {
+  canvas.loadFromJSON(canvasHistory[historyIndex], function() {
+    canvas.renderAll();
+    updateHistoryButtons();
     
+    // Rebuild layers array
+    layers = [];
+    canvas.forEachObject(function(obj) {
+      if (obj.isLayer) {
+        layers.push(obj);
+      }
+    });
+  });
+}
 
+function downloadImage() {
+  const quality = 10;
+  const dataURL = canvas.toDataURL({
+    format: 'png',
+    quality: 1,
+    multiplier: quality
+  });
+  
+  const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = 'image-editor-' + new Date().getTime() + '.png';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
+function handleCanvasMouseDown(event) {
+  if (isTextToolActive) {
+    createText(event.pointer.x, event.pointer.y);
+  } else if (isColorPickActive) {
+    pickColorFromPoint(event.pointer.x, event.pointer.y);
+  }
+}
 
+function handleCanvasMouseMove(event) {}
 
+function handleCanvasMouseUp(event) {}
 
+function toggleTextTool() {
+  resetAllTools();
+  isTextToolActive = !isTextToolActive;
+  document.getElementById('add-text').classList.toggle('active', isTextToolActive);
+  
+  if (isTextToolActive) {
+    canvas.defaultCursor = 'text';
+    document.getElementById('text-controls').style.display = 'block';
+  }
+}
 
+function toggleBrushTool() {
+  resetAllTools();
+  isBrushActive = !isBrushActive;
+  document.getElementById('brush-tool').classList.toggle('active', isBrushActive);
+  
+  if (isBrushActive) {
+    enableBrushMode();
+    document.getElementById('brush-controls').style.display = 'block';
+  } else {
+    canvas.isDrawingMode = false;
+  }
+}
 
+function toggleColorPickTool() {
+  resetAllTools();
+  isColorPickActive = !isColorPickActive;
+  document.getElementById('color-pick').classList.toggle('active', isColorPickActive);
+  
+  if (isColorPickActive) {
+    canvas.defaultCursor = 'crosshair';
+    canvas.getElement().classList.add('eyedropper-cursor');
+  } else {
+    canvas.getElement().classList.remove('eyedropper-cursor');
+  }
+}
 
+function enableSelectTool() {
+  resetAllTools();
+  document.getElementById('select-tool').classList.add('active');
+  canvas.defaultCursor = 'default';
+  canvas.isDrawingMode = false;
+}
 
-        
+function resetAllTools() {
+  isBoxToolActive = false;
+  isTextToolActive = false;
+  isBrushActive = false;
+  isColorPickActive = false;
+  
+  document.getElementById('add-text').classList.remove('active');
+  document.getElementById('brush-tool').classList.remove('active');
+  document.getElementById('color-pick').classList.remove('active');
+  document.getElementById('select-tool').classList.remove('active');
+  
+  canvas.defaultCursor = 'default';
+  canvas.isDrawingMode = false;
+  canvas.getElement().classList.remove('eyedropper-cursor');
+  
+  hideAllControls();
+  hideObjectActions();
+}
 
+function pickColorFromPoint(x, y) {
+  const context = canvas.getContext('2d');
+  const canvasZoom = canvas.getZoom();
+  const adjustedX = x / canvasZoom;
+  const adjustedY = y / canvasZoom;
+  
+  try {
+    const pixelData = context.getImageData(adjustedX, adjustedY, 1, 1).data;
+    const color = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
+    updateColorPickers(color);
+    enableSelectTool();
+  } catch (error) {
+    console.error('Error picking color:', error);
+    alert('Could not pick color. This may happen with external images due to security restrictions.');
+    enableSelectTool();
+  }
+}
 
+function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map(x => {
+    const hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
+}
 
+function updateColorPickers(color) {
+  document.getElementById('brush-color').value = color;
+  jscolor.install();
+  document.getElementById('brush-color').jscolor.fromString(color);
+  lastBrushColor = color;
+  
+  document.getElementById('text-color').value = color;
+  document.getElementById('text-color').jscolor.fromString(color);
+}
 
+function hideAllControls() {
+  document.getElementById('brush-controls').style.display = 'none';
+  document.getElementById('text-controls').style.display = 'none';
+  document.getElementById('layer-controls').style.display = 'none';
+}
 
-function draw(e) {
-    if (!drawing) return;
-
-    ctx.lineWidth = penSize;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = penColor;
-
-    if (eraseActive) {
-        ctx.globalCompositeOperation = 'destination-out';
-    } else {
-        ctx.globalCompositeOperation = 'source-over';
+function handleSelectionChange() {
+  const selectedObject = canvas.getActiveObject();
+  
+  if (selectedObject) {
+    if (selectedObject.type === 'i-text') {
+      document.getElementById('text-controls').style.display = 'block';
+      
+      if (selectedObject.fill) {
+        jscolor.install();
+        document.getElementById('text-color').jscolor.fromString(selectedObject.fill);
+      }
+      
+      document.getElementById('font-size').value = selectedObject.fontSize || 24;
+      document.getElementById('font-size-value').textContent = selectedObject.fontSize || 24;
+      
+      const fontFamilySelect = document.getElementById('font-family');
+      if (fontFamilySelect && selectedObject.fontFamily) {
+        for (let i = 0; i < fontFamilySelect.options.length; i++) {
+          if (fontFamilySelect.options[i].value === selectedObject.fontFamily) {
+            fontFamilySelect.selectedIndex = i;
+            break;
+          }
+        }
+      }
+    } else if (selectedObject.type === 'path') {
+      document.getElementById('brush-controls').style.display = 'block';
+      
+      if (selectedObject.stroke) {
+        document.getElementById('brush-color').value = selectedObject.stroke;
+        jscolor.install();
+        document.getElementById('brush-color').jscolor.fromString(selectedObject.stroke);
+      }
+      
+      if (selectedObject.strokeWidth) {
+        document.getElementById('brush-width').value = selectedObject.strokeWidth;
+        document.getElementById('brush-width-value').textContent = selectedObject.strokeWidth;
+      }
+      
+      if (selectedObject.opacity !== undefined) {
+        document.getElementById('brush-opacity').value = selectedObject.opacity;
+        document.getElementById('brush-opacity-value').textContent = selectedObject.opacity.toFixed(1);
+      }
+    } else if (selectedObject.isLayer) {
+      // Show layer controls
+      showLayerControls();
     }
-
-let rect = canvas.getBoundingClientRect();
-let clientX, clientY;
-
-if (e.type.startsWith('touch')) {
-    clientX = e.touches[0].clientX - rect.left;
-    clientY = e.touches[0].clientY - rect.top;
-} else {
-    clientX = e.clientX - rect.left;
-    clientY = e.clientY - rect.top;
+    
+    showObjectActions();
+  }
 }
 
+function showObjectActions() {
+  updateObjectActions();
+  document.getElementById('object-actions').style.display = 'flex';
+}
 
-    if (penActive || activateMagicalEraser|| brushActive) {
-        ctx.lineTo(clientX, clientY);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(clientX, clientY, penSize / 2, 0, Math.PI * 2);
-        ctx.fillStyle = penColor;
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(clientX, clientY);
+function hideObjectActions() {
+  document.getElementById('object-actions').style.display = 'none';
+}
+
+function updateObjectActions() {
+  const selectedObject = canvas.getActiveObject();
+  
+  if (!selectedObject) {
+    hideObjectActions();
+    return;
+  }
+  
+  const zoom = canvas.getZoom();
+  const objectActions = document.getElementById('object-actions');
+  const boundingRect = selectedObject.getBoundingRect();
+  const canvasRect = canvas.getElement().getBoundingClientRect();
+  
+  const top = canvasRect.top + boundingRect.top - objectActions.offsetHeight - 10;
+  const left = canvasRect.left + boundingRect.left + boundingRect.width / 2 - objectActions.offsetWidth / 2;
+  
+  objectActions.style.top = `${top}px`;
+  objectActions.style.left = `${left}px`;
+}
+
+function createText(x, y) {
+  const textColor = document.getElementById('text-color').value;
+  const fontSize = parseInt(document.getElementById('font-size').value);
+  const fontFamily = document.getElementById('font-family') ? document.getElementById('font-family').value : 'Cairo';
+  
+  const text = new fabric.IText('Type here', {
+    left: x,
+    top: y,
+    fill: textColor,
+    fontSize: fontSize,
+    fontFamily: fontFamily,
+    cornerColor: '#5cdaed',
+    cornerStrokeColor: '#2196f3',
+    cornerStyle: 'circle',
+    transparentCorners: false
+  });
+  
+  canvas.add(text);
+  canvas.setActiveObject(text);
+  toggleTextTool();
+  enableSelectTool();
+}
+
+function enableBrushMode() {
+  canvas.isDrawingMode = true;
+  
+  const brushColor = document.getElementById('brush-color').value;
+  const brushWidth = parseInt(document.getElementById('brush-width').value);
+  const brushOpacity = parseFloat(document.getElementById('brush-opacity').value);
+  
+  canvas.freeDrawingBrush.color = brushColor;
+  canvas.freeDrawingBrush.width = brushWidth;
+  
+  lastBrushColor = brushColor;
+  lastBrushWidth = brushWidth;
+}
+
+function deleteSelectedObject() {
+  const selectedObject = canvas.getActiveObject();
+  
+  if (selectedObject) {
+    // If it's a layer, remove from layers array
+    if (selectedObject.isLayer) {
+      const index = layers.indexOf(selectedObject);
+      if (index !== -1) {
+        layers.splice(index, 1);
+      }
     }
+    
+    canvas.remove(selectedObject);
+    hideAllControls();
+    hideObjectActions();
+  }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-        function activatePen() {
-    let toggleButton = document.getElementById('penToggleButton');
-    toggleButton.textContent = penActive ? 'Pen is disabled' : 'Pen is enabled'; 
-            if (!penActive) {
-                penActive = true;
-              canvas.removeEventListener('mousedown', startBrush);
-                canvas.removeEventListener('touchstart', startBrush);
- 
-            } else {
-
-                // Toggle off if it was the same button
-                penActive = false;
-            }
-        }
-
-        function updatePenColor(color) {
-            penColor = color;
-        }
-
-        function updatePenSize(size) {
-            penSize = parseInt(size);
-        }
-
-        function addTextAtMousePosition() {
-            text = document.getElementById('text').value;
-            canvas.addEventListener('click', addTextOnClick);
-        }
-
-        function addTextOnClick(event) {
-    let rect = canvas.getBoundingClientRect();
-    let x = event.clientX - rect.left;
-    let y = event.clientY - rect.top;
-
-    drawText(x, y);
-    saveSnapshot();
-    canvas.removeEventListener('click', addTextOnClick);
+function cloneSelectedObject() {
+  const selectedObject = canvas.getActiveObject();
+  if (!selectedObject) return;
+  
+  selectedObject.clone(function(cloned) {
+    cloned.set({
+      left: selectedObject.left + 20,
+      top: selectedObject.top + 20,
+      evented: true,
+    });
+    
+    if (cloned.type === 'i-text') {
+      cloned.set({
+        editable: true
+      });
+    }
+    
+    // If it's a layer, add to layers array
+    if (cloned.isLayer) {
+      layers.push(cloned);
+    }
+    
+    canvas.add(cloned);
+    canvas.setActiveObject(cloned);
+    canvas.renderAll();
+  });
 }
 
-        function drawText(x, y) {
-            ctx.font = fontSize + 'px Arial';
-            ctx.fillStyle = textColor;
-            ctx.fillText(text, x, y);
-        }
+function flipHorizontally() {
+  const selectedObject = canvas.getActiveObject();
+  if (!selectedObject) return;
+  
+  selectedObject.set('flipX', !selectedObject.flipX);
+  canvas.renderAll();
+}
 
-        function updateTextColor(color) {
-            textColor = color;
-            saveSnapshot();
-        }
+function flipVertically() {
+  const selectedObject = canvas.getActiveObject();
+  if (!selectedObject) return;
+  
+  selectedObject.set('flipY', !selectedObject.flipY);
+  canvas.renderAll();
+}
 
-        function updateFontSize(size) {
-            fontSize = parseInt(size);
-            saveSnapshot();
-        }
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const imgObj = new Image();
+    imgObj.src = event.target.result;
+    imgObj.onload = function() {
+      const image = new fabric.Image(imgObj);
+      
+      const canvasWidth = canvas.width / canvas.getZoom();
+      const canvasHeight = canvas.height / canvas.getZoom();
+      const imgRatio = image.width / image.height;
+      const canvasRatio = canvasWidth / canvasHeight;
+      let scale;
+      
+      if (imgRatio > canvasRatio) {
+        scale = canvasWidth / image.width;
+      } else {
+        scale = canvasHeight / image.height;
+      }
+      
+      image.scale(scale);
+      canvas.centerObject(image);
+      canvas.clear();
+      canvas.add(image);
+      image.sendToBack();
+      
+      image.clone(function(cloned) {
+        originalImage = cloned;
+      });
+      
+      // Reset layers array since we're starting with a new base image
+      layers = [];
+      
+      saveCanvasState();
+    };
+  };
+  reader.readAsDataURL(file);
+}
 
- let undoStack = [];
-        let lastSnapshot;
-
-        function saveSnapshot() {
-            // Save the current canvas state to the undo stack
-            undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-        }
-        function undo() {
-            // Undo the last change
-            if (undoStack.length > 0) {
-                // Pop the last snapshot from the stack
-                lastSnapshot = undoStack.pop();
-                ctx.putImageData(lastSnapshot, 0, 0);
-            }
-        }
-        canvas.addEventListener('mousedown', function() {
-            // Save a snapshot before making a change
-            saveSnapshot();
-        });
-        canvas.addEventListener('touchstart', function() {
-            // Save a snapshot before making a change
-            saveSnapshot();
-        });
-        canvas.addEventListener('mouseup', function() {
-            // Save a snapshot when the mouse is released after using any tool
-            saveSnapshot();
-        });
-        canvas.addEventListener('touchend', function() {
-            // Save a snapshot when the touch ends after using any tool
-            saveSnapshot();
-        });
-        // ... Additional functionalities for Erase can be added here.
-    </script>
+window.onload = function() {
+  initCanvas();
+  jscolor.install();
+  enableSelectTool();
+};
+</script>
 </body>
-</html>
+    </html>
