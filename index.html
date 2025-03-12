@@ -8,7 +8,10 @@
 <script src=https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap" rel="stylesheet">
-<style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#f5f5f7;color:#333;padding:20px}.editor-container{max-width:1200px;margin:0 auto;background:white;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}.toolbar{padding:15px;display:flex;flex-wrap:wrap;gap:10px;background:#fff;border-bottom:1px solid #eaeaea}.canvas-container{width:100%;overflow:auto;padding:20px;display:flex;justify-content:center}.canvas-wrapper{box-shadow:0 4px 12px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden}button{padding:8px 12px;border:0;border-radius:6px;background:#f0f0f0;color:#333;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:5px}button:hover{background:#e0e0e0}button.active{background:#4caf50;color:white}input[type="range"]{width:100px}.tool-group{display:flex;flex-direction:column;padding:10px;border-radius:8px;background:#f9f9f9;margin-top:10px}.tool-group-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#555}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.control-item{display:flex;align-items:center;gap:4px}.color-picker{padding:5px;border:1px solid #ddd;border-radius:4px;width:80px}.upload-btn-wrapper{position:relative;overflow:hidden;display:inline-block}.upload-btn-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}.brush-controls,.text-controls{display:none;margin-top:10px;flex-wrap:wrap;gap:10px}label{font-size:12px;color:#666}.tool-section{margin-top:10px;padding-top:10px;border-top:1px solid #eee}.eyedropper-cursor{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12,auto}.object-actions{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;}.object-actions button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}</style>
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#f5f5f7;color:#333;padding:20px}.editor-container{max-width:1200px;margin:0 auto;background:white;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}.toolbar{padding:15px;display:flex;flex-wrap:wrap;gap:10px;background:#fff;border-bottom:1px solid #eaeaea}.canvas-container{width:100%;overflow:auto;padding:20px;display:flex;justify-content:center}.canvas-wrapper{box-shadow:0 4px 12px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden}button{padding:8px 12px;border:0;border-radius:6px;background:#f0f0f0;color:#333;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:5px}button:hover{background:#e0e0e0}button.active{background:#4caf50;color:white}input[type="range"]{width:100px}.tool-group{display:flex;flex-direction:column;padding:10px;border-radius:8px;background:#f9f9f9;margin-top:10px}.tool-group-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#555}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.control-item{display:flex;align-items:center;gap:4px}.color-picker{padding:5px;border:1px solid #ddd;border-radius:4px;width:80px}.upload-btn-wrapper{position:relative;overflow:hidden;display:inline-block}.upload-btn-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}.brush-controls,.text-controls{display:none;margin-top:10px;flex-wrap:wrap;gap:10px}label{font-size:12px;color:#666}.tool-section{margin-top:10px;padding-top:10px;border-top:1px solid #eee}.eyedropper-cursor{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12,auto}.object-actions{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;}.object-actions button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}
+#canvas-controls {
+    margin: 0 17px;
+}</style>
 </head>
 <body>
 <div class=editor-container>
@@ -17,6 +20,25 @@
 <canvas id=canvas></canvas>
 </div>
 </div>
+<div class="tool-group" id="canvas-controls">
+        <div class="tool-group-title">Canvas Settings</div>
+        <div class="controls">
+            <div class="control-item">
+                <label for="canvas-width">Width:</label>
+                <input type="number" id="canvas-width" min="50" max="3000" value="800" style="width:70px">
+            </div>
+            <div class="control-item">
+                <label for="canvas-height">Height:</label>
+                <input type="number" id="canvas-height" min="50" max="3000" value="600" style="width:70px">
+            </div>
+            <div class="control-item">
+                <label for="canvas-bg-color">Background:</label>
+                <input type="text" id="canvas-bg-color" class="jscolor color-picker" value="#FFFFFF" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-current-color="#FFFFFF" style="background-image: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 30px, rgba(0, 0, 0, 0) 31px, rgba(0, 0, 0, 0) 100%), url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAAAXNSR0IArs4c6QAAAHxJREFUSEvtlbENACEMA52CARiBFWAndmIC5mAAasb5byhoglz8d04dRZbjXKy19oCoOSfRBZRSqL7bvJwzYoxYa3WTQMdPOegFTRn0nNEVH84IMwypaczUWqlP8sV1nsJv81JKCCFgjNFNAp19y8E/eakMMphRBpXBDeoXSJfVDUu/Ze0AAAAASUVORK5CYII=&quot;) !important; background-position: left top, left top !important; background-size: auto, 32px 16px !important; background-repeat: repeat-y, repeat-y !important; background-origin: padding-box, padding-box !important; padding-left: 40px !important;">
+            </div>
+            <button id="apply-canvas-settings">Apply Settings</button>
+        </div>
+    </div>
+<div>
 <div class=toolbar>
 <div class=upload-btn-wrapper>
 <button id=upload-btn><i class="fas fa-upload"></i> Upload Image</button>
@@ -33,6 +55,7 @@
 <button id=brush-tool title="Brush Tool"><i class="fas fa-paint-brush"></i> Brush</button>
 <button id=color-pick title="Color Pick Tool"><i class="fas fa-eye-dropper"></i> Color Pick</button>
 <button id=select-tool title="Select Tool"><i class="fas fa-mouse-pointer"></i> Select</button>
+</div>
 
 
 <div class="tool-group" id="layer-controls" style="display: none;">
@@ -139,30 +162,6 @@ function setupCanvasControls() {
     // Create a new tool group for canvas settings
     const toolbarElement = document.querySelector('.toolbar');
     
-    const canvasControlsGroup = document.createElement('div');
-    canvasControlsGroup.className = 'tool-group';
-    canvasControlsGroup.id = 'canvas-controls';
-    
-    canvasControlsGroup.innerHTML = `
-        <div class="tool-group-title">Canvas Settings</div>
-        <div class="controls">
-            <div class="control-item">
-                <label for="canvas-width">Width:</label>
-                <input type="number" id="canvas-width" min="50" max="3000" value="${canvasWidth}" style="width:70px">
-            </div>
-            <div class="control-item">
-                <label for="canvas-height">Height:</label>
-                <input type="number" id="canvas-height" min="50" max="3000" value="${canvasHeight}" style="width:70px">
-            </div>
-            <div class="control-item">
-                <label for="canvas-bg-color">Background:</label>
-                <input type="text" id="canvas-bg-color" class="jscolor color-picker" value="${canvasBackgroundColor}">
-            </div>
-            <button id="apply-canvas-settings">Apply Settings</button>
-        </div>
-    `;
-    
-    toolbarElement.appendChild(canvasControlsGroup);
     
     // Setup event listeners for the new controls
     document.getElementById('apply-canvas-settings').addEventListener('click', applyCanvasSettings);
