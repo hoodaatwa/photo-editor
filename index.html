@@ -116,6 +116,11 @@
 </div>
 <div id=object-actions class=object-actions>
 <button id=clone-object><i class="fas fa-clone"></i></button>
+    <button id="unselect-object"><i class="fas fa-ban"></i></button>
+    <button id="lock-object"><i class="fas fa-lock"></i></button>
+    <button id="unlock-object"><i class="fas fa-unlock"></i></button>
+    <button id="send-to-back"><i class="fas fa-arrow-down"></i></button>
+    <button id="bring-to-front"><i class="fas fa-arrow-up"></i></button>
 <button id=flip-h-object><i class="fas fa-arrows-alt-h"></i></button>
 <button id=flip-v-object><i class="fas fa-arrows-alt-v"></i></button>
 <button id=delete-object><i class="fas fa-trash-alt"></i></button>
@@ -853,6 +858,68 @@ function handleImageUpload(e) {
     };
     reader.readAsDataURL(file);
 }
+
+function unselectObject() {
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    hideObjectActions();
+}
+
+// Lock Object (Prevent Movement & Editing)
+function lockObject() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.set({
+            selectable: true,
+            evented: true,
+            hasControls: true,
+            lockMovementX: true,
+            lockMovementY: true
+        });
+        canvas.discardActiveObject();
+        canvas.renderAll();
+    }
+}
+
+// Unlock All Objects (Enable Editing Again)
+function unlockObject() {
+    canvas.getObjects().forEach(obj => {
+        obj.set({
+            selectable: true,
+            evented: true,
+            hasControls: true,
+            lockMovementX: false,
+            lockMovementY: false
+        });
+    });
+    canvas.renderAll();
+}
+
+
+// Send Object to Back
+function sendToBack() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        canvas.sendToBack(selectedObject);
+        canvas.renderAll();
+    }
+}
+
+// Bring Object to Front
+function bringToFront() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        canvas.bringToFront(selectedObject);
+        canvas.renderAll();
+    }
+}
+
+
+document.getElementById('unselect-object').addEventListener('click', unselectObject);
+document.getElementById('lock-object').addEventListener('click', lockObject);
+document.getElementById('unlock-object').addEventListener('click', unlockObject);
+document.getElementById('send-to-back').addEventListener('click', sendToBack);
+document.getElementById('bring-to-front').addEventListener('click', bringToFront);
 
 window.onload = function() {
     initCanvas();
