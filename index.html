@@ -40,10 +40,7 @@
     </div>
 <div>
 <div class=toolbar>
-<div class=upload-btn-wrapper>
-<button id=upload-btn><i class="fas fa-upload"></i> Upload Image</button>
-<input type=file id=image-upload accept=image/* />
-</div>
+
 <div class="upload-btn-wrapper">
   <button id="add-layer-btn"><i class="fas fa-layer-group"></i> Add Layer</button>
   <input type="file" id="layer-upload" accept="image/*" />
@@ -65,10 +62,6 @@
       <label for="layer-opacity">Opacity:</label>
       <input type="range" id="layer-opacity" min="0.1" max="1" value="1" step="0.1">
       <span id="layer-opacity-value">1.0</span>
-    </div>
-    <div class="control-item">
-      <button id="bring-forward"><i class="fas fa-arrow-up"></i> Bring Forward</button>
-      <button id="send-backward"><i class="fas fa-arrow-down"></i> Send Backward</button>
     </div>
   </div>
 </div>
@@ -298,7 +291,6 @@ function setupEventListeners() {
         document.getElementById('font-size-value').textContent = this.value;
     });
     
-    document.getElementById('image-upload').addEventListener('change', handleImageUpload);
     document.getElementById('clone-object').addEventListener('click', cloneSelectedObject);
     document.getElementById('flip-h-object').addEventListener('click', flipHorizontally);
     document.getElementById('flip-v-object').addEventListener('click', flipVertically);
@@ -310,8 +302,7 @@ function setupEventListeners() {
     
     document.getElementById('layer-upload').addEventListener('change', handleLayerUpload);
     document.getElementById('layer-opacity').addEventListener('input', updateLayerOpacity);
-    document.getElementById('bring-forward').addEventListener('click', bringLayerForward);
-    document.getElementById('send-backward').addEventListener('click', sendLayerBackward);
+
     
     canvas.on('mouse:down', handleCanvasMouseDown);
     canvas.on('mouse:move', handleCanvasMouseMove);
@@ -422,23 +413,6 @@ function updateLayerOpacity() {
     }
 }
 
-function bringLayerForward() {
-    const selectedObject = canvas.getActiveObject();
-    if (selectedObject) {
-        canvas.bringForward(selectedObject);
-        canvas.renderAll();
-        saveCanvasState();
-    }
-}
-
-function sendLayerBackward() {
-    const selectedObject = canvas.getActiveObject();
-    if (selectedObject) {
-        canvas.sendBackwards(selectedObject);
-        canvas.renderAll();
-        saveCanvasState();
-    }
-}
 
 function updateSelectedBrush() {
     const selectedObject = canvas.getActiveObject();
@@ -819,45 +793,6 @@ function flipVertically() {
     canvas.renderAll();
 }
 
-function handleImageUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const imgObj = new Image();
-        imgObj.src = event.target.result;
-        imgObj.onload = function() {
-            const image = new fabric.Image(imgObj);
-            
-            const canvasWidth = canvas.width / canvas.getZoom();
-            const canvasHeight = canvas.height / canvas.getZoom();
-            const imgRatio = image.width / image.height;
-            const canvasRatio = canvasWidth / canvasHeight;
-            let scale;
-            
-            if (imgRatio > canvasRatio) {
-                scale = canvasWidth / image.width;
-            } else {
-                scale = canvasHeight / image.height;
-            }
-            
-            image.scale(scale);
-            canvas.centerObject(image);
-            canvas.clear();
-            canvas.add(image);
-            image.sendToBack();
-            
-            image.clone(function(cloned) {
-                originalImage = cloned;
-            });
-            
-            layers = [];
-            saveCanvasState();
-        };
-    };
-    reader.readAsDataURL(file);
-}
 
 function unselectObject() {
     canvas.discardActiveObject();
