@@ -150,9 +150,16 @@
 <button id=flip-h-object><i class="fas fa-arrows-alt-h"></i></button>
 <button id=flip-v-object><i class="fas fa-arrows-alt-v"></i></button>
 <button id=delete-object><i class="fas fa-trash-alt"></i></button>
-<button id="toggle-visibility"><i class="fas fa-tint"></i></button>
+<button id="toggle-visibility"><i class="fas fa-gear"></i></button>
 </div>
 <div id="object-actions-2" class="object-actions2" style="display: none;"> 
+    <button id="align-left"><i class="fas fa-align-left"></i></button>
+    <button id="align-center"><i class="fas fa-align-center"></i></button>
+    <button id="align-right"><i class="fas fa-align-right"></i></button>
+    <button id="rotate-left"><i class="fas fa-undo"></i></button>
+    <button id="rotate-right"><i class="fas fa-redo"></i></button>
+    <button id="scale-up"><i class="fas fa-search-plus"></i></button>
+    <button id="scale-down"><i class="fas fa-search-minus"></i></button>
 
 
 </div>
@@ -654,6 +661,10 @@ function updateColorPickers(color) {
 
     document.getElementById('remove-color').value = color;
     document.getElementById('remove-color').jscolor.fromString(color);
+
+    document.getElementById('canvas-bg-color').value = color;
+    document.getElementById('canvas-bg-color').jscolor.fromString(color);
+
 }
 
 function hideAllControls() {
@@ -903,6 +914,72 @@ function toggleVisibility() {
     const panel = document.getElementById('object-actions-2');
     panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'flex' : 'none';
 }
+// Align Object Left
+function alignLeft() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.set({ left: 0 });
+        canvas.renderAll();
+    }
+}
+
+// Align Object Center (Horizontally)
+function alignCenter() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        const canvasWidth = canvas.width;
+        selectedObject.set({ left: (canvasWidth - selectedObject.width * selectedObject.scaleX) / 2 });
+        canvas.renderAll();
+    }
+}
+
+// Align Object Right
+function alignRight() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        const canvasWidth = canvas.width;
+        selectedObject.set({ left: canvasWidth - selectedObject.width * selectedObject.scaleX });
+        canvas.renderAll();
+    }
+}
+// Rotate Object Left
+function rotateLeft() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.rotate(selectedObject.angle - 15);
+        canvas.renderAll();
+    }
+}
+
+// Rotate Object Right
+function rotateRight() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.rotate(selectedObject.angle + 15);
+        canvas.renderAll();
+    }
+}
+
+// Scale Object Up
+function scaleUp() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.scale(selectedObject.scaleX + 0.1);
+        canvas.renderAll();
+    }
+}
+
+// Scale Object Down
+function scaleDown() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.scale(selectedObject.scaleX - 0.1);
+        canvas.renderAll();
+    }
+}
+
+
+
 
 // Toggle Sharpen Filter
 function toggleSharpen() {
@@ -1015,11 +1092,6 @@ function applyFilter(filterInstance) {
     }
 }
 
-
-
-
-
-
 // Brightness filter
 function toggleBrightness() {
     applyFilter(new fabric.Image.filters.Brightness({ brightness: 0.2 }));
@@ -1113,6 +1185,15 @@ document.getElementById('lock-object').addEventListener('click', lockObject);
 document.getElementById('unlock-object').addEventListener('click', unlockObject);
 document.getElementById('send-to-back').addEventListener('click', sendToBack);
 document.getElementById('bring-to-front').addEventListener('click', bringToFront);
+document.getElementById('align-left').addEventListener('click', alignLeft);
+document.getElementById('align-center').addEventListener('click', alignCenter);
+document.getElementById('align-right').addEventListener('click', alignRight);
+document.getElementById('rotate-left').addEventListener('click', rotateLeft);
+document.getElementById('rotate-right').addEventListener('click', rotateRight);
+document.getElementById('scale-up').addEventListener('click', scaleUp);
+document.getElementById('scale-down').addEventListener('click', scaleDown);
+
+
 
 window.onload = function() {
     initCanvas();
