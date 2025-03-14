@@ -20,26 +20,10 @@
 <canvas id=canvas></canvas>
 </div>
 </div>
-<div class="tool-group" id="canvas-controls">
-        <div class="tool-group-title">Canvas Settings</div>
-        <div class="controls">
-            <div class="control-item">
-                <label for="canvas-width">Width:</label>
-                <input type="number" id="canvas-width" min="50" max="3000" value="800" style="width:70px">
-            </div>
-            <div class="control-item">
-                <label for="canvas-height">Height:</label>
-                <input type="number" id="canvas-height" min="50" max="3000" value="600" style="width:70px">
-            </div>
-            <div class="control-item">
-                <label for="canvas-bg-color">Background:</label>
-                <input type="text" id="canvas-bg-color" class="jscolor color-picker" value="#FFFFFF" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-current-color="#FFFFFF" style="background-image: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 30px, rgba(0, 0, 0, 0) 31px, rgba(0, 0, 0, 0) 100%), url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAAAXNSR0IArs4c6QAAAHxJREFUSEvtlbENACEMA52CARiBFWAndmIC5mAAasb5byhoglz8d04dRZbjXKy19oCoOSfRBZRSqL7bvJwzYoxYa3WTQMdPOegFTRn0nNEVH84IMwypaczUWqlP8sV1nsJv81JKCCFgjNFNAp19y8E/eakMMphRBpXBDeoXSJfVDUu/Ze0AAAAASUVORK5CYII=&quot;) !important; background-position: left top, left top !important; background-size: auto, 32px 16px !important; background-repeat: repeat-y, repeat-y !important; background-origin: padding-box, padding-box !important; padding-left: 40px !important;">
-            </div>
-            <button id="apply-canvas-settings">Apply Settings</button>
-        </div>
-    </div>
+
 <div>
 <div class=toolbar>
+<button id="canvas-controls-btn"><i class="fas fa-gear"></i> Canvas Controls</button>
 
 <div class="upload-btn-wrapper">
   <button id="add-layer-btn"><i class="fas fa-layer-group"></i> Add Layer</button>
@@ -99,6 +83,24 @@
   </div>
 </div>
 
+<div class="tool-group" id="canvas-controls" style="display: none;">
+        <div class="tool-group-title">Canvas Settings</div>
+        <div class="controls">
+            <div class="control-item">
+                <label for="canvas-width">Width:</label>
+                <input type="number" id="canvas-width" min="50" max="3000" value="800" style="width:70px">
+            </div>
+            <div class="control-item">
+                <label for="canvas-height">Height:</label>
+                <input type="number" id="canvas-height" min="50" max="3000" value="600" style="width:70px">
+            </div>
+            <div class="control-item">
+                <label for="canvas-bg-color">Background:</label>
+                <input type="text" id="canvas-bg-color" class="jscolor color-picker" value="#FFFFFF" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-current-color="#FFFFFF" style="background-image: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 30px, rgba(0, 0, 0, 0) 31px, rgba(0, 0, 0, 0) 100%), url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAAAXNSR0IArs4c6QAAAHxJREFUSEvtlbENACEMA52CARiBFWAndmIC5mAAasb5byhoglz8d04dRZbjXKy19oCoOSfRBZRSqL7bvJwzYoxYa3WTQMdPOegFTRn0nNEVH84IMwypaczUWqlP8sV1nsJv81JKCCFgjNFNAp19y8E/eakMMphRBpXBDeoXSJfVDUu/Ze0AAAAASUVORK5CYII=&quot;) !important; background-position: left top, left top !important; background-size: auto, 32px 16px !important; background-repeat: repeat-y, repeat-y !important; background-origin: padding-box, padding-box !important; padding-left: 40px !important;">
+            </div>
+            <button id="apply-canvas-settings">Apply Settings</button>
+        </div>
+    </div>
 
 <div class=tool-group id=brush-controls>
 <div class=tool-group-title>Brush Controls</div>
@@ -436,6 +438,18 @@ function handleLayerUpload(e) {
     reader.readAsDataURL(file);
     e.target.value = null;
 }
+
+document.getElementById("canvas-controls-btn").addEventListener("click", function () { 
+    const canvasControls = document.getElementById("canvas-controls");
+
+    if (canvasControls.style.display === "none" || canvasControls.style.display === "") {
+        canvasControls.style.display = "flex";  // Show canvas controls
+    } else {
+        canvasControls.style.display = "none";  // Hide canvas controls
+    }
+
+});
+
 
 function showLayerControls() {
     const selectedObject = canvas.getActiveObject();
