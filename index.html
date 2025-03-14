@@ -73,6 +73,27 @@
 <button id="kodachrome-filter">Kodachrome</button>
 <button id="technicolor-filter">Technicolor</button>
 <button id="polaroid-filter">Polaroid</button>
+    <button id="brightness-filter">Brightness</button>
+    <button id="gamma-filter">Gamma</button>
+    <button id="contrast-filter">Contrast</button>
+    <button id="saturation-filter">Saturation</button>
+    <button id="vibrance-filter">Vibrance</button>
+    <button id="hue-filter">Hue</button>
+    <button id="noise-filter">Noise</button>
+    <button id="pixelate-filter">Pixelate</button>
+    <button id="blur-filter">Blur</button>
+
+
+<div class="control-item"> 
+    <label for="remove-color">Remove Color:</label>
+    <input type="text" id="remove-color" class="jscolor color-picker" value="#ffffff">
+    <button id="apply-remove-color">Remove Color</button>
+
+    <label for="remove-color-distance">Distance:</label>
+    <input type="range" id="remove-color-distance" min="0" max="1" step="0.01" value="0.3">
+    <span id="remove-color-distance-value">0.3</span>
+</div>
+
   </div>
 
   </div>
@@ -630,6 +651,9 @@ function updateColorPickers(color) {
     
     document.getElementById('text-color').value = color;
     document.getElementById('text-color').jscolor.fromString(color);
+
+    document.getElementById('remove-color').value = color;
+    document.getElementById('remove-color').jscolor.fromString(color);
 }
 
 function hideAllControls() {
@@ -982,6 +1006,98 @@ function togglePolaroid() {
     toggleFilter('Polaroid', new fabric.Image.filters.Polaroid());
 }
 
+function applyFilter(filterInstance) {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        selectedObject.filters.push(filterInstance);
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+
+
+
+
+
+
+// Brightness filter
+function toggleBrightness() {
+    applyFilter(new fabric.Image.filters.Brightness({ brightness: 0.2 }));
+}
+
+// Gamma filter (adjust red, green, blue)
+function toggleGamma() {
+    applyFilter(new fabric.Image.filters.Gamma({ gamma: [1.2, 1.2, 1.2] }));
+}
+
+// Contrast filter
+function toggleContrast() {
+    applyFilter(new fabric.Image.filters.Contrast({ contrast: 0.3 }));
+}
+
+// Saturation filter
+function toggleSaturation() {
+    applyFilter(new fabric.Image.filters.Saturation({ saturation: 0.5 }));
+}
+
+// Vibrance filter
+function toggleVibrance() {
+    applyFilter(new fabric.Image.filters.Vibrance({ vibrance: 0.4 }));
+}
+
+// Hue filter
+function toggleHue() {
+    applyFilter(new fabric.Image.filters.HueRotation({ rotation: 0.5 }));
+}
+
+// Noise filter
+function toggleNoise() {
+    applyFilter(new fabric.Image.filters.Noise({ noise: 50 }));
+}
+
+// Pixelate filter
+function togglePixelate() {
+    applyFilter(new fabric.Image.filters.Pixelate({ blocksize: 8 }));
+}
+
+// Blur filter
+function toggleBlur() {
+    applyFilter(new fabric.Image.filters.Blur({ blur: 0.1 }));
+}
+
+
+function removeColorFilter() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        const colorToRemove = document.getElementById('remove-color').value;
+        const distance = parseFloat(document.getElementById('remove-color-distance').value);
+
+        const removeColor = new fabric.Image.filters.RemoveColor({
+            color: colorToRemove,
+            distance: distance, // Adjust filter distance
+        });
+
+        selectedObject.filters = selectedObject.filters.filter(filter => !(filter instanceof fabric.Image.filters.RemoveColor)); 
+        selectedObject.filters.push(removeColor);
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+
+// Event Listeners
+document.getElementById('apply-remove-color').addEventListener('click', removeColorFilter);
+document.getElementById('remove-color-distance').addEventListener('input', function() {
+    document.getElementById('remove-color-distance-value').textContent = this.value;
+});
+document.getElementById('brightness-filter').addEventListener('click', toggleBrightness);
+document.getElementById('gamma-filter').addEventListener('click', toggleGamma);
+document.getElementById('contrast-filter').addEventListener('click', toggleContrast);
+document.getElementById('saturation-filter').addEventListener('click', toggleSaturation);
+document.getElementById('vibrance-filter').addEventListener('click', toggleVibrance);
+document.getElementById('hue-filter').addEventListener('click', toggleHue);
+document.getElementById('noise-filter').addEventListener('click', toggleNoise);
+document.getElementById('pixelate-filter').addEventListener('click', togglePixelate);
+document.getElementById('blur-filter').addEventListener('click', toggleBlur);
 document.getElementById('sepia-filter').addEventListener('click', toggleSepia);
 document.getElementById('bw-filter').addEventListener('click', toggleBlackWhite);
 document.getElementById('brownie-filter').addEventListener('click', toggleBrownie);
