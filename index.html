@@ -39,49 +39,7 @@
 </div>
 
 
-<div class="tool-group" id="layer-controls" style="display: none;">
-  <div class="tool-group-title">Layer Controls</div>
-  <div class="controls">
-    <div class="control-item">
-      <label for="layer-opacity">Opacity:</label>
-      <input type="range" id="layer-opacity" min="0.1" max="1" value="1" step="0.1">
-      <span id="layer-opacity-value">1.0</span>
-    </div>
-<div class="control-item" style="flex-wrap: wrap;max-width: calc(100% - 50px);">
-<button id="sharpen-filter">Sharpen</button>
-<button id="emboss-filter">Emboss</button>
-<button id="sepia-filter">Sepia</button>
-<button id="bw-filter">Black & White</button>
-<button id="brownie-filter">Brownie</button>
-<button id="vintage-filter">Vintage</button>
-<button id="kodachrome-filter">Kodachrome</button>
-<button id="technicolor-filter">Technicolor</button>
-<button id="polaroid-filter">Polaroid</button>
-    <button id="brightness-filter">Brightness</button>
-    <button id="gamma-filter">Gamma</button>
-    <button id="contrast-filter">Contrast</button>
-    <button id="saturation-filter">Saturation</button>
-    <button id="vibrance-filter">Vibrance</button>
-    <button id="hue-filter">Hue</button>
-    <button id="noise-filter">Noise</button>
-    <button id="pixelate-filter">Pixelate</button>
-    <button id="blur-filter">Blur</button>
 
-<br>
-<div class="control-item" style="border-top: 1px solid #eaeaea;width: 100%;padding-top: 4px;flex-wrap: wrap;"> 
-    <label for="remove-color">Remove Color:</label>
-    <input type="text" id="remove-color" class="jscolor color-picker" value="#ffffff">
-    <button id="apply-remove-color">Remove Color</button>
-
-    <label for="remove-color-distance">Distance:</label>
-    <input type="range" id="remove-color-distance" min="0" max="1" step="0.01" value="0.3">
-    <span id="remove-color-distance-value">0.3</span>
-</div>
-
-  </div>
-
-  </div>
-</div>
 
 <div class="tool-group" id="canvas-controls" style="display: none;">
         <div class="tool-group-title">Canvas Settings</div>
@@ -140,6 +98,51 @@
 </div>
 </div>
 </div>
+
+<div class="tool-group" id="layer-controls" style="display: none;">
+  <div class="tool-group-title">Layer Controls</div>
+  <div class="controls">
+    <div class="control-item">
+      <label for="layer-opacity">Opacity:</label>
+      <input type="range" id="layer-opacity" min="0.1" max="1" value="1" step="0.1">
+      <span id="layer-opacity-value">1.0</span>
+    </div>
+<div class="control-item" style="flex-wrap: wrap;max-width: calc(100% - 50px);">
+<button id="sharpen-filter">Sharpen</button>
+<button id="emboss-filter">Emboss</button>
+<button id="sepia-filter">Sepia</button>
+<button id="bw-filter">Black & White</button>
+<button id="brownie-filter">Brownie</button>
+<button id="vintage-filter">Vintage</button>
+<button id="kodachrome-filter">Kodachrome</button>
+<button id="technicolor-filter">Technicolor</button>
+<button id="polaroid-filter">Polaroid</button>
+    <button id="brightness-filter">Brightness</button>
+    <button id="gamma-filter">Gamma</button>
+    <button id="contrast-filter">Contrast</button>
+    <button id="saturation-filter">Saturation</button>
+    <button id="vibrance-filter">Vibrance</button>
+    <button id="hue-filter">Hue</button>
+    <button id="noise-filter">Noise</button>
+    <button id="pixelate-filter">Pixelate</button>
+    <button id="blur-filter">Blur</button>
+
+<br>
+<div class="control-item" style="border-top: 1px solid #eaeaea;width: 100%;padding-top: 4px;flex-wrap: wrap;"> 
+    <label for="remove-color">Remove Color:</label>
+    <input type="text" id="remove-color" class="jscolor color-picker" value="#ffffff">
+    <button id="apply-remove-color">Remove Color</button>
+
+    <label for="remove-color-distance">Distance:</label>
+    <input type="range" id="remove-color-distance" min="0" max="1" step="0.01" value="0.3">
+    <span id="remove-color-distance-value">0.3</span>
+</div>
+
+  </div>
+
+  </div>
+</div>
+    
 </div>
 </div>
 <div id=object-actions class=object-actions>
