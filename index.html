@@ -8,7 +8,7 @@
 <script src=https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap" rel="stylesheet">
-<style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#f5f5f7;color:#333;padding:20px}.editor-container{max-width:1200px;margin:0 auto;background:white;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}.toolbar{padding:15px;display:flex;flex-wrap:wrap;gap:10px;background:#fff;border-bottom:1px solid #eaeaea}.canvas-container{width:100%;overflow:auto;padding:20px;display:flex;justify-content:center}.canvas-wrapper{box-shadow:0 4px 12px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden}button{padding:8px 12px;border:0;border-radius:6px;background:#f0f0f0;color:#333;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:5px}button:hover{background:#e0e0e0}button.active{background:#4caf50;color:white}input[type="range"]{width:100px}.tool-group{display:flex;flex-direction:column;padding:10px;border-radius:8px;background:#f9f9f9;margin:10px}.tool-group-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#555}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.control-item{display:flex;align-items:center;gap:4px}.color-picker{padding:5px;border:1px solid #ddd;border-radius:4px;width:80px}.upload-btn-wrapper{position:relative;overflow:hidden;display:inline-block}.upload-btn-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}.brush-controls,.text-controls{display:none;margin-top:10px;flex-wrap:wrap;gap:10px}label{font-size:12px;color:#666}.tool-section{margin-top:10px;padding-top:10px;border-top:1px solid #eee}.eyedropper-cursor{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12,auto}.object-actions{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;}.object-actions button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#f5f5f7;color:#333;padding:20px}.editor-container{max-width:1200px;margin:0 auto;background:white;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}.toolbar{padding:15px;display:flex;flex-wrap:wrap;gap:10px;background:#fff;border-bottom:1px solid #eaeaea}.canvas-container{width:100%;overflow:auto;padding:20px;display:flex;justify-content:center}.canvas-wrapper{box-shadow:0 4px 12px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden}button{padding:8px 12px;border:0;border-radius:6px;background:#f0f0f0;color:#333;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:5px}button:hover{background:#e0e0e0}button.active{background:#4caf50;color:white}input[type="range"]{width:100px}.tool-group{display:flex;flex-direction:column;padding:10px;border-radius:8px;background:#f9f9f9;margin:10px}.tool-group-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#555}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.control-item{display:flex;align-items:center;gap:4px}.color-picker{padding:5px;border:1px solid #ddd;border-radius:4px;width:80px}.upload-btn-wrapper{position:relative;overflow:hidden;display:inline-block}.upload-btn-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}.brush-controls,.text-controls{display:none;margin-top:10px;flex-wrap:wrap;gap:10px}label{font-size:12px;color:#666}.tool-section{margin-top:10px;padding-top:10px;border-top:1px solid #eee}.eyedropper-cursor{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12,auto}.object-actions{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;}.object-actions button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}.object-actions2{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;max-width: 248px;flex-wrap: wrap;}.object-actions2 button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}
 #canvas-controls {
     margin: 0 17px;
 }</style>
@@ -117,6 +117,19 @@
 <button id=flip-h-object><i class="fas fa-arrows-alt-h"></i></button>
 <button id=flip-v-object><i class="fas fa-arrows-alt-v"></i></button>
 <button id=delete-object><i class="fas fa-trash-alt"></i></button>
+<button id="toggle-visibility"><i class="fas fa-tint"></i></button>
+</div>
+<div id="object-actions-2" class="object-actions2" style="display: none;"> 
+<button id="sharpen-filter">Sharpen</button>
+<button id="emboss-filter">Emboss</button>
+<button id="sepia-filter">Sepia</button>
+<button id="bw-filter">Black & White</button>
+<button id="brownie-filter">Brownie</button>
+<button id="vintage-filter">Vintage</button>
+<button id="kodachrome-filter">Kodachrome</button>
+<button id="technicolor-filter">Technicolor</button>
+<button id="polaroid-filter">Polaroid</button>
+
 </div>
 <script>
       
@@ -336,7 +349,7 @@ function setupEventListeners() {
     const brushControlsDiv = brushControls.querySelector('.controls');
     const updateBrushButton = document.createElement('button');
     updateBrushButton.id = 'update-brush';
-    updateBrushButton.textContent = 'Update Brush';
+    updateBrushButton.textContent = 'Update SELECTED';
     updateBrushButton.addEventListener('click', updateSelectedBrush);
     brushControlsDiv.appendChild(updateBrushButton);
     
@@ -344,7 +357,7 @@ function setupEventListeners() {
     const textControlsDiv = textControls.querySelector('.controls');
     const updateTextButton = document.createElement('button');
     updateTextButton.id = 'update-text';
-    updateTextButton.textContent = 'Update Text';
+    updateTextButton.textContent = 'Update SELECTED';
     updateTextButton.addEventListener('click', updateSelectedText);
     textControlsDiv.appendChild(updateTextButton);
 }
@@ -676,6 +689,7 @@ function showObjectActions() {
 
 function hideObjectActions() {
     document.getElementById('object-actions').style.display = 'none';
+    document.getElementById('object-actions-2').style.display = 'none';
 }
 
 function updateObjectActions() {
@@ -687,6 +701,7 @@ function updateObjectActions() {
     
     const zoom = canvas.getZoom();
     const objectActions = document.getElementById('object-actions');
+    const objectActions2 = document.getElementById('object-actions-2');
     const boundingRect = selectedObject.getBoundingRect();
     const canvasRect = canvas.getElement().getBoundingClientRect();
     
@@ -695,6 +710,12 @@ function updateObjectActions() {
     
     objectActions.style.top = `${top}px`;
     objectActions.style.left = `${left}px`;
+
+    const top2 =  boundingRect.top + 35;
+    
+    
+    objectActions2.style.top = `${top2}px`;
+    objectActions2.style.left = `${left}px`;
 }
 
 function createText(x, y) {
@@ -848,8 +869,124 @@ function bringToFront() {
         canvas.renderAll();
     }
 }
+// Toggle visibility of object-actions-2 div
+function toggleVisibility() {
+    const panel = document.getElementById('object-actions-2');
+    panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'flex' : 'none';
+}
 
+// Toggle Sharpen Filter
+function toggleSharpen() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        const filters = selectedObject.filters;
+        const sharpenFilterIndex = filters.findIndex(f => f && f.type === 'Convolute');
 
+        if (sharpenFilterIndex > -1) {
+            // Remove filter if it exists
+            filters.splice(sharpenFilterIndex, 1);
+        } else {
+            // Apply Sharpen filter
+            const sharpenFilter = new fabric.Image.filters.Convolute({
+                matrix: [  
+                    0, -1,  0,
+                    -1,  5, -1,
+                    0, -1,  0
+                ]
+            });
+            filters.push(sharpenFilter);
+        }
+
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+
+// Toggle Emboss Filter
+function toggleEmboss() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        const filters = selectedObject.filters;
+        const embossFilterIndex = filters.findIndex(f => f && f.type === 'Convolute');
+
+        if (embossFilterIndex > -1) {
+            // Remove filter if it exists
+            filters.splice(embossFilterIndex, 1);
+        } else {
+            // Apply Emboss filter
+            const embossFilter = new fabric.Image.filters.Convolute({
+                matrix: [  
+                    1, 1, 1,
+                    1, 0.7, -1,
+                    -1, -1, -1
+                ]
+            });
+            filters.push(embossFilter);
+        }
+
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+// Function to toggle Fabric.js filters
+function toggleFilter(filterType, filterInstance) {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        const filters = selectedObject.filters;
+        const existingFilterIndex = filters.findIndex(f => f && f.type === filterType);
+
+        if (existingFilterIndex > -1) {
+            // Remove filter if it exists
+            filters.splice(existingFilterIndex, 1);
+        } else {
+            // Apply filter
+            filters.push(filterInstance);
+        }
+
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+
+// Filter toggle functions
+function toggleSepia() {
+    toggleFilter('Sepia', new fabric.Image.filters.Sepia());
+}
+
+function toggleBlackWhite() {
+    toggleFilter('Grayscale', new fabric.Image.filters.Grayscale());
+}
+
+function toggleBrownie() {
+    toggleFilter('Brownie', new fabric.Image.filters.Brownie());
+}
+
+function toggleVintage() {
+    toggleFilter('Vintage', new fabric.Image.filters.Vintage());
+}
+
+function toggleKodachrome() {
+    toggleFilter('Kodachrome', new fabric.Image.filters.Kodachrome());
+}
+
+function toggleTechnicolor() {
+    toggleFilter('Technicolor', new fabric.Image.filters.Technicolor());
+}
+
+function togglePolaroid() {
+    toggleFilter('Polaroid', new fabric.Image.filters.Polaroid());
+}
+
+document.getElementById('sepia-filter').addEventListener('click', toggleSepia);
+document.getElementById('bw-filter').addEventListener('click', toggleBlackWhite);
+document.getElementById('brownie-filter').addEventListener('click', toggleBrownie);
+document.getElementById('vintage-filter').addEventListener('click', toggleVintage);
+document.getElementById('kodachrome-filter').addEventListener('click', toggleKodachrome);
+document.getElementById('technicolor-filter').addEventListener('click', toggleTechnicolor);
+document.getElementById('polaroid-filter').addEventListener('click', togglePolaroid);
+document.getElementById('sharpen-filter').addEventListener('click', toggleSharpen);
+document.getElementById('emboss-filter').addEventListener('click', toggleEmboss);
+document.getElementById('toggle-visibility').addEventListener('click', toggleVisibility);
 document.getElementById('unselect-object').addEventListener('click', unselectObject);
 document.getElementById('lock-object').addEventListener('click', lockObject);
 document.getElementById('unlock-object').addEventListener('click', unlockObject);
