@@ -154,6 +154,7 @@ let canvasBackgroundColor = '#FFFFFF';
 const fontFamilies = ['Cairo', 'Tajawal', 'Almarai', 'Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald'];
 
 function initCanvas() {
+ fabric.Object.prototype.controls.mtr.offsetY = -50;
     canvas = new fabric.Canvas('canvas', {
         width: canvasWidth,
         height: canvasHeight,
@@ -705,7 +706,7 @@ function updateObjectActions() {
     const boundingRect = selectedObject.getBoundingRect();
     const canvasRect = canvas.getElement().getBoundingClientRect();
     
-    const top =  boundingRect.top + 6;
+    const top =  boundingRect.top ;
     const left = canvasRect.left + boundingRect.left + boundingRect.width / 2 - objectActions.offsetWidth / 2;
     
     objectActions.style.top = `${top}px`;
