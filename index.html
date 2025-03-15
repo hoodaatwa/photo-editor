@@ -11,9 +11,50 @@
 <style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#f5f5f7;color:#333;padding:20px}.editor-container{max-width:1200px;margin:0 auto;background:white;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}.toolbar{padding:15px;display:flex;flex-wrap:wrap;gap:10px;background:#fff;border-bottom:1px solid #eaeaea}.canvas-container{width:100%;overflow:auto;padding:20px;display:flex;justify-content:center}.canvas-wrapper{box-shadow:0 4px 12px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden}button{padding:8px 12px;border:0;border-radius:6px;background:#f0f0f0;color:#333;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:5px}button:hover{background:#e0e0e0}button.active{background:#4caf50;color:white}input[type="range"]{width:100px}.tool-group{display:flex;flex-direction:column;padding:10px;border-radius:8px;background:#f9f9f9;margin:10px}.tool-group-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#555}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.control-item{display:flex;align-items:center;gap:4px}.color-picker{padding:5px;border:1px solid #ddd;border-radius:4px;width:80px}.upload-btn-wrapper{position:relative;overflow:hidden;display:inline-block}.upload-btn-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}.brush-controls,.text-controls{display:none;margin-top:10px;flex-wrap:wrap;gap:10px}label{font-size:12px;color:#666}.tool-section{margin-top:10px;padding-top:10px;border-top:1px solid #eee}.eyedropper-cursor{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12,auto}.object-actions{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;}.object-actions button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}.object-actions2{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;max-width: 248px;flex-wrap: wrap;}.object-actions2 button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}
 #canvas-controls {
     margin: 0 17px;
-}</style>
+}.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.5s ease-in-out;
+    z-index: 200;
+}
+
+.notification button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.notification button:hover {
+    background: #0056b3;
+}
+
+@keyframes slideIn {
+    from { bottom: -50px; opacity: 0; }
+    to { bottom: 20px; opacity: 1; }
+}
+</style>
 </head>
 <body>
+<div id="desktop-notification" class="notification">
+    <p>Want to try the desktop version for a better experience?</p>
+    <button id="try-desktop">Try Desktop</button>
+    <button id="close-notification">Stay Here</button>
+</div>
+
 <div class=editor-container>
 <div class=canvas-container>
 <div class=canvas-wrapper>
@@ -171,7 +212,26 @@
 
 </div>
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Check if the notification was dismissed before
+    if (!localStorage.getItem("desktop-notification-dismissed")) {
+        document.getElementById("desktop-notification").style.display = "flex";
+    }
+
+    // Redirect to desktop version
+    document.getElementById("try-desktop").addEventListener("click", function() {
+        window.location.href = "https://hoodaatwa.github.io/photo-editor/Desktop.html";
+    });
+
+    // Close notification and remember user choice
+    document.getElementById("close-notification").addEventListener("click", function() {
+        document.getElementById("desktop-notification").style.display = "none";
+        localStorage.setItem("desktop-notification-dismissed", "true");
+    });
+});
       
+
+
 let canvas;
 let isBoxToolActive = false;
 let isBrushActive = false;
@@ -1239,8 +1299,7 @@ window.onload = function() {
     initCanvas();
     jscolor.install();
     enableSelectTool();
-};
-  
+}; 
 </script>
 </body>
   </html>
