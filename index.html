@@ -362,7 +362,6 @@ function setupEventListeners() {
     canvas.on('selection:updated', handleSelectionChange);
     canvas.on('selection:cleared', function() {
         hideAllControls();
-        hideObjectActions();
     });
     
     canvas.on('object:modified', function() {
@@ -652,7 +651,6 @@ function resetAllTools() {
     canvas.getElement().classList.remove('eyedropper-cursor');
     
     hideAllControls();
-    hideObjectActions();
 }
 
 function pickColorFromPoint(x, y) {
