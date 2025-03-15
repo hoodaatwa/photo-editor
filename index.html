@@ -5,78 +5,61 @@
 <meta name=viewport content="width=device-width, initial-scale=1.0">
 <title>Modern Image Editor</title>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js></script>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet>
-<style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}body{background-color:#1e1e1e;color:#e0e0e0;height:100vh;display:flex;flex-direction:column}.editor-container{display:flex;flex-direction:column;height:100vh;max-width:100%;margin:0;overflow:hidden;background:#2a2a2a}.toolbar{padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;background:#333;border-bottom:1px solid #444;align-items:center;justify-content:space-between}.canvas-container{width:100%;overflow:auto;padding:20px;display:flex;justify-content:center}.canvas-wrapper{box-shadow:0 4px 12px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden;height:fit-content}button{padding:8px 12px;border:0;border-radius:4px;background:#444;color:#e0e0e0;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:5px}button:hover{background:#555}button.active{background:#2196f3;color:white}input[type="range"]{width:100px;accent-color:#2196f3;background:#444;height:6px;border-radius:3px}.tool-group{display:flex;flex-direction:column;padding:8px 12px;border-radius:6px;background:#3a3a3a;margin:0}.tool-group-title{font-size:13px;font-weight:600;margin-bottom:8px;color:#e0e0e0;text-transform:uppercase;letter-spacing:.5px}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.control-item{display:flex;align-items:center;gap:8px}.color-picker{padding:0;border:1px solid #555;border-radius:4px;width:32px;height:32px;cursor:pointer;position:relative;overflow:hidden}.upload-btn-wrapper{position:relative;overflow:hidden;display:inline-block}.upload-btn-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}.brush-controls,.text-controls{display:none;margin-top:10px;flex-wrap:wrap;gap:10px;background:#3a3a3a;padding:10px;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.2)}label{font-size:12px;color:#bbb;font-weight:500}.tool-section{margin-top:10px;padding-top:10px;border-top:1px solid #444}.eyedropper-cursor{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12,auto}.object-actions,.object-actions2{position:absolute;background:#333;border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,0.3);padding:4px;display:none;z-index:100;flex-direction:row}.object-actions button,.object-actions2 button{padding:6px 8px;margin:2px;font-size:12px;background:#444;color:#e0e0e0}.object-actions button:hover,.object-actions2 button:hover{background:#555}.object-actions2{max-width:248px;flex-wrap:wrap}.add-font-btn{padding:6px 10px;margin-left:5px;border-radius:4px;background:#2196f3;color:white;cursor:pointer;border:0;font-size:12px;font-weight:500}#canvas-controls{margin:0 16px;background:#333;border-radius:4px;padding:8px;display:flex;gap:12px}.top-bar{display:flex;justify-content:space-between;padding:8px 16px;background:#1a1a1a;align-items:center}.top-bar .logo{font-weight:700;font-size:18px;color:#2196f3}.top-bar .actions{display:flex;gap:12px}.sidebar{width:56px;background:#333;display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:16px}.sidebar button{width:40px;height:40px;padding:0;display:flex;justify-content:center;align-items:center;border-radius:6px}.main-content{display:flex;flex:1;overflow:hidden}.workspace{flex:1;display:flex;flex-direction:column}.properties-panel{width:280px;background:#333;padding:10px;border-left:1px solid #444;overflow:auto;position:fixed;bottom:0;left:0;width:100%;max-height:35%;@media(max-width:768px){.properties-panel{display:block}.toolbar{overflow-x:auto;justify-content:flex-start}}</style>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#f5f5f7;color:#333;padding:20px}.editor-container{max-width:1200px;margin:0 auto;background:white;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}.toolbar{padding:15px;display:flex;flex-wrap:wrap;gap:10px;background:#fff;border-bottom:1px solid #eaeaea}.canvas-container{width:100%;overflow:auto;padding:20px;display:flex;justify-content:center}.canvas-wrapper{box-shadow:0 4px 12px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden}button{padding:8px 12px;border:0;border-radius:6px;background:#f0f0f0;color:#333;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:5px}button:hover{background:#e0e0e0}button.active{background:#4caf50;color:white}input[type="range"]{width:100px}.tool-group{display:flex;flex-direction:column;padding:10px;border-radius:8px;background:#f9f9f9;margin:10px}.tool-group-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#555}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.control-item{display:flex;align-items:center;gap:4px}.color-picker{padding:5px;border:1px solid #ddd;border-radius:4px;width:80px}.upload-btn-wrapper{position:relative;overflow:hidden;display:inline-block}.upload-btn-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}.brush-controls,.text-controls{display:none;margin-top:10px;flex-wrap:wrap;gap:10px}label{font-size:12px;color:#666}.tool-section{margin-top:10px;padding-top:10px;border-top:1px solid #eee}.eyedropper-cursor{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12,auto}.object-actions{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;}.object-actions button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}.object-actions2{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;max-width: 248px;flex-wrap: wrap;}.object-actions2 button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}
+#canvas-controls {
+    margin: 0 17px;
+}</style>
 </head>
+<body>
 <div class=editor-container>
-<div class=top-bar>
-<div class=logo>Hoodaatwa Editor</div>
-<div class=actions>
-<button id=undo-action title=Undo><i class="fas fa-undo"></i> Undo</button>
-<button id=download-image title="Download Image"><i class="fas fa-download"></i> Download</button>
-</div>
-</div>
-<div class=main-content>
-<div class=sidebar>
-<div class=upload-btn-wrapper>
-<button id=add-layer-btn title="Add Layer"><i class="fas fa-layer-group"></i></button>
-<input type=file id=layer-upload accept=image/* />
-</div>
-<button id=select-tool title="Select Tool" class=active><i class="fas fa-mouse-pointer"></i></button>
-<button id=brush-tool title="Brush Tool"><i class="fas fa-paint-brush"></i></button>
-<button id=add-text title="Add Text"><i class="fas fa-font"></i></button>
-<button id=color-pick title="Color Pick Tool"><i class="fas fa-eye-dropper"></i></button>
-<button id=canvas-controls-btn title="Canvas Controls"><i class="fas fa-desktop"></i></button>
-<button id=show-filter-btn title=Filters><i class="fas fa-tint"></i></button>
-</div>
 <div class=canvas-container>
 <div class=canvas-wrapper>
 <canvas id=canvas></canvas>
 </div>
-<div id=object-actions class=object-actions>
-<button id=clone-object><i class="fas fa-clone"></i></button>
-<button id=unselect-object><i class="fas fa-ban"></i></button>
-<button id=lock-object><i class="fas fa-lock"></i></button>
-<button id=unlock-object><i class="fas fa-unlock"></i></button>
-<button id=send-to-back><i class="fas fa-arrow-down"></i></button>
-<button id=bring-to-front><i class="fas fa-arrow-up"></i></button>
-<button id=flip-h-object><i class="fas fa-arrows-alt-h"></i></button>
-<button id=flip-v-object><i class="fas fa-arrows-alt-v"></i></button>
-<button id=delete-object><i class="fas fa-trash-alt"></i></button>
-<button id=toggle-visibility><i class="fas fa-gear"></i></button>
 </div>
-<div id=object-actions-2 class=object-actions2>
-<button id=align-left><i class="fas fa-align-left"></i></button>
-<button id=align-center><i class="fas fa-align-center"></i></button>
-<button id=align-right><i class="fas fa-align-right"></i></button>
-<button id=align-top><i class="fas fa-long-arrow-alt-up"></i></button>
-<button id=rotate-left><i class="fas fa-undo"></i></button>
-<button id=rotate-right><i class="fas fa-redo"></i></button>
-<button id=scale-up><i class="fas fa-search-plus"></i></button>
-<button id=scale-down><i class="fas fa-search-minus"></i></button>
+
+<div>
+<div class=toolbar>
+<button id="canvas-controls-btn"><i class="fas fa-gear"></i> Canvas Controls</button>
+
+<div class="upload-btn-wrapper">
+  <button id="add-layer-btn"><i class="fas fa-layer-group"></i> Add Layer</button>
+  <input type="file" id="layer-upload" accept="image/*" />
 </div>
+  <button id="show-filter-btn"><i class="fas fa-tint"></i> Show Filter</button>
+<button id=undo-action title=Undo><i class="fas fa-undo"></i> Undo</button>
+<button id=download-image title="Download Image"><i class="fas fa-download"></i> Download</button>
+<button id=add-text title="Add Text"><i class="fas fa-font"></i> Add Text</button>
+<button id=brush-tool title="Brush Tool"><i class="fas fa-paint-brush"></i> Brush</button>
+<button id=color-pick title="Color Pick Tool"><i class="fas fa-eye-dropper"></i> Color Pick</button>
+<button id=select-tool title="Select Tool"><i class="fas fa-mouse-pointer"></i> Select</button>
 </div>
-</div>
-<div class=properties-panel>
-<div class=tool-group id=canvas-controls style=display:none>
-<div class=tool-group-title>Canvas Settings</div>
-<div class=controls>
-<div class=control-item>
-<label for=canvas-width>Width:</label>
-<input type=number id=canvas-width min=50 max=3000 value=800 style=width:70px>
-</div>
-<div class=control-item>
-<label for=canvas-height>Height:</label>
-<input type=number id=canvas-height min=50 max=3000 value=600 style=width:70px>
-</div>
-<div class=control-item>
-<label for=canvas-bg-color>Background:</label>
-<input type=text id=canvas-bg-color class="jscolor color-picker" value=#FFFFFF>
-</div>
-<button id=apply-canvas-settings>Apply Settings</button>
-</div>
-</div>
+
+
+
+
+<div class="tool-group" id="canvas-controls" style="display: none;">
+        <div class="tool-group-title">Canvas Settings</div>
+        <div class="controls">
+            <div class="control-item">
+                <label for="canvas-width">Width:</label>
+                <input type="number" id="canvas-width" min="50" max="3000" value="800" style="width:70px">
+            </div>
+            <div class="control-item">
+                <label for="canvas-height">Height:</label>
+                <input type="number" id="canvas-height" min="50" max="3000" value="600" style="width:70px">
+            </div>
+            <div class="control-item">
+                <label for="canvas-bg-color">Background:</label>
+                <input type="text" id="canvas-bg-color" class="jscolor color-picker" value="#FFFFFF" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-current-color="#FFFFFF" style="background-image: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 30px, rgba(0, 0, 0, 0) 31px, rgba(0, 0, 0, 0) 100%), url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAAAXNSR0IArs4c6QAAAHxJREFUSEvtlbENACEMA52CARiBFWAndmIC5mAAasb5byhoglz8d04dRZbjXKy19oCoOSfRBZRSqL7bvJwzYoxYa3WTQMdPOegFTRn0nNEVH84IMwypaczUWqlP8sV1nsJv81JKCCFgjNFNAp19y8E/eakMMphRBpXBDeoXSJfVDUu/Ze0AAAAASUVORK5CYII=&quot;) !important; background-position: left top, left top !important; background-size: auto, 32px 16px !important; background-repeat: repeat-y, repeat-y !important; background-origin: padding-box, padding-box !important; padding-left: 40px !important;">
+            </div>
+            <button id="apply-canvas-settings">Apply Settings</button>
+        </div>
+    </div>
+
 <div class=tool-group id=brush-controls>
 <div class=tool-group-title>Brush Controls</div>
 <div class=controls>
@@ -115,137 +98,1149 @@
 </div>
 </div>
 </div>
-<div class=tool-group id=layer-controls>
-<div class=tool-group-title>Layer Controls</div>
-<div class=controls>
-<div class=control-item>
-<label for=layer-opacity>Opacity:</label>
-<input type=range id=layer-opacity min=0.1 max=1 value=1 step=0.1>
-<span id=layer-opacity-value>1.0</span>
+
+<div class="tool-group" id="layer-controls" style="display: none;">
+  <div class="tool-group-title">Layer Controls</div>
+  <div class="controls">
+    <div class="control-item">
+      <label for="layer-opacity">Opacity:</label>
+      <input type="range" id="layer-opacity" min="0.1" max="1" value="1" step="0.1">
+      <span id="layer-opacity-value">1.0</span>
+    </div>
+<div class="control-item" style="flex-wrap: wrap;max-width: calc(100% - 50px);">
+<button id="sharpen-filter">Sharpen</button>
+<button id="emboss-filter">Emboss</button>
+<button id="sepia-filter">Sepia</button>
+<button id="bw-filter">Black & White</button>
+<button id="brownie-filter">Brownie</button>
+<button id="vintage-filter">Vintage</button>
+<button id="kodachrome-filter">Kodachrome</button>
+<button id="technicolor-filter">Technicolor</button>
+<button id="polaroid-filter">Polaroid</button>
+    <button id="brightness-filter">Brightness</button>
+    <button id="gamma-filter">Gamma</button>
+    <button id="contrast-filter">Contrast</button>
+    <button id="saturation-filter">Saturation</button>
+    <button id="vibrance-filter">Vibrance</button>
+    <button id="hue-filter">Hue</button>
+    <button id="noise-filter">Noise</button>
+    <button id="pixelate-filter">Pixelate</button>
+    <button id="blur-filter">Blur</button>
+
+<br>
+<div class="control-item" style="border-top: 1px solid #eaeaea;width: 100%;padding-top: 4px;flex-wrap: wrap;"> 
+    <label for="remove-color">Remove Color:</label>
+    <input type="text" id="remove-color" class="jscolor color-picker" value="#ffffff">
+    <button id="apply-remove-color">Remove Color</button>
+
+    <label for="remove-color-distance">Distance:</label>
+    <input type="range" id="remove-color-distance" min="0" max="1" step="0.01" value="0.3">
+    <span id="remove-color-distance-value">0.3</span>
 </div>
-<div class=control-item style="flex-wrap:wrap;max-width:calc(100% - 50px)">
-<button id=sharpen-filter>Sharpen</button>
-<button id=emboss-filter>Emboss</button>
-<button id=sepia-filter>Sepia</button>
-<button id=bw-filter>Black & White</button>
-<button id=brownie-filter>Brownie</button>
-<button id=vintage-filter>Vintage</button>
-<button id=kodachrome-filter>Kodachrome</button>
-<button id=technicolor-filter>Technicolor</button>
-<button id=polaroid-filter>Polaroid</button>
-<button id=brightness-filter>Brightness</button>
-<button id=gamma-filter>Gamma</button>
-<button id=contrast-filter>Contrast</button>
-<button id=saturation-filter>Saturation</button>
-<button id=vibrance-filter>Vibrance</button>
-<button id=hue-filter>Hue</button>
-<button id=noise-filter>Noise</button>
-<button id=pixelate-filter>Pixelate</button>
-<button id=blur-filter>Blur</button>
+
+  </div>
+
+  </div>
 </div>
-<div class=control-item style="border-top:1px solid #444;width:100%;padding-top:10px;flex-wrap:wrap">
-<label for=remove-color>Remove Color:</label>
-<input type=text id=remove-color class="jscolor color-picker" value=#ffffff>
-<button id=apply-remove-color>Remove Color</button>
-<label for=remove-color-distance>Distance:</label>
-<input type=range id=remove-color-distance min=0 max=1 step=0.01 value=0.3>
-<span id=remove-color-distance-value>0.3</span>
+    
 </div>
 </div>
+<div id=object-actions class=object-actions>
+<button id=clone-object><i class="fas fa-clone"></i></button>
+    <button id="unselect-object"><i class="fas fa-ban"></i></button>
+    <button id="lock-object"><i class="fas fa-lock"></i></button>
+    <button id="unlock-object"><i class="fas fa-unlock"></i></button>
+    <button id="send-to-back"><i class="fas fa-arrow-down"></i></button>
+    <button id="bring-to-front"><i class="fas fa-arrow-up"></i></button>
+<button id=flip-h-object><i class="fas fa-arrows-alt-h"></i></button>
+<button id=flip-v-object><i class="fas fa-arrows-alt-v"></i></button>
+<button id=delete-object><i class="fas fa-trash-alt"></i></button>
+<button id="toggle-visibility"><i class="fas fa-gear"></i></button>
 </div>
+<div id="object-actions-2" class="object-actions2" style="display: none;"> 
+    <button id="align-left"><i class="fas fa-align-left"></i></button>
+    <button id="align-center"><i class="fas fa-align-center"></i></button>
+    <button id="align-right"><i class="fas fa-align-right"></i></button>
+    <button id="align-top"><i class="fas fa-long-arrow-alt-up"></i></button>
+
+    <button id="rotate-left"><i class="fas fa-undo"></i></button>
+    <button id="rotate-right"><i class="fas fa-redo"></i></button>
+    <button id="scale-up"><i class="fas fa-search-plus"></i></button>
+    <button id="scale-down"><i class="fas fa-search-minus"></i></button>
+
+
 </div>
-</div>
-</div>
-<script>let canvas;let isBoxToolActive=false;let isBrushActive=false;let isTextToolActive=false;let isColorPickActive=false;let currentColor='#FF0000';let lastBrushColor='#000000';let lastBrushWidth=10;let canvasHistory=[];let historyIndex=-1;let originalImage=null;let undoStack=[];let redoStack=[];let layers=[];let canvasWidth=800;let canvasHeight=600;let canvasBackgroundColor='#FFFFFF';const fontFamilies=['Cairo','Tajawal','Almarai','Arial','Helvetica','Times New Roman','Courier New','Georgia','Verdana','Roboto','Open Sans','Lato','Montserrat','Oswald'];function initCanvas(){fabric.Object.prototype.controls.mtr.offsetY=-50;canvas=new fabric.Canvas('canvas',{width:canvasWidth,height:canvasHeight,backgroundColor:canvasBackgroundColor,preserveObjectStacking:true});window.addEventListener('resize',resizeCanvas);resizeCanvas();setupEventListeners();loadGoogleFonts();setupCanvasControls();saveCanvasState();}
-function setupCanvasControls(){const toolbarElement=document.querySelector('.toolbar');document.getElementById('apply-canvas-settings').addEventListener('click',applyCanvasSettings);jscolor.install();}
-function applyCanvasSettings(){const newWidth=parseInt(document.getElementById('canvas-width').value);const newHeight=parseInt(document.getElementById('canvas-height').value);const newColor=document.getElementById('canvas-bg-color').value;if(isNaN(newWidth)||isNaN(newHeight)||newWidth<50||newHeight<50||newWidth>3000||newHeight>3000){alert('Please enter valid dimensions (between 50 and 3000 pixels)');return;}
-canvasWidth=newWidth;canvasHeight=newHeight;canvasBackgroundColor=newColor;canvas.setWidth(canvasWidth);canvas.setHeight(canvasHeight);canvas.setBackgroundColor(canvasBackgroundColor,canvas.renderAll.bind(canvas));resizeCanvas();saveCanvasState();}
-function loadGoogleFonts(){const link=document.createElement('link');link.rel='stylesheet';link.href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap';document.head.appendChild(link);const fontFamilySelect=document.getElementById('font-family');fontFamilySelect.innerHTML='';fontFamilies.forEach(font=>{const option=document.createElement('option');option.value=font;option.textContent=font;option.style.fontFamily=font;fontFamilySelect.appendChild(option);});fontFamilySelect.addEventListener('change',function(){const selectedFont=this.value;});setupAddFontButton();}
-function setupAddFontButton(){document.getElementById('add-font-family').addEventListener('click',addNewFont);}
-function addNewFont(){const fontName=prompt("Enter Google Font name (e.g. 'Poppins', 'Playfair Display'):");if(!fontName)return;const fontFamilySelect=document.getElementById('font-family');for(let i=0;i<fontFamilySelect.options.length;i++){if(fontFamilySelect.options[i].value.toLowerCase()===fontName.toLowerCase()){alert("This font is already in the list.");return;}}
-try{const formattedFontName=fontName.replace(/\s+/g,'+');const link=document.createElement('link');link.rel='stylesheet';link.href=`https:document.head.appendChild(link);const option=document.createElement('option');option.value=fontName;option.textContent=fontName;option.style.fontFamily=fontName;fontFamilySelect.appendChild(option);fontFamilySelect.value=fontName;}catch(error){console.error("Error adding font:",error);alert("There was an error adding the font. Please try again.");}}
-function resizeCanvas(){const container=document.querySelector('.canvas-container');const containerWidth=container.clientWidth-40;if(containerWidth<canvas.width){const scale=containerWidth/canvas.width;canvas.setZoom(scale);canvas.setWidth(canvas.width*scale);canvas.setHeight(canvas.height*scale);}}
-function setupEventListeners(){document.getElementById('add-text').addEventListener('click',toggleTextTool);document.getElementById('brush-tool').addEventListener('click',toggleBrushTool);document.getElementById('color-pick').addEventListener('click',toggleColorPickTool);document.getElementById('select-tool').addEventListener('click',enableSelectTool);document.getElementById('undo-action').addEventListener('click',undoAction);document.getElementById('download-image').addEventListener('click',downloadImage);document.getElementById('brush-color').addEventListener('change',function(){});document.getElementById('brush-width').addEventListener('input',function(){document.getElementById('brush-width-value').textContent=this.value;});document.getElementById('brush-opacity').addEventListener('input',function(){document.getElementById('brush-opacity-value').textContent=parseFloat(this.value).toFixed(1);});document.getElementById('text-color').addEventListener('change',function(){});document.getElementById('font-size').addEventListener('input',function(){document.getElementById('font-size-value').textContent=this.value;});document.getElementById('clone-object').addEventListener('click',cloneSelectedObject);document.getElementById('flip-h-object').addEventListener('click',flipHorizontally);document.getElementById('flip-v-object').addEventListener('click',flipVertically);document.getElementById('delete-object').addEventListener('click',deleteSelectedObject);document.getElementById('add-layer-btn').addEventListener('click',function(){document.getElementById('layer-upload').click();});document.getElementById('layer-upload').addEventListener('change',handleLayerUpload);document.getElementById('layer-opacity').addEventListener('input',updateLayerOpacity);canvas.on('mouse:down',handleCanvasMouseDown);canvas.on('mouse:move',handleCanvasMouseMove);canvas.on('mouse:up',handleCanvasMouseUp);canvas.on('selection:created',handleSelectionChange);canvas.on('selection:updated',handleSelectionChange);canvas.on('selection:cleared',function(){hideAllControls();});canvas.on('object:modified',function(){saveCanvasState();updateObjectActions();});canvas.on('object:added',function(){saveCanvasState();});canvas.on('object:removed',function(){saveCanvasState();hideObjectActions();});canvas.on('mouse:move',function(){updateObjectActions();});const brushControls=document.getElementById('brush-controls');const brushControlsDiv=brushControls.querySelector('.controls');const updateBrushButton=document.createElement('button');updateBrushButton.id='update-brush';updateBrushButton.textContent='Update SELECTED';updateBrushButton.addEventListener('click',updateSelectedBrush);brushControlsDiv.appendChild(updateBrushButton);const textControls=document.getElementById('text-controls');const textControlsDiv=textControls.querySelector('.controls');const updateTextButton=document.createElement('button');updateTextButton.id='update-text';updateTextButton.textContent='Update SELECTED';updateTextButton.addEventListener('click',updateSelectedText);textControlsDiv.appendChild(updateTextButton);}
-function handleLayerUpload(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(event){const imgObj=new Image();imgObj.src=event.target.result;imgObj.onload=function(){const image=new fabric.Image(imgObj,{opacity:1,selectable:true,hasControls:true,hasBorders:true,isLayer:true});const canvasWidth=canvas.width/canvas.getZoom();const canvasHeight=canvas.height/canvas.getZoom();const imgRatio=image.width/image.height;const canvasRatio=canvasWidth/canvasHeight;let scale;if(imgRatio>canvasRatio){scale=canvasWidth/image.width*0.8;}else{scale=canvasHeight/image.height*0.8;}
-image.scale(scale);canvas.centerObject(image);canvas.add(image);layers.push(image);canvas.setActiveObject(image);showLayerControls();saveCanvasState();};};reader.readAsDataURL(file);e.target.value=null;}
-document.getElementById("canvas-controls-btn").addEventListener("click",function(){const canvasControls=document.getElementById("canvas-controls");if(canvasControls.style.display==="none"||canvasControls.style.display===""){canvasControls.style.display="flex";}else{canvasControls.style.display="none";}});function showLayerControls(){const selectedObject=canvas.getActiveObject();if(selectedObject&&selectedObject.isLayer){document.getElementById('layer-controls').style.display='block';document.getElementById('layer-opacity').value=selectedObject.opacity;document.getElementById('layer-opacity-value').textContent=selectedObject.opacity.toFixed(1);}else{document.getElementById('layer-controls').style.display='none';}}
-document.getElementById("show-filter-btn").addEventListener("click",function(){const layerControls=document.getElementById("layer-controls");if(layerControls.style.display==="flex"){layerControls.style.display="none";}else{layerControls.style.display="flex";document.getElementById('brush-controls').style.display='none';document.getElementById('text-controls').style.display='none';}});function updateLayerOpacity(){const selectedObject=canvas.getActiveObject();if(selectedObject&&selectedObject.isLayer){const opacity=parseFloat(document.getElementById('layer-opacity').value);document.getElementById('layer-opacity-value').textContent=opacity.toFixed(1);selectedObject.set('opacity',opacity);canvas.renderAll();saveCanvasState();}}
-function updateSelectedBrush(){const selectedObject=canvas.getActiveObject();if(!selectedObject||selectedObject.type!=='path')return;const brushColor=document.getElementById('brush-color').value;const brushWidth=parseInt(document.getElementById('brush-width').value);const brushOpacity=parseFloat(document.getElementById('brush-opacity').value);selectedObject.set({stroke:brushColor,strokeWidth:brushWidth,opacity:brushOpacity});canvas.renderAll();saveCanvasState();}
-function updateSelectedText(){const selectedObject=canvas.getActiveObject();if(!selectedObject||selectedObject.type!=='i-text')return;const textColor=document.getElementById('text-color').value;const fontSize=parseInt(document.getElementById('font-size').value);const fontFamily=document.getElementById('font-family')?document.getElementById('font-family').value:'Arial';selectedObject.set({fill:textColor,fontSize:fontSize,fontFamily:fontFamily});canvas.renderAll();saveCanvasState();}
-function saveCanvasState(){if(historyIndex<canvasHistory.length-1){canvasHistory=canvasHistory.slice(0,historyIndex+1);}
-const json=JSON.stringify(canvas.toJSON(['selectable','evented','isLayer']));canvasHistory.push(json);historyIndex=canvasHistory.length-1;updateHistoryButtons();}
-function updateHistoryButtons(){const undoBtn=document.getElementById('undo-action');undoBtn.disabled=historyIndex<=0;undoBtn.style.opacity=undoBtn.disabled?"0.5":"1";}
-function undoAction(){if(historyIndex>0){historyIndex--;loadCanvasState();}}
-function loadCanvasState(){canvas.loadFromJSON(canvasHistory[historyIndex],function(){canvas.renderAll();updateHistoryButtons();layers=[];canvas.forEachObject(function(obj){if(obj.isLayer){layers.push(obj);}});});}
-function downloadImage(){const quality=10;const dataURL=canvas.toDataURL({format:'png',quality:1,multiplier:quality});const link=document.createElement('a');link.href=dataURL;link.download='image-editor-'+new Date().getTime()+'.png';document.body.appendChild(link);link.click();document.body.removeChild(link);}
-function handleCanvasMouseDown(event){if(isTextToolActive){createText(event.pointer.x,event.pointer.y);}else if(isColorPickActive){pickColorFromPoint(event.pointer.x,event.pointer.y);}}
-function handleCanvasMouseMove(event){}
-function handleCanvasMouseUp(event){}
-function toggleTextTool(){resetAllTools();isTextToolActive=!isTextToolActive;document.getElementById('add-text').classList.toggle('active',isTextToolActive);if(isTextToolActive){canvas.defaultCursor='text';document.getElementById('text-controls').style.display='block';}}
-function toggleBrushTool(){resetAllTools();isBrushActive=!isBrushActive;document.getElementById('brush-tool').classList.toggle('active',isBrushActive);if(isBrushActive){enableBrushMode();document.getElementById('brush-controls').style.display='block';}else{canvas.isDrawingMode=false;}}
-function toggleColorPickTool(){resetAllTools();isColorPickActive=!isColorPickActive;document.getElementById('color-pick').classList.toggle('active',isColorPickActive);if(isColorPickActive){canvas.defaultCursor='crosshair';canvas.getElement().classList.add('eyedropper-cursor');}else{canvas.getElement().classList.remove('eyedropper-cursor');}}
-function enableSelectTool(){resetAllTools();document.getElementById('select-tool').classList.add('active');canvas.defaultCursor='default';canvas.isDrawingMode=false;}
-function resetAllTools(){isBoxToolActive=false;isTextToolActive=false;isBrushActive=false;isColorPickActive=false;document.getElementById('add-text').classList.remove('active');document.getElementById('brush-tool').classList.remove('active');document.getElementById('color-pick').classList.remove('active');document.getElementById('select-tool').classList.remove('active');canvas.defaultCursor='default';canvas.isDrawingMode=false;canvas.getElement().classList.remove('eyedropper-cursor');hideAllControls();}
-function pickColorFromPoint(x,y){const context=canvas.getContext('2d');const canvasZoom=canvas.getZoom();const adjustedX=x/canvasZoom;const adjustedY=y/canvasZoom;try{const pixelData=context.getImageData(adjustedX,adjustedY,1,1).data;const color=rgbToHex(pixelData[0],pixelData[1],pixelData[2]);updateColorPickers(color);enableSelectTool();}catch(error){console.error('Error picking color:',error);alert('Could not pick color. This may happen with external images due to security restrictions.');enableSelectTool();}}
-function rgbToHex(r,g,b){return'#'+[r,g,b].map(x=>{const hex=x.toString(16);return hex.length===1?'0'+hex:hex;}).join('');}
-function updateColorPickers(color){document.getElementById('brush-color').value=color;jscolor.install();document.getElementById('brush-color').jscolor.fromString(color);lastBrushColor=color;document.getElementById('text-color').value=color;document.getElementById('text-color').jscolor.fromString(color);document.getElementById('remove-color').value=color;document.getElementById('remove-color').jscolor.fromString(color);document.getElementById('canvas-bg-color').value=color;document.getElementById('canvas-bg-color').jscolor.fromString(color);}
-function hideAllControls(){document.getElementById('brush-controls').style.display='none';document.getElementById('text-controls').style.display='none';document.getElementById('layer-controls').style.display='none';document.getElementById('canvas-controls').style.display='none';}
-function handleSelectionChange(){const selectedObject=canvas.getActiveObject();if(selectedObject){if(selectedObject.type==='i-text'){document.getElementById('text-controls').style.display='block';if(selectedObject.fill){jscolor.install();document.getElementById('text-color').jscolor.fromString(selectedObject.fill);}
-document.getElementById('font-size').value=selectedObject.fontSize||24;document.getElementById('font-size-value').textContent=selectedObject.fontSize||24;const fontFamilySelect=document.getElementById('font-family');if(fontFamilySelect&&selectedObject.fontFamily){for(let i=0;i<fontFamilySelect.options.length;i++){if(fontFamilySelect.options[i].value===selectedObject.fontFamily){fontFamilySelect.selectedIndex=i;break;}}}}else if(selectedObject.type==='path'){document.getElementById('brush-controls').style.display='block';if(selectedObject.stroke){document.getElementById('brush-color').value=selectedObject.stroke;jscolor.install();document.getElementById('brush-color').jscolor.fromString(selectedObject.stroke);}
-if(selectedObject.strokeWidth){document.getElementById('brush-width').value=selectedObject.strokeWidth;document.getElementById('brush-width-value').textContent=selectedObject.strokeWidth;}
-if(selectedObject.opacity!==undefined){document.getElementById('brush-opacity').value=selectedObject.opacity;document.getElementById('brush-opacity-value').textContent=selectedObject.opacity.toFixed(1);}}else if(selectedObject.isLayer){showLayerControls();}
-showObjectActions();}}
-function showObjectActions(){updateObjectActions();document.getElementById('object-actions').style.display='flex';}
-function hideObjectActions(){document.getElementById('object-actions').style.display='none';document.getElementById('object-actions-2').style.display='none';}
-function updateObjectActions(){const selectedObject=canvas.getActiveObject();if(!selectedObject){hideObjectActions();return;}
-const zoom=canvas.getZoom();const objectActions=document.getElementById('object-actions');const objectActions2=document.getElementById('object-actions-2');const boundingRect=selectedObject.getBoundingRect();const canvasRect=canvas.getElement().getBoundingClientRect();const top=boundingRect.top+24;const left=canvasRect.left+boundingRect.left+boundingRect.width/2-objectActions.offsetWidth/2;objectActions.style.top=`${top}px`;objectActions.style.left=`${left}px`;const top2=boundingRect.top+55;objectActions2.style.top=`${top2}px`;objectActions2.style.left=`${left}px`;}
-function createText(x,y){const textColor=document.getElementById('text-color').value;const fontSize=parseInt(document.getElementById('font-size').value);const fontFamily=document.getElementById('font-family')?document.getElementById('font-family').value:'Cairo';const text=new fabric.IText('Type here',{left:x,top:y,fill:textColor,fontSize:fontSize,fontFamily:fontFamily,cornerColor:'#5cdaed',cornerStrokeColor:'#2196f3',cornerStyle:'circle',transparentCorners:false});canvas.add(text);canvas.setActiveObject(text);toggleTextTool();enableSelectTool();}
-function enableBrushMode(){canvas.isDrawingMode=true;const brushColor=document.getElementById('brush-color').value;const brushWidth=parseInt(document.getElementById('brush-width').value);const brushOpacity=parseFloat(document.getElementById('brush-opacity').value);canvas.freeDrawingBrush.color=brushColor;canvas.freeDrawingBrush.width=brushWidth;lastBrushColor=brushColor;lastBrushWidth=brushWidth;}
-function deleteSelectedObject(){const selectedObject=canvas.getActiveObject();if(selectedObject){if(selectedObject.isLayer){const index=layers.indexOf(selectedObject);if(index!==-1){layers.splice(index,1);}}
-canvas.remove(selectedObject);hideAllControls();hideObjectActions();}}
-function cloneSelectedObject(){const selectedObject=canvas.getActiveObject();if(!selectedObject)return;selectedObject.clone(function(cloned){cloned.set({left:selectedObject.left+20,top:selectedObject.top+20,evented:true,});if(cloned.type==='i-text'){cloned.set({editable:true});}
-if(cloned.isLayer){layers.push(cloned);}
-canvas.add(cloned);canvas.setActiveObject(cloned);canvas.renderAll();});}
-function flipHorizontally(){const selectedObject=canvas.getActiveObject();if(!selectedObject)return;selectedObject.set('flipX',!selectedObject.flipX);canvas.renderAll();}
-function flipVertically(){const selectedObject=canvas.getActiveObject();if(!selectedObject)return;selectedObject.set('flipY',!selectedObject.flipY);canvas.renderAll();}
-function unselectObject(){canvas.discardActiveObject();canvas.renderAll();hideObjectActions();}
-function lockObject(){const selectedObject=canvas.getActiveObject();if(selectedObject){selectedObject.set({selectable:true,evented:true,hasControls:true,lockMovementX:true,lockMovementY:true});canvas.discardActiveObject();canvas.renderAll();}}
-function unlockObject(){canvas.getObjects().forEach(obj=>{obj.set({selectable:true,evented:true,hasControls:true,lockMovementX:false,lockMovementY:false});});canvas.renderAll();}
-function sendToBack(){const selectedObject=canvas.getActiveObject();if(selectedObject){canvas.sendToBack(selectedObject);canvas.renderAll();}}
-function bringToFront(){const selectedObject=canvas.getActiveObject();if(selectedObject){canvas.bringToFront(selectedObject);canvas.renderAll();}}
-function toggleVisibility(){const panel=document.getElementById('object-actions-2');panel.style.display=(panel.style.display==='none'||panel.style.display==='')?'flex':'none';}
-function alignLeft(){const selectedObject=canvas.getActiveObject();if(selectedObject){selectedObject.set({left:0});canvas.renderAll();}}
-function alignCenter(){const selectedObject=canvas.getActiveObject();if(selectedObject){const canvasWidth=canvas.width;selectedObject.set({left:(canvasWidth-selectedObject.width*selectedObject.scaleX)/2});canvas.renderAll();}}
-function alignRight(){const selectedObject=canvas.getActiveObject();if(selectedObject){const canvasWidth=canvas.width;selectedObject.set({left:canvasWidth-selectedObject.width*selectedObject.scaleX});canvas.renderAll();}}
-function rotateLeft(){const selectedObject=canvas.getActiveObject();if(selectedObject){selectedObject.rotate(selectedObject.angle-15);canvas.renderAll();}}
-function alignTop(){const selectedObject=canvas.getActiveObject();if(selectedObject){selectedObject.set({top:0});canvas.renderAll();}}
-function rotateRight(){const selectedObject=canvas.getActiveObject();if(selectedObject){selectedObject.rotate(selectedObject.angle+15);canvas.renderAll();}}
-function scaleUp(){const selectedObject=canvas.getActiveObject();if(selectedObject){selectedObject.scale(selectedObject.scaleX+0.1);canvas.renderAll();}}
-function scaleDown(){const selectedObject=canvas.getActiveObject();if(selectedObject){selectedObject.scale(selectedObject.scaleX-0.1);canvas.renderAll();}}
-function toggleSharpen(){const selectedObject=canvas.getActiveObject();if(selectedObject&&selectedObject.type==='image'){const filters=selectedObject.filters;const sharpenFilterIndex=filters.findIndex(f=>f&&f.type==='Convolute');if(sharpenFilterIndex>-1){filters.splice(sharpenFilterIndex,1);}else{const sharpenFilter=new fabric.Image.filters.Convolute({matrix:[0,-1,0,-1,5,-1,0,-1,0]});filters.push(sharpenFilter);}
-selectedObject.applyFilters();canvas.requestRenderAll();}}
-function toggleEmboss(){const selectedObject=canvas.getActiveObject();if(selectedObject&&selectedObject.type==='image'){const filters=selectedObject.filters;const embossFilterIndex=filters.findIndex(f=>f&&f.type==='Convolute');if(embossFilterIndex>-1){filters.splice(embossFilterIndex,1);}else{const embossFilter=new fabric.Image.filters.Convolute({matrix:[1,1,1,1,0.7,-1,-1,-1,-1]});filters.push(embossFilter);}
-selectedObject.applyFilters();canvas.requestRenderAll();}}
-function toggleFilter(filterType,filterInstance){const selectedObject=canvas.getActiveObject();if(selectedObject&&selectedObject.type==='image'){const filters=selectedObject.filters;const existingFilterIndex=filters.findIndex(f=>f&&f.type===filterType);if(existingFilterIndex>-1){filters.splice(existingFilterIndex,1);}else{filters.push(filterInstance);}
-selectedObject.applyFilters();canvas.requestRenderAll();}}
-function toggleSepia(){toggleFilter('Sepia',new fabric.Image.filters.Sepia());}
-function toggleBlackWhite(){toggleFilter('Grayscale',new fabric.Image.filters.Grayscale());}
-function toggleBrownie(){toggleFilter('Brownie',new fabric.Image.filters.Brownie());}
-function toggleVintage(){toggleFilter('Vintage',new fabric.Image.filters.Vintage());}
-function toggleKodachrome(){toggleFilter('Kodachrome',new fabric.Image.filters.Kodachrome());}
-function toggleTechnicolor(){toggleFilter('Technicolor',new fabric.Image.filters.Technicolor());}
-function togglePolaroid(){toggleFilter('Polaroid',new fabric.Image.filters.Polaroid());}
-function applyFilter(filterInstance){const selectedObject=canvas.getActiveObject();if(selectedObject&&selectedObject.type==='image'){selectedObject.filters.push(filterInstance);selectedObject.applyFilters();canvas.requestRenderAll();}}
-function toggleBrightness(){applyFilter(new fabric.Image.filters.Brightness({brightness:0.2}));}
-function toggleGamma(){applyFilter(new fabric.Image.filters.Gamma({gamma:[1.2,1.2,1.2]}));}
-function toggleContrast(){applyFilter(new fabric.Image.filters.Contrast({contrast:0.3}));}
-function toggleSaturation(){applyFilter(new fabric.Image.filters.Saturation({saturation:0.5}));}
-function toggleVibrance(){applyFilter(new fabric.Image.filters.Vibrance({vibrance:0.4}));}
-function toggleHue(){applyFilter(new fabric.Image.filters.HueRotation({rotation:0.5}));}
-function toggleNoise(){applyFilter(new fabric.Image.filters.Noise({noise:50}));}
-function togglePixelate(){applyFilter(new fabric.Image.filters.Pixelate({blocksize:8}));}
-function toggleBlur(){applyFilter(new fabric.Image.filters.Blur({blur:0.1}));}
-function removeColorFilter(){const selectedObject=canvas.getActiveObject();if(selectedObject&&selectedObject.type==='image'){const colorToRemove=document.getElementById('remove-color').value;const distance=parseFloat(document.getElementById('remove-color-distance').value);const removeColor=new fabric.Image.filters.RemoveColor({color:colorToRemove,distance:distance,});selectedObject.filters=selectedObject.filters.filter(filter=>!(filter instanceof fabric.Image.filters.RemoveColor));selectedObject.filters.push(removeColor);selectedObject.applyFilters();canvas.requestRenderAll();}}
-document.getElementById('apply-remove-color').addEventListener('click',removeColorFilter);document.getElementById('remove-color-distance').addEventListener('input',function(){document.getElementById('remove-color-distance-value').textContent=this.value;});document.getElementById('brightness-filter').addEventListener('click',toggleBrightness);document.getElementById('gamma-filter').addEventListener('click',toggleGamma);document.getElementById('contrast-filter').addEventListener('click',toggleContrast);document.getElementById('saturation-filter').addEventListener('click',toggleSaturation);document.getElementById('vibrance-filter').addEventListener('click',toggleVibrance);document.getElementById('hue-filter').addEventListener('click',toggleHue);document.getElementById('noise-filter').addEventListener('click',toggleNoise);document.getElementById('pixelate-filter').addEventListener('click',togglePixelate);document.getElementById('blur-filter').addEventListener('click',toggleBlur);document.getElementById('sepia-filter').addEventListener('click',toggleSepia);document.getElementById('bw-filter').addEventListener('click',toggleBlackWhite);document.getElementById('brownie-filter').addEventListener('click',toggleBrownie);document.getElementById('vintage-filter').addEventListener('click',toggleVintage);document.getElementById('kodachrome-filter').addEventListener('click',toggleKodachrome);document.getElementById('technicolor-filter').addEventListener('click',toggleTechnicolor);document.getElementById('polaroid-filter').addEventListener('click',togglePolaroid);document.getElementById('sharpen-filter').addEventListener('click',toggleSharpen);document.getElementById('emboss-filter').addEventListener('click',toggleEmboss);document.getElementById('toggle-visibility').addEventListener('click',toggleVisibility);document.getElementById('unselect-object').addEventListener('click',unselectObject);document.getElementById('lock-object').addEventListener('click',lockObject);document.getElementById('unlock-object').addEventListener('click',unlockObject);document.getElementById('send-to-back').addEventListener('click',sendToBack);document.getElementById('bring-to-front').addEventListener('click',bringToFront);document.getElementById('align-left').addEventListener('click',alignLeft);document.getElementById('align-center').addEventListener('click',alignCenter);document.getElementById('align-right').addEventListener('click',alignRight);document.getElementById('align-top').addEventListener('click',alignTop);document.getElementById('rotate-left').addEventListener('click',rotateLeft);document.getElementById('rotate-right').addEventListener('click',rotateRight);document.getElementById('scale-up').addEventListener('click',scaleUp);document.getElementById('scale-down').addEventListener('click',scaleDown);window.onload=function(){initCanvas();jscolor.install();enableSelectTool();};</script>
+<script>
+      
+let canvas;
+let isBoxToolActive = false;
+let isBrushActive = false;
+let isTextToolActive = false;
+let isColorPickActive = false;
+let currentColor = '#FF0000';
+let lastBrushColor = '#000000';
+let lastBrushWidth = 10;
+let canvasHistory = [];
+let historyIndex = -1;
+let originalImage = null;
+let undoStack = [];
+let redoStack = [];
+let layers = [];
+let canvasWidth = 800;
+let canvasHeight = 600;
+let canvasBackgroundColor = '#FFFFFF';
+
+const fontFamilies = ['Cairo', 'Tajawal', 'Almarai', 'Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald'];
+
+function initCanvas() {
+ fabric.Object.prototype.controls.mtr.offsetY = -50;
+    canvas = new fabric.Canvas('canvas', {
+        width: canvasWidth,
+        height: canvasHeight,
+        backgroundColor: canvasBackgroundColor,
+        preserveObjectStacking: true
+    });
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    setupEventListeners();
+    loadGoogleFonts();
+    setupCanvasControls();
+    saveCanvasState();
+}
+
+function setupCanvasControls() {
+    // Create a new tool group for canvas settings
+    const toolbarElement = document.querySelector('.toolbar');
+    
+    
+    // Setup event listeners for the new controls
+    document.getElementById('apply-canvas-settings').addEventListener('click', applyCanvasSettings);
+    
+    // Initialize color picker
+    jscolor.install();
+}
+
+function applyCanvasSettings() {
+    const newWidth = parseInt(document.getElementById('canvas-width').value);
+    const newHeight = parseInt(document.getElementById('canvas-height').value);
+    const newColor = document.getElementById('canvas-bg-color').value;
+    
+    // Validate inputs
+    if (isNaN(newWidth) || isNaN(newHeight) || newWidth < 50 || newHeight < 50 || newWidth > 3000 || newHeight > 3000) {
+        alert('Please enter valid dimensions (between 50 and 3000 pixels)');
+        return;
+    }
+    
+    // Update canvas size and background
+    canvasWidth = newWidth;
+    canvasHeight = newHeight;
+    canvasBackgroundColor = newColor;
+    
+    // Apply changes to canvas
+    canvas.setWidth(canvasWidth);
+    canvas.setHeight(canvasHeight);
+    canvas.setBackgroundColor(canvasBackgroundColor, canvas.renderAll.bind(canvas));
+    
+    // Resize canvas to fit container
+    resizeCanvas();
+    
+    // Save state
+    saveCanvasState();
+}
+
+function loadGoogleFonts() {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap';
+    document.head.appendChild(link);
+
+    const fontFamilySelect = document.getElementById('font-family');
+    fontFamilySelect.innerHTML = '';
+    fontFamilies.forEach(font => {
+        const option = document.createElement('option');
+        option.value = font;
+        option.textContent = font;
+        option.style.fontFamily = font;
+        fontFamilySelect.appendChild(option);
+    });
+
+    fontFamilySelect.addEventListener('change', function() {
+        const selectedFont = this.value;
+    });
+
+    setupAddFontButton();
+}
+
+function setupAddFontButton() {
+    document.getElementById('add-font-family').addEventListener('click', addNewFont);
+}
+
+function addNewFont() {
+    const fontName = prompt("Enter Google Font name (e.g. 'Poppins', 'Playfair Display'):");
+    if (!fontName) return;
+
+    const fontFamilySelect = document.getElementById('font-family');
+    for (let i = 0; i < fontFamilySelect.options.length; i++) {
+        if (fontFamilySelect.options[i].value.toLowerCase() === fontName.toLowerCase()) {
+            alert("This font is already in the list.");
+            return;
+        }
+    }
+
+    try {
+        const formattedFontName = fontName.replace(/\s+/g, '+');
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = `https://fonts.googleapis.com/css2?family=${formattedFontName}:wght@400;700&display=swap`;
+        document.head.appendChild(link);
+
+        const option = document.createElement('option');
+        option.value = fontName;
+        option.textContent = fontName;
+        option.style.fontFamily = fontName;
+        fontFamilySelect.appendChild(option);
+        fontFamilySelect.value = fontName;
+    } catch (error) {
+        console.error("Error adding font:", error);
+        alert("There was an error adding the font. Please try again.");
+    }
+}
+
+function resizeCanvas() {
+    const container = document.querySelector('.canvas-container');
+    const containerWidth = container.clientWidth - 40;
+    if (containerWidth < canvas.width) {
+        const scale = containerWidth / canvas.width;
+        canvas.setZoom(scale);
+        canvas.setWidth(canvas.width * scale);
+        canvas.setHeight(canvas.height * scale);
+    }
+}
+
+function setupEventListeners() {
+    document.getElementById('add-text').addEventListener('click', toggleTextTool);
+    document.getElementById('brush-tool').addEventListener('click', toggleBrushTool);
+    document.getElementById('color-pick').addEventListener('click', toggleColorPickTool);
+    document.getElementById('select-tool').addEventListener('click', enableSelectTool);
+    document.getElementById('undo-action').addEventListener('click', undoAction);
+    document.getElementById('download-image').addEventListener('click', downloadImage);
+    
+    document.getElementById('brush-color').addEventListener('change', function() {
+    });
+    
+    document.getElementById('brush-width').addEventListener('input', function() {
+        document.getElementById('brush-width-value').textContent = this.value;
+    });
+    
+    document.getElementById('brush-opacity').addEventListener('input', function() {
+        document.getElementById('brush-opacity-value').textContent = parseFloat(this.value).toFixed(1);
+    });
+    
+    document.getElementById('text-color').addEventListener('change', function() {
+    });
+    
+    document.getElementById('font-size').addEventListener('input', function() {
+        document.getElementById('font-size-value').textContent = this.value;
+    });
+    
+    document.getElementById('clone-object').addEventListener('click', cloneSelectedObject);
+    document.getElementById('flip-h-object').addEventListener('click', flipHorizontally);
+    document.getElementById('flip-v-object').addEventListener('click', flipVertically);
+    document.getElementById('delete-object').addEventListener('click', deleteSelectedObject);
+    
+    document.getElementById('add-layer-btn').addEventListener('click', function() {
+        document.getElementById('layer-upload').click();
+    });
+    
+    document.getElementById('layer-upload').addEventListener('change', handleLayerUpload);
+    document.getElementById('layer-opacity').addEventListener('input', updateLayerOpacity);
+
+    
+    canvas.on('mouse:down', handleCanvasMouseDown);
+    canvas.on('mouse:move', handleCanvasMouseMove);
+    canvas.on('mouse:up', handleCanvasMouseUp);
+    canvas.on('selection:created', handleSelectionChange);
+    canvas.on('selection:updated', handleSelectionChange);
+    canvas.on('selection:cleared', function() {
+        hideAllControls();
+    });
+    
+    canvas.on('object:modified', function() {
+        saveCanvasState();
+        updateObjectActions();
+    });
+    
+    canvas.on('object:added', function() {
+        saveCanvasState();
+    });
+    
+    canvas.on('object:removed', function() {
+        saveCanvasState();
+        hideObjectActions();
+    });
+    
+    canvas.on('mouse:move', function() {
+        updateObjectActions();
+    });
+    
+    const brushControls = document.getElementById('brush-controls');
+    const brushControlsDiv = brushControls.querySelector('.controls');
+    const updateBrushButton = document.createElement('button');
+    updateBrushButton.id = 'update-brush';
+    updateBrushButton.textContent = 'Update SELECTED';
+    updateBrushButton.addEventListener('click', updateSelectedBrush);
+    brushControlsDiv.appendChild(updateBrushButton);
+    
+    const textControls = document.getElementById('text-controls');
+    const textControlsDiv = textControls.querySelector('.controls');
+    const updateTextButton = document.createElement('button');
+    updateTextButton.id = 'update-text';
+    updateTextButton.textContent = 'Update SELECTED';
+    updateTextButton.addEventListener('click', updateSelectedText);
+    textControlsDiv.appendChild(updateTextButton);
+}
+
+function handleLayerUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const imgObj = new Image();
+        imgObj.src = event.target.result;
+        imgObj.onload = function() {
+            const image = new fabric.Image(imgObj, {
+                opacity: 1,
+                selectable: true,
+                hasControls: true,
+                hasBorders: true,
+                isLayer: true
+            });
+            
+            const canvasWidth = canvas.width / canvas.getZoom();
+            const canvasHeight = canvas.height / canvas.getZoom();
+            const imgRatio = image.width / image.height;
+            const canvasRatio = canvasWidth / canvasHeight;
+            let scale;
+            
+            if (imgRatio > canvasRatio) {
+                scale = canvasWidth / image.width * 0.8;
+            } else {
+                scale = canvasHeight / image.height * 0.8;
+            }
+            
+            image.scale(scale);
+            canvas.centerObject(image);
+            canvas.add(image);
+            layers.push(image);
+            canvas.setActiveObject(image);
+            showLayerControls();
+            saveCanvasState();
+        };
+    };
+    reader.readAsDataURL(file);
+    e.target.value = null;
+}
+
+document.getElementById("canvas-controls-btn").addEventListener("click", function () { 
+    const canvasControls = document.getElementById("canvas-controls");
+
+    if (canvasControls.style.display === "none" || canvasControls.style.display === "") {
+        canvasControls.style.display = "flex";  // Show canvas controls
+    } else {
+        canvasControls.style.display = "none";  // Hide canvas controls
+    }
+
+});
+
+
+function showLayerControls() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.isLayer) {
+        document.getElementById('layer-controls').style.display = 'block';
+        document.getElementById('layer-opacity').value = selectedObject.opacity;
+        document.getElementById('layer-opacity-value').textContent = selectedObject.opacity.toFixed(1);
+    } else {
+        document.getElementById('layer-controls').style.display = 'none';
+    }
+}
+
+document.getElementById("show-filter-btn").addEventListener("click", function () {
+    const layerControls = document.getElementById("layer-controls");
+    
+    if (layerControls.style.display === "flex") {
+        layerControls.style.display = "none"; // Hide if already visible
+    } else {
+        layerControls.style.display = "flex"; // Show if hidden
+        document.getElementById('brush-controls').style.display = 'none';
+        document.getElementById('text-controls').style.display = 'none';
+    }
+});
+
+
+function updateLayerOpacity() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.isLayer) {
+        const opacity = parseFloat(document.getElementById('layer-opacity').value);
+        document.getElementById('layer-opacity-value').textContent = opacity.toFixed(1);
+        selectedObject.set('opacity', opacity);
+        canvas.renderAll();
+        saveCanvasState();
+    }
+}
+
+
+function updateSelectedBrush() {
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject || selectedObject.type !== 'path') return;
+    
+    const brushColor = document.getElementById('brush-color').value;
+    const brushWidth = parseInt(document.getElementById('brush-width').value);
+    const brushOpacity = parseFloat(document.getElementById('brush-opacity').value);
+    
+    selectedObject.set({
+        stroke: brushColor,
+        strokeWidth: brushWidth,
+        opacity: brushOpacity
+    });
+    
+    canvas.renderAll();
+    saveCanvasState();
+}
+
+function updateSelectedText() {
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject || selectedObject.type !== 'i-text') return;
+    
+    const textColor = document.getElementById('text-color').value;
+    const fontSize = parseInt(document.getElementById('font-size').value);
+    const fontFamily = document.getElementById('font-family') ? document.getElementById('font-family').value : 'Arial';
+    
+    selectedObject.set({
+        fill: textColor,
+        fontSize: fontSize,
+        fontFamily: fontFamily
+    });
+    
+    canvas.renderAll();
+    saveCanvasState();
+}
+
+function saveCanvasState() {
+    if (historyIndex < canvasHistory.length - 1) {
+        canvasHistory = canvasHistory.slice(0, historyIndex + 1);
+    }
+    
+    const json = JSON.stringify(canvas.toJSON(['selectable', 'evented', 'isLayer']));
+    canvasHistory.push(json);
+    historyIndex = canvasHistory.length - 1;
+    updateHistoryButtons();
+}
+
+function updateHistoryButtons() {
+    const undoBtn = document.getElementById('undo-action');
+    undoBtn.disabled = historyIndex <= 0;
+    undoBtn.style.opacity = undoBtn.disabled ? "0.5" : "1";
+}
+
+function undoAction() {
+    if (historyIndex > 0) {
+        historyIndex--;
+        loadCanvasState();
+    }
+}
+
+function loadCanvasState() {
+    canvas.loadFromJSON(canvasHistory[historyIndex], function() {
+        canvas.renderAll();
+        updateHistoryButtons();
+        
+        layers = [];
+        canvas.forEachObject(function(obj) {
+            if (obj.isLayer) {
+                layers.push(obj);
+            }
+        });
+    });
+}
+
+function downloadImage() {
+    const quality = 10;
+    const dataURL = canvas.toDataURL({
+        format: 'png',
+        quality: 1,
+        multiplier: quality
+    });
+    
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = 'image-editor-' + new Date().getTime() + '.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function handleCanvasMouseDown(event) {
+    if (isTextToolActive) {
+        createText(event.pointer.x, event.pointer.y);
+    } else if (isColorPickActive) {
+        pickColorFromPoint(event.pointer.x, event.pointer.y);
+    }
+}
+
+function handleCanvasMouseMove(event) {}
+
+function handleCanvasMouseUp(event) {}
+
+function toggleTextTool() {
+    resetAllTools();
+    isTextToolActive = !isTextToolActive;
+    document.getElementById('add-text').classList.toggle('active', isTextToolActive);
+    
+    if (isTextToolActive) {
+        canvas.defaultCursor = 'text';
+        document.getElementById('text-controls').style.display = 'block';
+    }
+}
+
+function toggleBrushTool() {
+    resetAllTools();
+    isBrushActive = !isBrushActive;
+    document.getElementById('brush-tool').classList.toggle('active', isBrushActive);
+    
+    if (isBrushActive) {
+        enableBrushMode();
+        document.getElementById('brush-controls').style.display = 'block';
+    } else {
+        canvas.isDrawingMode = false;
+    }
+}
+
+function toggleColorPickTool() {
+    resetAllTools();
+    isColorPickActive = !isColorPickActive;
+    document.getElementById('color-pick').classList.toggle('active', isColorPickActive);
+    
+    if (isColorPickActive) {
+        canvas.defaultCursor = 'crosshair';
+        canvas.getElement().classList.add('eyedropper-cursor');
+    } else {
+        canvas.getElement().classList.remove('eyedropper-cursor');
+    }
+}
+
+function enableSelectTool() {
+    resetAllTools();
+    document.getElementById('select-tool').classList.add('active');
+    canvas.defaultCursor = 'default';
+    canvas.isDrawingMode = false;
+}
+
+function resetAllTools() {
+    isBoxToolActive = false;
+    isTextToolActive = false;
+    isBrushActive = false;
+    isColorPickActive = false;
+    
+    document.getElementById('add-text').classList.remove('active');
+    document.getElementById('brush-tool').classList.remove('active');
+    document.getElementById('color-pick').classList.remove('active');
+    document.getElementById('select-tool').classList.remove('active');
+    
+    canvas.defaultCursor = 'default';
+    canvas.isDrawingMode = false;
+    canvas.getElement().classList.remove('eyedropper-cursor');
+    
+    hideAllControls();
+}
+
+function pickColorFromPoint(x, y) {
+    const context = canvas.getContext('2d');
+    const canvasZoom = canvas.getZoom();
+    const adjustedX = x / canvasZoom;
+    const adjustedY = y / canvasZoom;
+    
+    try {
+        const pixelData = context.getImageData(adjustedX, adjustedY, 1, 1).data;
+        const color = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
+        updateColorPickers(color);
+        enableSelectTool();
+    } catch (error) {
+        console.error('Error picking color:', error);
+        alert('Could not pick color. This may happen with external images due to security restrictions.');
+        enableSelectTool();
+    }
+}
+
+function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    }).join('');
+}
+
+function updateColorPickers(color) {
+    document.getElementById('brush-color').value = color;
+    jscolor.install();
+    document.getElementById('brush-color').jscolor.fromString(color);
+    lastBrushColor = color;
+    
+    document.getElementById('text-color').value = color;
+    document.getElementById('text-color').jscolor.fromString(color);
+
+    document.getElementById('remove-color').value = color;
+    document.getElementById('remove-color').jscolor.fromString(color);
+
+    document.getElementById('canvas-bg-color').value = color;
+    document.getElementById('canvas-bg-color').jscolor.fromString(color);
+
+}
+
+function hideAllControls() {
+    document.getElementById('brush-controls').style.display = 'none';
+    document.getElementById('text-controls').style.display = 'none';
+    document.getElementById('layer-controls').style.display = 'none';
+}
+
+function handleSelectionChange() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        if (selectedObject.type === 'i-text') {
+            document.getElementById('text-controls').style.display = 'block';
+            
+            if (selectedObject.fill) {
+                jscolor.install();
+                document.getElementById('text-color').jscolor.fromString(selectedObject.fill);
+            }
+            
+            document.getElementById('font-size').value = selectedObject.fontSize || 24;
+            document.getElementById('font-size-value').textContent = selectedObject.fontSize || 24;
+            
+            const fontFamilySelect = document.getElementById('font-family');
+            if (fontFamilySelect && selectedObject.fontFamily) {
+                for (let i = 0; i < fontFamilySelect.options.length; i++) {
+                    if (fontFamilySelect.options[i].value === selectedObject.fontFamily) {
+                        fontFamilySelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        } else if (selectedObject.type === 'path') {
+            document.getElementById('brush-controls').style.display = 'block';
+            
+            if (selectedObject.stroke) {
+                document.getElementById('brush-color').value = selectedObject.stroke;
+                jscolor.install();
+                document.getElementById('brush-color').jscolor.fromString(selectedObject.stroke);
+            }
+            
+            if (selectedObject.strokeWidth) {
+                document.getElementById('brush-width').value = selectedObject.strokeWidth;
+                document.getElementById('brush-width-value').textContent = selectedObject.strokeWidth;
+            }
+            
+            if (selectedObject.opacity !== undefined) {
+                document.getElementById('brush-opacity').value = selectedObject.opacity;
+                document.getElementById('brush-opacity-value').textContent = selectedObject.opacity.toFixed(1);
+            }
+        } else if (selectedObject.isLayer) {
+            showLayerControls();
+        }
+        
+        showObjectActions();
+    }
+}
+
+function showObjectActions() {
+    updateObjectActions();
+    document.getElementById('object-actions').style.display = 'flex';
+}
+
+function hideObjectActions() {
+    document.getElementById('object-actions').style.display = 'none';
+    document.getElementById('object-actions-2').style.display = 'none';
+}
+
+function updateObjectActions() {
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) {
+        hideObjectActions();
+        return;
+    }
+    
+    const zoom = canvas.getZoom();
+    const objectActions = document.getElementById('object-actions');
+    const objectActions2 = document.getElementById('object-actions-2');
+    const boundingRect = selectedObject.getBoundingRect();
+    const canvasRect = canvas.getElement().getBoundingClientRect();
+    
+    const top =  boundingRect.top ;
+    const left = canvasRect.left + boundingRect.left + boundingRect.width / 2 - objectActions.offsetWidth / 2;
+    
+    objectActions.style.top = `${top}px`;
+    objectActions.style.left = `${left}px`;
+
+    const top2 =  boundingRect.top + 35;
+    
+    
+    objectActions2.style.top = `${top2}px`;
+    objectActions2.style.left = `${left}px`;
+}
+
+function createText(x, y) {
+    const textColor = document.getElementById('text-color').value;
+    const fontSize = parseInt(document.getElementById('font-size').value);
+    const fontFamily = document.getElementById('font-family') ? document.getElementById('font-family').value : 'Cairo';
+    
+    const text = new fabric.IText('Type here', {
+        left: x,
+        top: y,
+        fill: textColor,
+        fontSize: fontSize,
+        fontFamily: fontFamily,
+        cornerColor: '#5cdaed',
+        cornerStrokeColor: '#2196f3',
+        cornerStyle: 'circle',
+        transparentCorners: false
+    });
+    
+    canvas.add(text);
+    canvas.setActiveObject(text);
+    toggleTextTool();
+    enableSelectTool();
+}
+
+function enableBrushMode() {
+    canvas.isDrawingMode = true;
+    
+    const brushColor = document.getElementById('brush-color').value;
+    const brushWidth = parseInt(document.getElementById('brush-width').value);
+    const brushOpacity = parseFloat(document.getElementById('brush-opacity').value);
+    
+    canvas.freeDrawingBrush.color = brushColor;
+    canvas.freeDrawingBrush.width = brushWidth;
+    
+    lastBrushColor = brushColor;
+    lastBrushWidth = brushWidth;
+}
+
+function deleteSelectedObject() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        if (selectedObject.isLayer) {
+            const index = layers.indexOf(selectedObject);
+            if (index !== -1) {
+                layers.splice(index, 1);
+            }
+        }
+        
+        canvas.remove(selectedObject);
+        hideAllControls();
+        hideObjectActions();
+    }
+}
+
+function cloneSelectedObject() {
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) return;
+    
+    selectedObject.clone(function(cloned) {
+        cloned.set({
+            left: selectedObject.left + 20,
+            top: selectedObject.top + 20,
+            evented: true,
+        });
+        
+        if (cloned.type === 'i-text') {
+            cloned.set({
+                editable: true
+            });
+        }
+        
+        if (cloned.isLayer) {
+            layers.push(cloned);
+        }
+        
+        canvas.add(cloned);
+        canvas.setActiveObject(cloned);
+        canvas.renderAll();
+    });
+}
+
+function flipHorizontally() {
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) return;
+    
+    selectedObject.set('flipX', !selectedObject.flipX);
+    canvas.renderAll();
+}
+
+function flipVertically() {
+    const selectedObject = canvas.getActiveObject();
+    if (!selectedObject) return;
+    
+    selectedObject.set('flipY', !selectedObject.flipY);
+    canvas.renderAll();
+}
+
+
+function unselectObject() {
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    hideObjectActions();
+}
+
+// Lock Object (Prevent Movement & Editing)
+function lockObject() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.set({
+            selectable: true,
+            evented: true,
+            hasControls: true,
+            lockMovementX: true,
+            lockMovementY: true
+        });
+        canvas.discardActiveObject();
+        canvas.renderAll();
+    }
+}
+
+// Unlock All Objects (Enable Editing Again)
+function unlockObject() {
+    canvas.getObjects().forEach(obj => {
+        obj.set({
+            selectable: true,
+            evented: true,
+            hasControls: true,
+            lockMovementX: false,
+            lockMovementY: false
+        });
+    });
+    canvas.renderAll();
+}
+
+
+// Send Object to Back
+function sendToBack() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        canvas.sendToBack(selectedObject);
+        canvas.renderAll();
+    }
+}
+
+// Bring Object to Front
+function bringToFront() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        canvas.bringToFront(selectedObject);
+        canvas.renderAll();
+    }
+}
+// Toggle visibility of object-actions-2 div
+function toggleVisibility() {
+    const panel = document.getElementById('object-actions-2');
+    panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'flex' : 'none';
+}
+// Align Object Left
+function alignLeft() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.set({ left: 0 });
+        canvas.renderAll();
+    }
+}
+
+// Align Object Center (Horizontally)
+function alignCenter() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        const canvasWidth = canvas.width;
+        selectedObject.set({ left: (canvasWidth - selectedObject.width * selectedObject.scaleX) / 2 });
+        canvas.renderAll();
+    }
+}
+
+// Align Object Right
+function alignRight() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        const canvasWidth = canvas.width;
+        selectedObject.set({ left: canvasWidth - selectedObject.width * selectedObject.scaleX });
+        canvas.renderAll();
+    }
+}
+// Rotate Object Left
+function rotateLeft() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.rotate(selectedObject.angle - 15);
+        canvas.renderAll();
+    }
+}
+
+// Align Object to Top
+function alignTop() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.set({ top: 0 });
+        canvas.renderAll();
+    }
+}
+
+// Rotate Object Right
+function rotateRight() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.rotate(selectedObject.angle + 15);
+        canvas.renderAll();
+    }
+}
+
+// Scale Object Up
+function scaleUp() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.scale(selectedObject.scaleX + 0.1);
+        canvas.renderAll();
+    }
+}
+
+// Scale Object Down
+function scaleDown() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.scale(selectedObject.scaleX - 0.1);
+        canvas.renderAll();
+    }
+}
+
+
+
+
+// Toggle Sharpen Filter
+function toggleSharpen() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        const filters = selectedObject.filters;
+        const sharpenFilterIndex = filters.findIndex(f => f && f.type === 'Convolute');
+
+        if (sharpenFilterIndex > -1) {
+            // Remove filter if it exists
+            filters.splice(sharpenFilterIndex, 1);
+        } else {
+            // Apply Sharpen filter
+            const sharpenFilter = new fabric.Image.filters.Convolute({
+                matrix: [  
+                    0, -1,  0,
+                    -1,  5, -1,
+                    0, -1,  0
+                ]
+            });
+            filters.push(sharpenFilter);
+        }
+
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+
+// Toggle Emboss Filter
+function toggleEmboss() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        const filters = selectedObject.filters;
+        const embossFilterIndex = filters.findIndex(f => f && f.type === 'Convolute');
+
+        if (embossFilterIndex > -1) {
+            // Remove filter if it exists
+            filters.splice(embossFilterIndex, 1);
+        } else {
+            // Apply Emboss filter
+            const embossFilter = new fabric.Image.filters.Convolute({
+                matrix: [  
+                    1, 1, 1,
+                    1, 0.7, -1,
+                    -1, -1, -1
+                ]
+            });
+            filters.push(embossFilter);
+        }
+
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+// Function to toggle Fabric.js filters
+function toggleFilter(filterType, filterInstance) {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        const filters = selectedObject.filters;
+        const existingFilterIndex = filters.findIndex(f => f && f.type === filterType);
+
+        if (existingFilterIndex > -1) {
+            // Remove filter if it exists
+            filters.splice(existingFilterIndex, 1);
+        } else {
+            // Apply filter
+            filters.push(filterInstance);
+        }
+
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+
+// Filter toggle functions
+function toggleSepia() {
+    toggleFilter('Sepia', new fabric.Image.filters.Sepia());
+}
+
+function toggleBlackWhite() {
+    toggleFilter('Grayscale', new fabric.Image.filters.Grayscale());
+}
+
+function toggleBrownie() {
+    toggleFilter('Brownie', new fabric.Image.filters.Brownie());
+}
+
+function toggleVintage() {
+    toggleFilter('Vintage', new fabric.Image.filters.Vintage());
+}
+
+function toggleKodachrome() {
+    toggleFilter('Kodachrome', new fabric.Image.filters.Kodachrome());
+}
+
+function toggleTechnicolor() {
+    toggleFilter('Technicolor', new fabric.Image.filters.Technicolor());
+}
+
+function togglePolaroid() {
+    toggleFilter('Polaroid', new fabric.Image.filters.Polaroid());
+}
+
+function applyFilter(filterInstance) {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        selectedObject.filters.push(filterInstance);
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+
+// Brightness filter
+function toggleBrightness() {
+    applyFilter(new fabric.Image.filters.Brightness({ brightness: 0.2 }));
+}
+
+// Gamma filter (adjust red, green, blue)
+function toggleGamma() {
+    applyFilter(new fabric.Image.filters.Gamma({ gamma: [1.2, 1.2, 1.2] }));
+}
+
+// Contrast filter
+function toggleContrast() {
+    applyFilter(new fabric.Image.filters.Contrast({ contrast: 0.3 }));
+}
+
+// Saturation filter
+function toggleSaturation() {
+    applyFilter(new fabric.Image.filters.Saturation({ saturation: 0.5 }));
+}
+
+// Vibrance filter
+function toggleVibrance() {
+    applyFilter(new fabric.Image.filters.Vibrance({ vibrance: 0.4 }));
+}
+
+// Hue filter
+function toggleHue() {
+    applyFilter(new fabric.Image.filters.HueRotation({ rotation: 0.5 }));
+}
+
+// Noise filter
+function toggleNoise() {
+    applyFilter(new fabric.Image.filters.Noise({ noise: 50 }));
+}
+
+// Pixelate filter
+function togglePixelate() {
+    applyFilter(new fabric.Image.filters.Pixelate({ blocksize: 8 }));
+}
+
+// Blur filter
+function toggleBlur() {
+    applyFilter(new fabric.Image.filters.Blur({ blur: 0.1 }));
+}
+
+
+function removeColorFilter() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject && selectedObject.type === 'image') {
+        const colorToRemove = document.getElementById('remove-color').value;
+        const distance = parseFloat(document.getElementById('remove-color-distance').value);
+
+        const removeColor = new fabric.Image.filters.RemoveColor({
+            color: colorToRemove,
+            distance: distance, // Adjust filter distance
+        });
+
+        selectedObject.filters = selectedObject.filters.filter(filter => !(filter instanceof fabric.Image.filters.RemoveColor)); 
+        selectedObject.filters.push(removeColor);
+        selectedObject.applyFilters();
+        canvas.requestRenderAll();
+    }
+}
+
+// Event Listeners
+document.getElementById('apply-remove-color').addEventListener('click', removeColorFilter);
+document.getElementById('remove-color-distance').addEventListener('input', function() {
+    document.getElementById('remove-color-distance-value').textContent = this.value;
+});
+document.getElementById('brightness-filter').addEventListener('click', toggleBrightness);
+document.getElementById('gamma-filter').addEventListener('click', toggleGamma);
+document.getElementById('contrast-filter').addEventListener('click', toggleContrast);
+document.getElementById('saturation-filter').addEventListener('click', toggleSaturation);
+document.getElementById('vibrance-filter').addEventListener('click', toggleVibrance);
+document.getElementById('hue-filter').addEventListener('click', toggleHue);
+document.getElementById('noise-filter').addEventListener('click', toggleNoise);
+document.getElementById('pixelate-filter').addEventListener('click', togglePixelate);
+document.getElementById('blur-filter').addEventListener('click', toggleBlur);
+document.getElementById('sepia-filter').addEventListener('click', toggleSepia);
+document.getElementById('bw-filter').addEventListener('click', toggleBlackWhite);
+document.getElementById('brownie-filter').addEventListener('click', toggleBrownie);
+document.getElementById('vintage-filter').addEventListener('click', toggleVintage);
+document.getElementById('kodachrome-filter').addEventListener('click', toggleKodachrome);
+document.getElementById('technicolor-filter').addEventListener('click', toggleTechnicolor);
+document.getElementById('polaroid-filter').addEventListener('click', togglePolaroid);
+document.getElementById('sharpen-filter').addEventListener('click', toggleSharpen);
+document.getElementById('emboss-filter').addEventListener('click', toggleEmboss);
+document.getElementById('toggle-visibility').addEventListener('click', toggleVisibility);
+document.getElementById('unselect-object').addEventListener('click', unselectObject);
+document.getElementById('lock-object').addEventListener('click', lockObject);
+document.getElementById('unlock-object').addEventListener('click', unlockObject);
+document.getElementById('send-to-back').addEventListener('click', sendToBack);
+document.getElementById('bring-to-front').addEventListener('click', bringToFront);
+document.getElementById('align-left').addEventListener('click', alignLeft);
+document.getElementById('align-center').addEventListener('click', alignCenter);
+document.getElementById('align-right').addEventListener('click', alignRight);
+document.getElementById('align-top').addEventListener('click', alignTop);
+document.getElementById('rotate-left').addEventListener('click', rotateLeft);
+document.getElementById('rotate-right').addEventListener('click', rotateRight);
+document.getElementById('scale-up').addEventListener('click', scaleUp);
+document.getElementById('scale-down').addEventListener('click', scaleDown);
+
+
+
+window.onload = function() {
+    initCanvas();
+    jscolor.install();
+    enableSelectTool();
+};
+  
+</script>
 </body>
-</html>
+  </html>
