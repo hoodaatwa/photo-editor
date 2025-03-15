@@ -161,6 +161,8 @@
     <button id="align-left"><i class="fas fa-align-left"></i></button>
     <button id="align-center"><i class="fas fa-align-center"></i></button>
     <button id="align-right"><i class="fas fa-align-right"></i></button>
+    <button id="align-top"><i class="fas fa-long-arrow-alt-up"></i></button>
+
     <button id="rotate-left"><i class="fas fa-undo"></i></button>
     <button id="rotate-right"><i class="fas fa-redo"></i></button>
     <button id="scale-up"><i class="fas fa-search-plus"></i></button>
@@ -979,6 +981,15 @@ function rotateLeft() {
     }
 }
 
+// Align Object to Top
+function alignTop() {
+    const selectedObject = canvas.getActiveObject();
+    if (selectedObject) {
+        selectedObject.set({ top: 0 });
+        canvas.renderAll();
+    }
+}
+
 // Rotate Object Right
 function rotateRight() {
     const selectedObject = canvas.getActiveObject();
@@ -1216,6 +1227,7 @@ document.getElementById('bring-to-front').addEventListener('click', bringToFront
 document.getElementById('align-left').addEventListener('click', alignLeft);
 document.getElementById('align-center').addEventListener('click', alignCenter);
 document.getElementById('align-right').addEventListener('click', alignRight);
+document.getElementById('align-top').addEventListener('click', alignTop);
 document.getElementById('rotate-left').addEventListener('click', rotateLeft);
 document.getElementById('rotate-right').addEventListener('click', rotateRight);
 document.getElementById('scale-up').addEventListener('click', scaleUp);
