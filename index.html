@@ -1,175 +1,488 @@
 <!DOCTYPE html>
-<html lang=en>
+<html lang="en">
 <head>
-<meta charset=UTF-8>
-<meta name=viewport content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Modern Image Editor</title>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js></script>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&display=swap" rel="stylesheet">
-<style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#f5f5f7;color:#333;padding:20px}.editor-container{max-width:1200px;margin:0 auto;background:white;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}.toolbar{padding:15px;display:flex;flex-wrap:wrap;gap:10px;background:#fff;border-bottom:1px solid #eaeaea}.canvas-container{width:100%;overflow:auto;padding:20px;display:flex;justify-content:center}.canvas-wrapper{box-shadow:0 4px 12px rgba(0,0,0,0.05);border-radius:8px;overflow:hidden}button{padding:8px 12px;border:0;border-radius:6px;background:#f0f0f0;color:#333;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s ease;display:flex;align-items:center;gap:5px}button:hover{background:#e0e0e0}button.active{background:#4caf50;color:white}input[type="range"]{width:100px}.tool-group{display:flex;flex-direction:column;padding:10px;border-radius:8px;background:#f9f9f9;margin:10px}.tool-group-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#555}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.control-item{display:flex;align-items:center;gap:4px}.color-picker{padding:5px;border:1px solid #ddd;border-radius:4px;width:80px}.upload-btn-wrapper{position:relative;overflow:hidden;display:inline-block}.upload-btn-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}.brush-controls,.text-controls{display:none;margin-top:10px;flex-wrap:wrap;gap:10px}label{font-size:12px;color:#666}.tool-section{margin-top:10px;padding-top:10px;border-top:1px solid #eee}.eyedropper-cursor{cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12,auto}.object-actions{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;}.object-actions button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}.object-actions2{position:absolute;background:white;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);padding:2px;display:none;z-index:100;flex-direction:row;max-width: 248px;flex-wrap: wrap;}.object-actions2 button{padding:5px;margin:2px;font-size:12px;}.add-font-btn{padding:5px 8px;margin-left:5px;border-radius:4px;background:#4caf50;color:white;cursor:pointer;border:0}
-#canvas-controls {
-    margin: 0 17px;
-}</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Base Styles */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  body {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Main Layout */
+  .editor-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: #2a2a2a;
+  }
+  
+  /* Header/Toolbar */
+  .toolbar {
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: #333333;
+    border-bottom: 1px solid #444444;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  /* Main Editor Area */
+  .canvas-container {
+    width: 100%;
+    overflow: auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+  
+  .canvas-wrapper {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+  
+  /* Buttons & Controls */
+  button {
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 4px;
+    background: #444444;
+    color: #e0e0e0;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  button:hover {
+    background: #555555;
+  }
+  
+  button.active {
+    background: #2196F3;
+    color: white;
+  }
+  
+  input[type="range"] {
+    width: 100px;
+    accent-color: #2196F3;
+    background: #444;
+    height: 6px;
+    border-radius: 3px;
+  }
+  
+  /* Tool Groups */
+  .tool-group {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #3a3a3a;
+    margin: 0;
+  }
+  
+  .tool-group-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #e0e0e0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .control-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .color-picker {
+    padding: 0;
+    border: 1px solid #555;
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Upload Button */
+  .upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+  }
+  
+  .upload-btn-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  /* Tool Controls */
+  .brush-controls, .text-controls {
+    display: none;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #3a3a3a;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  label {
+    font-size: 12px;
+    color: #bbb;
+    font-weight: 500;
+  }
+  
+  .tool-section {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+  }
+  
+  /* Cursors */
+  .eyedropper-cursor {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h.01M7 12h.01M12 12h.01M17 12h.01M22 12h.01"/></svg>') 12 12, auto;
+  }
+  
+  /* Object Actions */
+  .object-actions, .object-actions2 {
+    position: absolute;
+    background: #333333;
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    padding: 4px;
+    display: none;
+    z-index: 100;
+    flex-direction: row;
+  }
+  
+  .object-actions button, .object-actions2 button {
+    padding: 6px 8px;
+    margin: 2px;
+    font-size: 12px;
+    background: #444;
+    color: #e0e0e0;
+  }
+  
+  .object-actions button:hover, .object-actions2 button:hover {
+    background: #555;
+  }
+  
+  .object-actions2 {
+    max-width: 248px;
+    flex-wrap: wrap;
+  }
+  
+  .add-font-btn {
+    padding: 6px 10px;
+    margin-left: 5px;
+    border-radius: 4px;
+    background: #2196F3;
+    color: white;
+    cursor: pointer;
+    border: 0;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  #canvas-controls {
+    margin: 0 16px;
+    background: #333;
+    border-radius: 4px;
+    padding: 8px;
+    display: flex;
+    gap: 12px;
+  }
+  
+  /* Additional Modern UI Elements */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: #1a1a1a;
+    align-items: center;
+  }
+  
+  .top-bar .logo {
+    font-weight: 700;
+    font-size: 18px;
+    color: #2196F3;
+  }
+  
+  .top-bar .actions {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .sidebar {
+    width: 56px;
+    background: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    gap: 16px;
+  }
+  
+  .sidebar button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+  }
+  
+  .main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+.properties-panel {
+    width: 280px;
+    background: #333;
+    padding: 16px;
+    border-left: 1px solid #444;
+    overflow: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 35%;
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .properties-panel {
+      display: block;
+    }
+    
+    .toolbar {
+      overflow-x: auto;
+      justify-content: flex-start;
+    }
+  }
+</style>
 </head>
-<body>
-<div class=editor-container>
-<div class=canvas-container>
-<div class=canvas-wrapper>
-<canvas id=canvas></canvas>
-</div>
-</div>
+  <div class="editor-container">
+    <!-- Top Navigation Bar -->
+    <div class="top-bar">
+      <div class="logo">Hoodaatwa Editor</div>
+      <div class="actions">
+        <button id="undo-action" title="Undo"><i class="fas fa-undo"></i> Undo</button>
+        <button id="download-image" title="Download Image"><i class="fas fa-download"></i> Download</button>
+      </div>
+    </div>
+    
+    <div class="main-content">
+      <!-- Left Sidebar with Main Tools -->
+      <div class="sidebar">
+              <div class="upload-btn-wrapper">
+                <button id="add-layer-btn" title="Add Layer"><i class="fas fa-layer-group"></i></button>
+                <input type="file" id="layer-upload" accept="image/*" />
+              </div>
+        <button id="select-tool" title="Select Tool" class="active"><i class="fas fa-mouse-pointer"></i></button>
+        <button id="brush-tool" title="Brush Tool"><i class="fas fa-paint-brush"></i></button>
+        <button id="add-text" title="Add Text"><i class="fas fa-font"></i></button>
+        <button id="color-pick" title="Color Pick Tool"><i class="fas fa-eye-dropper"></i></button>
+        <button id="canvas-controls-btn" title="Canvas Controls"><i class="fas fa-desktop"></i></button>
+        <button id="show-filter-btn" title="Filters"><i class="fas fa-tint"></i></button>
+      </div>
+      
 
-<div>
-<div class=toolbar>
-<button id="canvas-controls-btn"><i class="fas fa-gear"></i> Canvas Controls</button>
-
-<div class="upload-btn-wrapper">
-  <button id="add-layer-btn"><i class="fas fa-layer-group"></i> Add Layer</button>
-  <input type="file" id="layer-upload" accept="image/*" />
-</div>
-  <button id="show-filter-btn"><i class="fas fa-tint"></i> Show Filter</button>
-<button id=undo-action title=Undo><i class="fas fa-undo"></i> Undo</button>
-<button id=download-image title="Download Image"><i class="fas fa-download"></i> Download</button>
-<button id=add-text title="Add Text"><i class="fas fa-font"></i> Add Text</button>
-<button id=brush-tool title="Brush Tool"><i class="fas fa-paint-brush"></i> Brush</button>
-<button id=color-pick title="Color Pick Tool"><i class="fas fa-eye-dropper"></i> Color Pick</button>
-<button id=select-tool title="Select Tool"><i class="fas fa-mouse-pointer"></i> Select</button>
-</div>
-
-
-
-
-<div class="tool-group" id="canvas-controls" style="display: none;">
-        <div class="tool-group-title">Canvas Settings</div>
-        <div class="controls">
+        
+        <!-- Canvas Container -->
+        <div class="canvas-container">
+          <div class="canvas-wrapper">
+            <canvas id="canvas"></canvas>
+          </div>
+          
+          <!-- Object Action Menus -->
+          <div id="object-actions" class="object-actions">
+            <button id="clone-object"><i class="fas fa-clone"></i></button>
+            <button id="unselect-object"><i class="fas fa-ban"></i></button>
+            <button id="lock-object"><i class="fas fa-lock"></i></button>
+            <button id="unlock-object"><i class="fas fa-unlock"></i></button>
+            <button id="send-to-back"><i class="fas fa-arrow-down"></i></button>
+            <button id="bring-to-front"><i class="fas fa-arrow-up"></i></button>
+            <button id="flip-h-object"><i class="fas fa-arrows-alt-h"></i></button>
+            <button id="flip-v-object"><i class="fas fa-arrows-alt-v"></i></button>
+            <button id="delete-object"><i class="fas fa-trash-alt"></i></button>
+            <button id="toggle-visibility"><i class="fas fa-gear"></i></button>
+          </div>
+          
+          <div id="object-actions-2" class="object-actions2">
+            <button id="align-left"><i class="fas fa-align-left"></i></button>
+            <button id="align-center"><i class="fas fa-align-center"></i></button>
+            <button id="align-right"><i class="fas fa-align-right"></i></button>
+            <button id="align-top"><i class="fas fa-long-arrow-alt-up"></i></button>
+            <button id="rotate-left"><i class="fas fa-undo"></i></button>
+            <button id="rotate-right"><i class="fas fa-redo"></i></button>
+            <button id="scale-up"><i class="fas fa-search-plus"></i></button>
+            <button id="scale-down"><i class="fas fa-search-minus"></i></button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Properties Panel -->
+      <div class="properties-panel">
+        <!-- Canvas Settings -->
+        <div class="tool-group" id="canvas-controls" style="display: none;">
+          <div class="tool-group-title">Canvas Settings</div>
+          <div class="controls">
             <div class="control-item">
-                <label for="canvas-width">Width:</label>
-                <input type="number" id="canvas-width" min="50" max="3000" value="800" style="width:70px">
+              <label for="canvas-width">Width:</label>
+              <input type="number" id="canvas-width" min="50" max="3000" value="800" style="width:70px">
             </div>
             <div class="control-item">
-                <label for="canvas-height">Height:</label>
-                <input type="number" id="canvas-height" min="50" max="3000" value="600" style="width:70px">
+              <label for="canvas-height">Height:</label>
+              <input type="number" id="canvas-height" min="50" max="3000" value="600" style="width:70px">
             </div>
             <div class="control-item">
-                <label for="canvas-bg-color">Background:</label>
-                <input type="text" id="canvas-bg-color" class="jscolor color-picker" value="#FFFFFF" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-current-color="#FFFFFF" style="background-image: linear-gradient(to right, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 30px, rgba(0, 0, 0, 0) 31px, rgba(0, 0, 0, 0) 100%), url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAAAXNSR0IArs4c6QAAAHxJREFUSEvtlbENACEMA52CARiBFWAndmIC5mAAasb5byhoglz8d04dRZbjXKy19oCoOSfRBZRSqL7bvJwzYoxYa3WTQMdPOegFTRn0nNEVH84IMwypaczUWqlP8sV1nsJv81JKCCFgjNFNAp19y8E/eakMMphRBpXBDeoXSJfVDUu/Ze0AAAAASUVORK5CYII=&quot;) !important; background-position: left top, left top !important; background-size: auto, 32px 16px !important; background-repeat: repeat-y, repeat-y !important; background-origin: padding-box, padding-box !important; padding-left: 40px !important;">
+              <label for="canvas-bg-color">Background:</label>
+              <input type="text" id="canvas-bg-color" class="jscolor color-picker" value="#FFFFFF">
             </div>
             <button id="apply-canvas-settings">Apply Settings</button>
+          </div>
         </div>
+        
+        <!-- Brush Controls -->
+        <div class="tool-group" id="brush-controls">
+          <div class="tool-group-title">Brush Controls</div>
+          <div class="controls">
+            <div class="control-item">
+              <label for="brush-color">Color:</label>
+              <input type="text" id="brush-color" class="jscolor color-picker" value="#000000">
+            </div>
+            <div class="control-item">
+              <label for="brush-width">Width:</label>
+              <input type="range" id="brush-width" min="1" max="50" value="10">
+              <span id="brush-width-value">10</span>
+            </div>
+            <div class="control-item">
+              <label for="brush-opacity">Opacity:</label>
+              <input type="range" id="brush-opacity" min="0.1" max="1" value="1" step="0.1">
+              <span id="brush-opacity-value">1.0</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Text Controls -->
+        <div class="tool-group" id="text-controls">
+          <div class="tool-group-title">Text Controls</div>
+          <div class="controls">
+            <div class="control-item">
+              <label for="text-color">Color:</label>
+              <input type="text" id="text-color" class="jscolor color-picker" value="#000000">
+            </div>
+            <div class="control-item">
+              <label for="font-size">Font Size:</label>
+              <input type="range" id="font-size" min="10" max="80" value="24">
+              <span id="font-size-value">24</span>
+            </div>
+            <div class="control-item" id="font-family-container">
+              <label for="font-family">Font:</label>
+              <select id="font-family" style="padding:4px;border-radius:4px;border:1px solid #ddd"></select>
+              <button id="add-font-family" class="add-font-btn" title="Add New Font">+</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Layer Controls -->
+        <div class="tool-group" id="layer-controls">
+          <div class="tool-group-title">Layer Controls</div>
+          <div class="controls">
+            <div class="control-item">
+              <label for="layer-opacity">Opacity:</label>
+              <input type="range" id="layer-opacity" min="0.1" max="1" value="1" step="0.1">
+              <span id="layer-opacity-value">1.0</span>
+            </div>
+            
+            <!-- Filter Controls -->
+            <div class="control-item" style="flex-wrap: wrap;max-width: calc(100% - 50px);">
+              <button id="sharpen-filter">Sharpen</button>
+              <button id="emboss-filter">Emboss</button>
+              <button id="sepia-filter">Sepia</button>
+              <button id="bw-filter">Black & White</button>
+              <button id="brownie-filter">Brownie</button>
+              <button id="vintage-filter">Vintage</button>
+              <button id="kodachrome-filter">Kodachrome</button>
+              <button id="technicolor-filter">Technicolor</button>
+              <button id="polaroid-filter">Polaroid</button>
+              <button id="brightness-filter">Brightness</button>
+              <button id="gamma-filter">Gamma</button>
+              <button id="contrast-filter">Contrast</button>
+              <button id="saturation-filter">Saturation</button>
+              <button id="vibrance-filter">Vibrance</button>
+              <button id="hue-filter">Hue</button>
+              <button id="noise-filter">Noise</button>
+              <button id="pixelate-filter">Pixelate</button>
+              <button id="blur-filter">Blur</button>
+            </div>
+            
+            <!-- Color Removal -->
+            <div class="control-item" style="border-top: 1px solid #444;width: 100%;padding-top: 10px;flex-wrap: wrap;"> 
+              <label for="remove-color">Remove Color:</label>
+              <input type="text" id="remove-color" class="jscolor color-picker" value="#ffffff">
+              <button id="apply-remove-color">Remove Color</button>
+              
+              <label for="remove-color-distance">Distance:</label>
+              <input type="range" id="remove-color-distance" min="0" max="1" step="0.01" value="0.3">
+              <span id="remove-color-distance-value">0.3</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
-<div class=tool-group id=brush-controls>
-<div class=tool-group-title>Brush Controls</div>
-<div class=controls>
-<div class=control-item>
-<label for=brush-color>Color:</label>
-<input type=text id=brush-color class="jscolor color-picker" value=#000000>
-</div>
-<div class=control-item>
-<label for=brush-width>Width:</label>
-<input type=range id=brush-width min=1 max=50 value=10>
-<span id=brush-width-value>10</span>
-</div>
-<div class=control-item>
-<label for=brush-opacity>Opacity:</label>
-<input type=range id=brush-opacity min=0.1 max=1 value=1 step=0.1>
-<span id=brush-opacity-value>1.0</span>
-</div>
-</div>
-</div>
-<div class=tool-group id=text-controls>
-<div class=tool-group-title>Text Controls</div>
-<div class=controls>
-<div class=control-item>
-<label for=text-color>Color:</label>
-<input type=text id=text-color class="jscolor color-picker" value=#000000>
-</div>
-<div class=control-item>
-<label for=font-size>Font Size:</label>
-<input type=range id=font-size min=10 max=80 value=24>
-<span id=font-size-value>24</span>
-</div>
-<div class=control-item id=font-family-container>
-<label for=font-family>Font:</label>
-<select id=font-family style="padding:4px;border-radius:4px;border:1px solid #ddd"></select>
-<button id=add-font-family class=add-font-btn title="Add New Font">+</button>
-</div>
-</div>
-</div>
-
-<div class="tool-group" id="layer-controls" style="display: none;">
-  <div class="tool-group-title">Layer Controls</div>
-  <div class="controls">
-    <div class="control-item">
-      <label for="layer-opacity">Opacity:</label>
-      <input type="range" id="layer-opacity" min="0.1" max="1" value="1" step="0.1">
-      <span id="layer-opacity-value">1.0</span>
-    </div>
-<div class="control-item" style="flex-wrap: wrap;max-width: calc(100% - 50px);">
-<button id="sharpen-filter">Sharpen</button>
-<button id="emboss-filter">Emboss</button>
-<button id="sepia-filter">Sepia</button>
-<button id="bw-filter">Black & White</button>
-<button id="brownie-filter">Brownie</button>
-<button id="vintage-filter">Vintage</button>
-<button id="kodachrome-filter">Kodachrome</button>
-<button id="technicolor-filter">Technicolor</button>
-<button id="polaroid-filter">Polaroid</button>
-    <button id="brightness-filter">Brightness</button>
-    <button id="gamma-filter">Gamma</button>
-    <button id="contrast-filter">Contrast</button>
-    <button id="saturation-filter">Saturation</button>
-    <button id="vibrance-filter">Vibrance</button>
-    <button id="hue-filter">Hue</button>
-    <button id="noise-filter">Noise</button>
-    <button id="pixelate-filter">Pixelate</button>
-    <button id="blur-filter">Blur</button>
-
-<br>
-<div class="control-item" style="border-top: 1px solid #eaeaea;width: 100%;padding-top: 4px;flex-wrap: wrap;"> 
-    <label for="remove-color">Remove Color:</label>
-    <input type="text" id="remove-color" class="jscolor color-picker" value="#ffffff">
-    <button id="apply-remove-color">Remove Color</button>
-
-    <label for="remove-color-distance">Distance:</label>
-    <input type="range" id="remove-color-distance" min="0" max="1" step="0.01" value="0.3">
-    <span id="remove-color-distance-value">0.3</span>
-</div>
-
   </div>
-
-  </div>
-</div>
-    
-</div>
-</div>
-<div id=object-actions class=object-actions>
-<button id=clone-object><i class="fas fa-clone"></i></button>
-    <button id="unselect-object"><i class="fas fa-ban"></i></button>
-    <button id="lock-object"><i class="fas fa-lock"></i></button>
-    <button id="unlock-object"><i class="fas fa-unlock"></i></button>
-    <button id="send-to-back"><i class="fas fa-arrow-down"></i></button>
-    <button id="bring-to-front"><i class="fas fa-arrow-up"></i></button>
-<button id=flip-h-object><i class="fas fa-arrows-alt-h"></i></button>
-<button id=flip-v-object><i class="fas fa-arrows-alt-v"></i></button>
-<button id=delete-object><i class="fas fa-trash-alt"></i></button>
-<button id="toggle-visibility"><i class="fas fa-gear"></i></button>
-</div>
-<div id="object-actions-2" class="object-actions2" style="display: none;"> 
-    <button id="align-left"><i class="fas fa-align-left"></i></button>
-    <button id="align-center"><i class="fas fa-align-center"></i></button>
-    <button id="align-right"><i class="fas fa-align-right"></i></button>
-    <button id="align-top"><i class="fas fa-long-arrow-alt-up"></i></button>
-
-    <button id="rotate-left"><i class="fas fa-undo"></i></button>
-    <button id="rotate-right"><i class="fas fa-redo"></i></button>
-    <button id="scale-up"><i class="fas fa-search-plus"></i></button>
-    <button id="scale-down"><i class="fas fa-search-minus"></i></button>
-
-
-</div>
 <script>
       
 let canvas;
@@ -775,13 +1088,13 @@ function updateObjectActions() {
     const boundingRect = selectedObject.getBoundingRect();
     const canvasRect = canvas.getElement().getBoundingClientRect();
     
-    const top =  boundingRect.top ;
+    const top =  boundingRect.top + 24;
     const left = canvasRect.left + boundingRect.left + boundingRect.width / 2 - objectActions.offsetWidth / 2;
     
     objectActions.style.top = `${top}px`;
     objectActions.style.left = `${left}px`;
 
-    const top2 =  boundingRect.top + 35;
+    const top2 =  boundingRect.top + 55;
     
     
     objectActions2.style.top = `${top2}px`;
