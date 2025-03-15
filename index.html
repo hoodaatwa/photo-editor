@@ -61,6 +61,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
     overflow: hidden;
+    height: fit-content;
 }
   
   /* Buttons & Controls */
@@ -290,7 +291,7 @@
 .properties-panel {
     width: 280px;
     background: #333;
-    padding: 16px;
+    padding: 10px;
     border-left: 1px solid #444;
     overflow: auto;
     position: fixed;
@@ -1014,6 +1015,7 @@ function hideAllControls() {
     document.getElementById('brush-controls').style.display = 'none';
     document.getElementById('text-controls').style.display = 'none';
     document.getElementById('layer-controls').style.display = 'none';
+    document.getElementById('canvas-controls').style.display = 'none';
 }
 
 function handleSelectionChange() {
