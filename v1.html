@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text detector with Effects</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@latest/dist/tesseract.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+<!-- إضافة مكتبة CropperJS -->
+<link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css">
+<script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+
+  <style>
+    html {
+    font-weight: bolder;
+    }
+    #image-container {
+      position: relative;
+      display: inline-block;
+    }
+    .word-box {
+      position: absolute;
+      border: 2px solid red;
+      cursor: pointer;
+    }
+    .word-box.selected {
+      border-color: green;
+    }
+#tab-edit {
+  position: relative; /* وضعه بشكل طبيعي داخل الصفحة */
+  transition: margin-left 0.3s ease; /* تأثير الحركة عند إضافة/إخفاء #effectsPanel */
+}
+
+#effectsPanel {
+  position: fixed;
+  top: 60px;
+  left: 100px;
+  height: calc(100vh - 75px);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  padding: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-width: 300px;
+  display: none; /* إخفاء اللوحة بشكل افتراضي */
+}
+
+#effectsPanel.show {
+  display: block; /* إظهار اللوحة عندما نضيف الكلاس .show */
+}
+
+#tab-edit.with-effects {
+    margin-left: 27.5rem;
+    margin-right: 1.5rem;
+    width: 100%;
+}
+      #actionBar {
+    position: fixed;
+    top: 60px;
+    left: 10px;
+    height: calc(100vh - 75px); /* مع أخذ المسافة العلوية والسفلية بعين الاعتبار */
+    width: 80px;
+    background: #607d8b;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+  }
+
+  #actionBar button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background 0.2s;
+    width: 100%;
+  }
+
+  #actionBar button:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  #actionBar button i {
+    font-size: 24px;
+    color: rgb(255 255 255);
+  }
+
+  #actionBar button span {
+    font-size: 12px;
+    color: rgb(255 255 255);
+    text-align: center;
+  }
+
+  /* إضافة خاصية Overflow لأزرار كثيرة */
+  #actionBar::-webkit-scrollbar ,#effectsPanel::-webkit-scrollbar{
+    width: 6px;
+  }
+
+  #actionBar::-webkit-scrollbar-thumb ,#effectsPanel::-webkit-scrollbar-thumb{
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+  }
+   #tab-edit {
+    /* إضافة margin-left لضبط المسافة بين #tab-edit و #actionBar */
+    margin-left: 6.5rem;
+  }
+
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  html {
+    font-size: 16px; /* الحجم الافتراضي */
+  }
+  i {
+  font-size: 1.5em;
+  }
+  #actionBar {
+    width: 80px; /* عرض متوسط */
+  }
+
+  #actionBar button i {
+    font-size: 20px; /* أيقونات متوسطة الحجم */
+  }
+
+  #actionBar button span {
+    font-size: 12px; /* تكبير النص قليلاً */
+  }
+  #effectsPanel {
+    left: 6.2rem;
+  }
+  #effectsPanel {
+    max-width: 400px; /* توسيع اللوحة الجانبية */
+  }
+}
+@media (min-width: 1025px) {
+  html {
+    font-size: 18px; /* تكبير النصوص */
+  }
+  i {
+  font-size: 3.5em;
+  }
+
+  #actionBar {
+    width: 100px; /* عرض أكبر */
+  }
+
+  #actionBar button i {
+    font-size: 33px; /* أيقونات كبيرة */
+  }
+
+  #actionBar button span {
+    font-size: 17px; /* نص أكبر */
+  }
+  button span {
+    font-size: 17px; /* نص أكبر */
+  }
+  span {
+    font-size: 17px; /* نص أكبر */
+  }
+  #effectsPanel {
+    max-width: 600px; /* لوحة عريضة */
+   left: 6.5rem;
+  }
+  #tab-edit.with-effects {
+    margin-left: 27.5rem;
+}
+  #image-container {
+    max-width: 90%; /* توسيع عرض الصور */
+    margin: 0 auto; /* التوسيط */
+  }
+}
+#image-container {
+  transition: transform 0.3s ease; /* تأثير سلس عند تغيير الحجم */
+  max-width: 100%; /* ضمان عدم تجاوز العنصر العرض */
+  height:0;
+}
+
+    /* إخفاء الزر في شاشة التليفون */
+@media (max-width: 668px) {
+  #toggleZoomBtn {
+    display: none !important;
+  }
+}
+
+    .repoCard {
+      background: #f7fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+    .repoCard:hover {
+      transform: translateY(-5px);
+    }
+    .hidden{
+    display: none; /* إخفاء الـ action bar بشكل افتراضي */
+  }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow fixed w-full top-0 z-50">
+    <div class="container mx-auto px-4 py-1 flex items-center justify-between">
+      <img src="https://github.com/hoodaatwa/Edit-text-in-image/blob/main/edited_image%20(13).png.webp?raw=true" alt="Logo" class="w-10 h-10">
+
+
+      <div class="relative">
+        <select id="tabSelector" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-2xl">
+          <option value="tab-extracted-data">Extracted Data</option>
+          <option value="tab-edit" selected>Edit</option>
+          <option value="tab-other-tools">Other Tools</option>
+        </select>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="mt-16 container px-2">
+    <!-- Extracted Data Tab -->
+    <div id="tab-extracted-data" class="hidden">
+      <h2 class="text-2xl font-semibold mb-4">Extracted Data</h2>
+      <table class="table-auto w-full bg-white shadow rounded">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Word</th>
+            <th class="px-4 py-2">Confidence</th>
+          </tr>
+        </thead>
+        <tbody id="extractedDataTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Edit Tab -->
+    <div id="tab-edit" class="block">
+<h2 id="h-opening" class="text-2xl font-semibold mb-4" style="text-align: center;">Simplify Your Image Workflow</h2>
+  
+  <!-- وصف العملية -->
+  <p id="p-opening" class="text-gray-600 mb-6" style="text-align: center;">Upload an image, detect text, apply effects, and download the final result. A seamless process to enhance your productivity.</p>
+      <div class="mb-4">
+        <input type="file" id="imageInput" accept="image/*" class="block m-auto w-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+      </div>
+      
+      <div id="image-container">
+        <canvas id="imageCanvas"></canvas>
+      </div>
+      
+      <!-- Effects Panel -->
+      <div id="effectsPanel" class="hidden">
+
+       
+<div id="colorPalette" class="space-y-2" style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
+  <h4 class="font-semibold">Choose Brush Settings</h4>
+  <input type="color" id="colorPicker" class="w-16 h-16 cursor-pointer border-2 border-gray-300" />
+  <div>
+    <label for="brushType" class="block">Brush Type</label>
+    <select id="brushType" class="w-full border-2 border-gray-300">
+      <option value="circle">Circle</option>
+      <option value="square">Square</option>
+    </select>
+  </div>
+<hr class="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700">
+
+    <!-- Input لاختيار صورة الفرشاة -->
+  <div>
+    <label class="block">Choose Image Brush</label>
+    <input type="file" id="imageBrush" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+  </div>
+  
+  <!-- المكان الذي يتم فيه عرض الصورة لاقتصاصها -->
+  <div id="crop-container" style="display:none;">
+    <img id="image-to-crop" src="" alt="Image for cropping">
+<button id="save-cropped-image" class="block w-full bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600" >Save Cropped Image</button>
+<!-- زر لإعادة استخدام الصورة كفرشاة بعد تعطيلها -->
+
+  </div>
+<!-- إضافة زر جديد لإعادة استخدام الفرشاة بالصورة -->
+<button id="reuseBrushImageOnlyButton" style="display:none;" class="block w-full bg-blue-500 text-white px-4 py-2 rounded">USE Brush Image</button>
+<hr class="w-48 h-1 mx-auto my-4 bg-gray-100 border-0 rounded md:my-10 dark:bg-gray-700">
+
+  <div>
+    <label for="brushSize" class="block">Brush Size</label>
+    <input type="range" id="brushSize" min="5" max="60" value="10" class="w-auto border-2 border-gray-300" />
+    <span id="brushSizeValue" class="text-sm">60</span>
+  </div>
+  
+  <div>
+    <label for="brushOpacity" class="block">Opacity</label>
+    <input type="range" id="brushOpacity" min="0" max="1" step="0.1" value="1" class="w-auto border-2 border-gray-300" />
+    <span id="brushOpacityValue" class="text-lg">1</span>
+  </div>
+  
+
+
+
+
+</div>
+
+
+        <div class="space-y-2" style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
+  <h4 class="font-semibold">Apply Effects</h4>
+
+          <button id="applyBlur" class="block w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Apply Blur</button>
+          <button id="applyGrayscale" class="block w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">Apply Grayscale</button>
+          <button id="applyBrightness" class="block w-full bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600">Increase Brightness</button>
+<button id="applyContrast" class="block w-full bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600">Increase Contrast</button>
+</div>
+
+
+<div style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
+  <h4 class="font-semibold">Replace Color In SELECTED BOx</h4>
+  <label for="removeColorInput" class="block text-sm font-medium text-gray-700">Enter Color to Remove (Hex):</label>
+  <input type="color" id="removeColorInput" class="block w-full text-sm text-gray-500" />
+
+  <label for="replaceColorInput" class="block text-sm font-medium text-gray-700 mt-4">Enter Color to Replace With (Hex):</label>
+  <input type="color" id="replaceColorInput" class="block w-full text-sm text-gray-500" />
+
+  <label for="colorTolerance" class="block text-sm font-medium text-gray-700 mt-4">Color Tolerance:</label>
+  <input type="range" id="colorTolerance" class="w-full" min="0" max="255" value="60" />
+
+
+<button id="removeColorBtn" class="block w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600">Remove and Replace Color</button>
+</div>
+      </div>
+ </div>
+
+      <!-- Action Bar -->
+<div id="actionBar">
+  <button id="toggleEffectsPanel" class="block w-auto bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 flex flex-col items-center">
+    <i class="fas fa-cogs"></i> <!-- أيقونة Font Awesome -->
+    <span class="text-sm">Toggle Effects Panel</span> <!-- النص أسفل الأيقونة -->
+  </button>
+    <button id="toggleZoomBtn">
+    <i class="fas fa-search-plus"></i>
+    <span>Adjust Zoom</span>
+  </button>
+  <button id="toggleBoxesBtn">
+    <i class="fas fa-eye"></i> <!-- أيقونة Show/Hide -->
+    <span>Show/Hide BOXES</span>
+  </button>
+  <button id="stopButton" style="display: none;">
+    <i class="fas fa-hand-paper" style="color: #f44336;"></i> <!-- أيقونة Disable Brush -->
+    <span>Disable Brush</span>
+  </button>
+  <button id="toggleCreateMode">
+    <i class="fas fa-plus-square"></i> <!-- أيقونة Create Boxes -->
+    <span>Create NEW Boxes</span>
+  </button>
+  <button id="deleteUnselectedBoxesBtn">
+    <i class="fas fa-trash-alt"></i> <!-- أيقونة Delete Boxes -->
+    <span>Delete UnSelected Boxes</span>
+  </button>
+  <button id="undoBtn">
+    <i class="fas fa-undo"></i> <!-- أيقونة Undo -->
+    <span>Undo</span>
+  </button>
+  <button id="forwardBtn">
+    <i class="fas fa-redo"></i> <!-- أيقونة Forward -->
+    <span>Forward</span>
+  </button>
+  <button id="resetBtn">
+    <i class="fas fa-sync"></i> <!-- أيقونة Reset -->
+    <span>Reset</span>
+  </button>
+  <button id="downloadBtn">
+    <i class="fas fa-file-download"></i> <!-- أيقونة Download -->
+    <span>Download</span>
+  </button>
+</div>
+
+    <!-- Other Tools Tab -->
+    <div id="tab-other-tools" class="hidden">
+      <h2 class="text-2xl font-semibold mb-4">Other Tools</h2>
+      <div class="flex flex-wrap" id="repoList"></div>
+    </div>
+  </div>
+<div id="loading" class="hidden fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
+  <span class="text-white text-2xl font-bold">Loading...</span>
+</div>
+  <script>
+    const tabSelector = document.getElementById('tabSelector');
+  const extractedDataTab = document.getElementById('tab-extracted-data');
+  const editTab = document.getElementById('tab-edit');
+  const otherToolsTab = document.getElementById('tab-other-tools');
+  const imageInput = document.getElementById('imageInput');
+  const imageCanvas = document.getElementById('imageCanvas');
+  const ctx = imageCanvas.getContext('2d');
+  const imageContainer = document.getElementById('image-container');
+  const effectsPanel = document.getElementById('effectsPanel');
+  const actionBar = document.getElementById('actionBar');
+  const applyBlur = document.getElementById('applyBlur');
+  const applyGrayscale = document.getElementById('applyGrayscale');
+  const applyBrightness = document.getElementById('applyBrightness');
+  const undoBtn = document.getElementById('undoBtn');
+  const forwardBtn = document.getElementById('forwardBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const repoList = document.getElementById('repoList');
+  const extractedDataTable = document.getElementById('extractedDataTable');
+  const hOpening = document.getElementById('h-opening');
+  const pOpening  = document.getElementById('p-opening');
+
+
+
+  let uploadedImage = null;
+  let selectedBoxes = [];
+  let rectangles = []; // مصفوفة لتخزين المربعات المرسومة
+  let history = [];
+  let currentHistoryIndex = -1;
+
+    // Tab Switching Logic
+    tabSelector.addEventListener('change', () => {
+      const selectedTab = tabSelector.value;
+      if (selectedTab === 'tab-extracted-data') {
+        extractedDataTab.classList.remove('hidden');
+        editTab.classList.add('hidden');
+        otherToolsTab.classList.add('hidden');
+        effectsPanel.classList.add('hidden');
+        actionBar.classList.add('hidden');
+      } else if (selectedTab === 'tab-edit') {
+        extractedDataTab.classList.add('hidden');
+        editTab.classList.remove('hidden');
+        otherToolsTab.classList.add('hidden');
+        actionBar.classList.remove('hidden');
+      } else {
+        extractedDataTab.classList.add('hidden');
+        editTab.classList.add('hidden');
+        otherToolsTab.classList.remove('hidden');
+        effectsPanel.classList.add('hidden');
+        actionBar.classList.add('hidden');
+        // تحقق إذا كان المحتوى موجودًا مسبقًا
+  const repoList = document.getElementById('repoList');
+  if (repoList && repoList.children.length === 0) {
+    fetchGitHubRepos(); // استدعاء الدالة فقط إذا كان المحتوى غير موجود
+  }
+
+
+      }
+    });
+
+    // Fetch GitHub Repositories
+    function fetchGitHubRepos() {
+      const currentPageLocation = window.location.href;
+      let displayedRepos = 0;
+
+      fetch('https://api.github.com/users/hoodaatwa/repos')
+        .then(response => response.json())
+        .then(data => {
+          const currentRepoTopics = data
+            .filter(repo => repo.homepage === currentPageLocation)
+            .flatMap(repo => repo.topics || []);
+
+          data.forEach(repo => {
+            const repoTopics = repo.topics || [];
+            if (displayedRepos >= 4 || repo.homepage === currentPageLocation || !repoTopics.some(topic => currentRepoTopics.includes(topic))) {
+              return;
+            }
+
+            const repoCard = document.createElement('div');
+            repoCard.classList.add('repoCard', 'w-full', 'md:w-1/1', 'lg:w-1/1');
+            repoCard.innerHTML = `
+              <div class="repoTitle font-semibold text-lg">${repo.name}</div>
+              <div class="repoDescription text-sm text-gray-600">${repo.description || 'No description available'}</div>
+              <div class="repoLink mt-2">
+                <a href="${repo.homepage}" target="_blank" class="text-blue-500">Homepage</a>
+              </div>
+            `;
+            repoList.appendChild(repoCard);
+            displayedRepos++;
+          });
+
+          const mainRepo = data.find(repo => repo.name.toLowerCase() === 'main');
+          if (mainRepo) {
+            const mainRepoCard = document.createElement('div');
+            mainRepoCard.innerHTML = `
+<br>
+              <a href="${mainRepo.homepage}" target="_blank" class="repoCard text-center font-semibold text-blue-500">Go to Main Page </a><br>
+            `;
+            repoList.appendChild(mainRepoCard);
+          }
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }
+
+// Load Image and Extract Words
+// Load Image and Extract Words
+// إعادة تعيين canvas والمربعات
+  function resetCanvasAndBoxes() {
+    ctx.clearRect(0, 0, imageCanvas.width, imageCanvas.height); // مسح canvas
+    rectangles = []; // مسح المربعات المخزنة
+    selectedBoxes = []; // مسح المربعات المحددة
+    // إزالة المربعات من DOM
+    const wordBoxes = document.querySelectorAll('.word-box');
+    wordBoxes.forEach((box) => box.remove());
+  }
+
+  // تحميل الصورة واستخراج الكلمات
+  imageInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // إعادة ضبط أبعاد canvas لتناسب أبعاد الصورة
+          imageCanvas.width = img.width;
+          imageCanvas.height = img.height;
+
+          // إعادة تعيين canvas والمربعات
+          resetCanvasAndBoxes();
+          
+          extractedDataTable.innerHTML = '';
+
+
+          // رسم الصورة الجديدة
+          ctx.drawImage(img, 0, 0);
+
+          // تحديث البيانات وتحليل النصوص
+          uploadedImage = ctx.getImageData(0, 0, img.width, img.height);
+
+          // استدعاء الدوال الأخرى
+          extractWords(img);
+          saveHistory();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+    
+// Handle Image Input and Extract Data
+    imageInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        uploadedImage = file;
+
+    // تحديد اللغات التي تريد التعرف عليها (مثال: الإنجليزية، العربية، الإسبانية...)
+    const languages = 'eng+ara';
+
+    // التعرف على النصوص
+    const { data: { text } } = await Tesseract.recognize(file, languages);
+    const words = text.split("\n").map(word => word.trim()).filter(word => word.length > 0);
+
+    // عرض البيانات المستخرجة في الجدول
+
+        // Display extracted data in table
+        extractedDataTable.innerHTML = words.map((word, index) => `
+          <tr>
+            <td class="px-4 py-2">${word}</td>
+            <td class="px-4 py-2">${(Math.random() * 100).toFixed(2)}%</td>
+          </tr>
+        `).join('');
+      }
+    });
+
+
+    const loading = document.getElementById('loading');
+
+// عندما تبدأ عملية استخراج النصوص، يظهر الـ Loading
+imageInput.addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    loading.classList.remove('hidden'); // إظهار الـ Loading
+
+const languages = 'eng+ara';
+
+    uploadedImage = file;
+    const { data: { text } } = await Tesseract.recognize(file, languages);
+    const words = text.split("\n").map(word => word.trim()).filter(word => word.length > 0);
+
+    extractedDataTable.innerHTML = '';
+
+    hOpening .style.display = 'none';
+    pOpening .style.display = 'none';
+
+    // إخفاء الـ Loading بعد الانتهاء
+    loading.classList.add('hidden');
+
+    // عرض البيانات المستخلصة في الجدول
+    extractedDataTable.innerHTML = words.map((word, index) => `
+      <tr>
+        <td class="px-4 py-2">${word}</td>
+        <td class="px-4 py-2">${(Math.random() * 100).toFixed(2)}%</td>
+      </tr>
+    `).join('');
+  }
+});
+    
+
+const languages = 'eng+ara';
+    
+function extractWords(image) {
+  Tesseract.recognize(image.src, languages).then(({ data }) => {
+    const words = data.words;
+    words.forEach((word) => {
+      const box = document.createElement('div');
+      box.classList.add('word-box');
+      box.style.left = `${word.bbox.x0}px`;
+      box.style.top = `${word.bbox.y0}px`;
+      box.style.width = `${word.bbox.x1 - word.bbox.x0}px`;
+      box.style.height = `${word.bbox.y1 - word.bbox.y0}px`;
+      box.title = word.text;
+
+      // Toggle selection
+      box.addEventListener('click', () => {
+        if (box.classList.toggle('selected')) {
+          selectedBoxes.push(word.bbox);
+        } else {
+          selectedBoxes = selectedBoxes.filter(
+            (b) => b.x0 !== word.bbox.x0 || b.y0 !== word.bbox.y0
+          );
+        }
+        toggleEffectsPanel();
+      });
+
+      imageContainer.appendChild(box);
+    });
+  });
+}
+
+
+
+document.getElementById('toggleEffectsPanel').addEventListener('click', function() {
+  const effectsPanel = document.getElementById('effectsPanel');
+  const tabEdit = document.getElementById('tab-edit');
+  
+  // تغيير إظهار/إخفاء اللوحة
+  effectsPanel.classList.toggle('show');
+  
+  // إضافة/إزالة المسافة من #tab-edit
+  tabEdit.classList.toggle('with-effects');
+});
+
+
+  let adjustZoomEnabled = true; // التحكم في حالة adjustZoom
+
+  function adjustZoom() {
+    const container = document.getElementById("image-container");
+    const canvas = document.getElementById("imageCanvas");
+
+    if (!adjustZoomEnabled) {
+      container.style.transform = "scale(1)";
+      container.style.transformOrigin = "top left";
+      return;
+    }
+
+    const containerWidth = container.offsetWidth;
+    const canvasWidth = canvas.offsetWidth;
+
+    if (canvasWidth > containerWidth) {
+      const scale = containerWidth / canvasWidth;
+      container.style.transform = `scale(${scale})`;
+      container.style.transformOrigin = "top left";
+    } else {
+      container.style.transform = "scale(1)";
+    }
+  }
+
+  document.getElementById("imageInput").addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.getElementById("imageCanvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0, img.width, img.height);
+
+          // استدعاء ضبط التكبير
+          adjustZoom();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // تحديث التكبير عند تغيير حجم النافذة
+  window.addEventListener("resize", adjustZoom);
+
+  // زر Toggle لإيقاف أو تفعيل adjustZoom
+  document.getElementById("toggleZoomBtn").addEventListener("click", function () {
+    adjustZoomEnabled = !adjustZoomEnabled; // تبديل حالة adjustZoom
+    adjustZoom(); // تحديث العرض بناءً على الحالة الجديدة
+
+    // تحديث نص الزر
+    this.querySelector("span").textContent = adjustZoomEnabled ? "Enable Zoom" : "Disable Zoom";
+  });
+
+
+document.getElementById('toggleEffectsPanel').addEventListener('click', function() {
+  const effectsPanel = document.getElementById('effectsPanel');
+  // Toggle the visibility of the effects panel
+  if (effectsPanel.classList.contains('hidden')) {
+    effectsPanel.classList.remove('hidden');
+  } else {
+    effectsPanel.classList.add('hidden');
+  }
+});
+
+
+    // Apply Effects
+    applyBlur.addEventListener('click', () => applyEffect('blur(5px)'));
+    applyGrayscale.addEventListener('click', () => applyEffect('grayscale(1)'));
+    applyBrightness.addEventListener('click', () => applyEffect('brightness(1.5)'));
+// عناصر جديدة للتأثيرات
+const applyContrast = document.getElementById('applyContrast');
+const removeColor = document.getElementById('removeColor');
+
+// تطبيق التباين
+applyContrast.addEventListener('click', () => {
+  applyEffectToSelectedBoxes((pixel) => {
+    const factor = (259 * (128 + 255)) / (255 * (259 - 128)); // تعديل التباين
+    pixel.r = Math.min(255, Math.max(0, factor * (pixel.r - 128) + 128));
+    pixel.g = Math.min(255, Math.max(0, factor * (pixel.g - 128) + 128));
+    pixel.b = Math.min(255, Math.max(0, factor * (pixel.b - 128) + 128));
+  });
+});
+
+// إزالة لون محدد
+// استهداف
+const removeColorInput = document.getElementById('removeColorInput');
+const replaceColorInput = document.getElementById('replaceColorInput');
+const colorToleranceInput = document.getElementById('colorTolerance');
+const removeColorBtn = document.getElementById('removeColorBtn');
+
+// تحويل اللون Hex إلى RGB
+function hexToRgbForReplaceColor(hex) {
+  const bigint = parseInt(hex.slice(1), 16);
+  return {
+    r: (bigint >> 16) & 255,
+    g: (bigint >> 8) & 255,
+    b: bigint & 255,
+  };
+}
+
+// إزالة اللون واستبداله
+removeColorBtn.addEventListener('click', () => {
+  const removeColorHex = removeColorInput.value.trim();
+  const replaceColorHex = replaceColorInput.value.trim();
+  const tolerance = parseInt(colorToleranceInput.value);
+
+  if (!/^#[0-9A-Fa-f]{6}$/.test(removeColorHex) || !/^#[0-9A-Fa-f]{6}$/.test(replaceColorHex)) {
+    alert('Please enter valid hex color codes.');
+    return;
+  }
+
+  const targetRemoveColor = hexToRgbForReplaceColor(removeColorHex);
+  const targetReplaceColor = hexToRgbForReplaceColor(replaceColorHex);
+
+  selectedBoxes.forEach((bbox) => {
+    const imageData = ctx.getImageData(
+      bbox.x0,
+      bbox.y0,
+      bbox.x1 - bbox.x0,
+      bbox.y1 - bbox.y0
+    );
+
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      const r = imageData.data[i];
+      const g = imageData.data[i + 1];
+      const b = imageData.data[i + 2];
+
+      if (
+        Math.abs(r - targetRemoveColor.r) <= tolerance &&
+        Math.abs(g - targetRemoveColor.g) <= tolerance &&
+        Math.abs(b - targetRemoveColor.b) <= tolerance
+      ) {
+        // استبدال اللون
+        imageData.data[i] = targetReplaceColor.r;
+        imageData.data[i + 1] = targetReplaceColor.g;
+        imageData.data[i + 2] = targetReplaceColor.b;
+      }
+    }
+
+    ctx.putImageData(imageData, bbox.x0, bbox.y0);
+  });
+
+  saveHistory(); // حفظ الحالة بعد التعديل
+});
+
+
+// تحميل مكتبة Color Thief
+// استخدام ColorThief لاستخراج الألوان من الصورة
+// دالة لاختيار اللون من input
+let selectedColor = null;
+let brushSize = 10;
+let brushOpacity = 1;
+let brushType = 'circle';
+let brushImage = null;
+let cropper = null;
+
+const colorPicker = document.getElementById('colorPicker');
+const brushSizeInput = document.getElementById('brushSize');
+const brushSizeValue = document.getElementById('brushSizeValue');
+const brushOpacityInput = document.getElementById('brushOpacity');
+const brushOpacityValue = document.getElementById('brushOpacityValue');
+const brushTypeSelect = document.getElementById('brushType');
+const imageBrushInput = document.getElementById('imageBrush');
+const cropContainer = document.getElementById('crop-container');
+const imageToCrop = document.getElementById('image-to-crop');
+const reuseBrushImageOnlyButton = document.getElementById('reuseBrushImageOnlyButton'); // زر جديد
+
+
+// تحديث حجم الفرشاة
+brushSizeInput.addEventListener('input', (event) => {
+  brushSize = event.target.value;
+  brushSizeValue.textContent = brushSize;
+});
+
+// تحديث الشفافية
+brushOpacityInput.addEventListener('input', (event) => {
+  brushOpacity = event.target.value;
+  brushOpacityValue.textContent = brushOpacity;
+});
+
+// تحديث نوع الفرشاة
+brushTypeSelect.addEventListener('change', (event) => {
+  brushType = event.target.value;
+});
+
+// اختيار اللون
+colorPicker.addEventListener('input', (event) => {
+  const color = event.target.value;
+  selectedColor = hexToRgb(color);
+
+  activateBrush();
+  toggleStopButton(true);
+
+  // لا يظهر زر إعادة استخدام فرشاة الصورة إذا لم تكن هناك صورة مقتصة
+  if (brushImage) {
+    reuseBrushImageOnlyButton.style.display = 'block';
+
+  } else {
+    reuseBrushImageOnlyButton.style.display = 'none';
+  }
+});
+
+
+// تحميل صورة الفرشاة
+imageBrushInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        // إخفاء واجهة اختيار صورة الفرشاة
+        cropContainer.style.display = 'block';
+        imageToCrop.src = e.target.result;
+        reuseBrushImageOnlyButton.style.display = 'none'; // إظهار زر إعادة استخدام فرشاة الصورة فقط
+      
+        // إذا كان هناك كائن Cropper موجود مسبقًا، قم بتدميره
+        if (cropper) {
+          cropper.destroy();
+        }
+
+        // تفعيل CropperJS لاقتصاص الصورة
+        cropper = new Cropper(imageToCrop, {
+            viewMode: 1,
+            autoCropArea: 1,
+            movable: true,
+            rotatable: false,
+            scalable: false,
+            zoomable: true,
+            autoCrop: true,
+            autoCropArea: 1,
+            resizable: false, // يمكنك تغييره حسب الحاجة
+
+        });
+
+        // حفظ الصورة بعد اقتصاصها
+        document.getElementById('save-cropped-image').addEventListener('click', () => {
+          const canvas = cropper.getCroppedCanvas();
+          brushImage = new Image();
+          brushImage.src = canvas.toDataURL(); // استخدام الصورة المقتصة كفرشاة
+          activateBrush();
+          toggleStopButton(true);
+
+          // إعادة تمكين واجهة اختيار صورة الفرشاة
+          cropContainer.style.display = 'none';
+          imageBrushInput.value = ''; // تصفير مدخل الملف لإتاحة اختيار نفس الصورة مجددًا
+          reuseBrushImageOnlyButton.style.display = 'block'; // إظهار زر إعادة استخدام فرشاة الصورة فقط
+        });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// تحويل اللون من Hex إلى RGB
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return [r, g, b];
+}
+
+// تفعيل الفرشاة
+function activateBrush() {
+  if (!(selectedColor || brushImage)) return;
+  imageCanvas.addEventListener('mousedown', startDrawing);
+  imageCanvas.addEventListener('mousemove', draw);
+  imageCanvas.addEventListener('mouseup', stopDrawing);
+  imageCanvas.addEventListener('mouseout', stopDrawing);
+}
+
+let drawing = false;
+
+function startDrawing(event) {
+  if (!(selectedColor || brushImage)) return;
+  drawing = true;
+  draw(event);
+}
+
+function draw(event) {
+  if (!drawing || !(selectedColor || brushImage)) return;
+  const x = event.offsetX;
+  const y = event.offsetY;
+
+  if (selectedColor) {
+    ctx.fillStyle = `rgba(${selectedColor[0]}, ${selectedColor[1]}, ${selectedColor[2]}, ${brushOpacity})`;
+    ctx.beginPath();
+    if (brushType === 'circle') {
+      ctx.arc(x, y, brushSize, 0, 2 * Math.PI); 
+    } else {
+      ctx.rect(x - brushSize / 2, y - brushSize / 2, brushSize, brushSize);
+    }
+    ctx.fill();
+  } else if (brushImage) {
+    ctx.globalAlpha = brushOpacity;
+    ctx.drawImage(brushImage, x - brushSize / 2, y - brushSize / 2, brushSize, brushSize);
+  }
+}
+
+function stopDrawing() {
+  drawing = false;
+}
+
+function toggleStopButton(show) {
+  stopButton.style.display = show ? 'block' : 'none';
+}
+
+// إعادة استخدام فرشاة الصورة فقط عند الضغط على الزر الجديد
+reuseBrushImageOnlyButton.addEventListener('click', () => {
+  if (brushImage) {
+    selectedColor = null; // إلغاء اللون المحدد
+    activateBrush(); // تفعيل الفرشاة باستخدام الصورة فقط
+    toggleStopButton(true);
+    reuseBrushImageOnlyButton.style.display = 'none'; // إخفاء الزر بعد إعادة التفعيل
+  }
+});
+stopButton.addEventListener('click', stopBrush);
+
+function stopBrush() {
+  drawing = false; // تعطيل الرسم
+  imageCanvas.removeEventListener('mousedown', startDrawing);
+  imageCanvas.removeEventListener('mousemove', draw);
+  imageCanvas.removeEventListener('mouseup', stopDrawing);
+  imageCanvas.removeEventListener('mouseout', stopDrawing);
+  toggleStopButton(false); // إخفاء زر الإيقاف
+  stopButton.style.display = 'none';
+  reuseBrushImageOnlyButton.style.display = brushImage ? 'block' : 'none';
+}
+
+
+
+// عند تحميل الصورة
+imageInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        imageCanvas.width = img.width;
+        imageCanvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        // استدعاء الدالة لاستخراج الألوان من الصورة
+        extractColors(img);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+
+
+function applyEffect(effect) {
+  selectedBoxes.forEach((bbox) => {
+    ctx.filter = effect; // تطبيق التأثير على الـ canvas
+    ctx.drawImage(
+      imageCanvas,
+      bbox.x0,
+      bbox.y0,
+      bbox.x1 - bbox.x0,
+      bbox.y1 - bbox.y0,
+      bbox.x0,
+      bbox.y0,
+      bbox.x1 - bbox.x0,
+      bbox.y1 - bbox.y0
+    );
+    ctx.filter = 'none'; // إعادة التصفية إلى الوضع الافتراضي بعد التطبيق
+  });
+  saveHistory();
+}
+
+
+
+const toggleBoxesBtn = document.getElementById('toggleBoxesBtn');
+
+// إضافة وظيفة لتبديل ظهور المربعات
+toggleBoxesBtn.addEventListener('click', () => {
+  const wordBoxes = document.querySelectorAll('.word-box');
+  wordBoxes.forEach((box) => {
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  });
+});
+
+
+    // Undo
+    undoBtn.addEventListener('click', () => {
+      if (currentHistoryIndex > 0) {
+        currentHistoryIndex--;
+        restoreHistory();
+      }
+    });
+
+    // Forward
+    forwardBtn.addEventListener('click', () => {
+      if (currentHistoryIndex < history.length - 1) {
+        currentHistoryIndex++;
+        restoreHistory();
+      }
+    });
+
+    // Reset Image
+    resetBtn.addEventListener('click', () => {
+      ctx.putImageData(uploadedImage, 0, 0);
+      saveHistory();
+    });
+
+    // Download Image
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = imageCanvas.toDataURL();
+      link.download = 'edited_image.png';
+      link.click();
+    });
+
+    // Save and Restore History
+    function saveHistory() {
+      if (currentHistoryIndex < history.length - 1) {
+        history = history.slice(0, currentHistoryIndex + 1);
+      }
+      history.push(ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height));
+      currentHistoryIndex++;
+    }
+
+    function restoreHistory() {
+      const state = history[currentHistoryIndex];
+      ctx.putImageData(state, 0, 0);
+    }
+
+
+
+
+let createMode = false; // الحالة الافتراضية لوضع الإنشاء
+let startX, startY;
+
+// زر تفعيل/إيقاف وضع الإنشاء
+document.getElementById('toggleCreateMode').addEventListener('click', () => {
+  createMode = !createMode;
+  alert(`Create Mode is now ${createMode ? 'ON' : 'OFF'}`);
+});
+
+// إضافة حدث للنقر أو اللمس على الصورة
+imageContainer.addEventListener('mousedown', startCreateBox);
+imageContainer.addEventListener('touchstart', startCreateBox);
+
+function startCreateBox(e) {
+  if (!createMode) return;
+
+  e.preventDefault(); // لمنع السلوك الافتراضي
+
+  const rect = imageContainer.getBoundingClientRect();
+
+  // حساب نسبة التصغير
+  const scale = parseFloat(window.getComputedStyle(imageContainer).transform.split(',')[0].replace('matrix(', '')) || 1;
+
+  // تسجيل نقطة البداية مع الأخذ بالاعتبار نسبة التصغير
+  startX = (e.clientX ? e.clientX - rect.left : e.touches[0].clientX - rect.left) / scale;
+  startY = (e.clientY ? e.clientY - rect.top : e.touches[0].clientY - rect.top) / scale;
+
+  // إنشاء مربع مؤقت
+  const newBox = document.createElement('div');
+  newBox.classList.add('word-box');
+  newBox.style.left = `${startX}px`;
+  newBox.style.top = `${startY}px`;
+  newBox.style.width = '0px';
+  newBox.style.height = '0px';
+
+  imageContainer.appendChild(newBox);
+
+  // متابعة السحب لتحديد أبعاد المربع
+  const onMove = (moveEvent) => {
+    const currentX = (moveEvent.clientX ? moveEvent.clientX - rect.left : moveEvent.touches[0].clientX - rect.left) / scale;
+    const currentY = (moveEvent.clientY ? moveEvent.clientY - rect.top : moveEvent.touches[0].clientY - rect.top) / scale;
+    const width = currentX - startX;
+    const height = currentY - startY;
+
+    newBox.style.width = `${Math.abs(width)}px`;
+    newBox.style.height = `${Math.abs(height)}px`;
+    newBox.style.left = `${width < 0 ? currentX : startX}px`;
+    newBox.style.top = `${height < 0 ? currentY : startY}px`;
+  };
+
+  // إنهاء السحب
+  const onEnd = () => {
+    newBox.addEventListener('click', () => {
+      if (newBox.classList.toggle('selected')) {
+        selectedBoxes.push({
+          x0: parseInt(newBox.style.left),
+          y0: parseInt(newBox.style.top),
+          x1: parseInt(newBox.style.left) + parseInt(newBox.style.width),
+          y1: parseInt(newBox.style.top) + parseInt(newBox.style.height),
+        });
+      } else {
+        selectedBoxes = selectedBoxes.filter(
+          (b) =>
+            b.x0 !== parseInt(newBox.style.left) ||
+            b.y0 !== parseInt(newBox.style.top)
+        );
+      }
+      toggleEffectsPanel();
+    });
+
+    rectangles.push(newBox); // تخزين المربع الجديد
+    saveHistory(); // حفظ الحالة الحالية
+
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onEnd);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onEnd);
+  };
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onEnd);
+  document.addEventListener('touchmove', onMove);
+  document.addEventListener('touchend', onEnd);
+}
+
+
+  // Select the Delete button
+  const deleteUnselectedBoxesBtn = document.getElementById('deleteUnselectedBoxesBtn');
+
+  // Function to remove unselected boxes
+  deleteUnselectedBoxesBtn.addEventListener('click', () => {
+    const allBoxes = document.querySelectorAll('.word-box');
+    allBoxes.forEach(box => {
+      if (!box.classList.contains('selected')) {
+        box.remove();
+      }
+    });
+  });
+
+  // Function to toggle selection of word boxes
+  function toggleBoxSelection(box, word) {
+    if (box.classList.toggle('selected')) {
+      selectedBoxes.push(word.bbox);
+    } else {
+      selectedBoxes = selectedBoxes.filter(
+        (b) => b.x0 !== word.bbox.x0 || b.y0 !== word.bbox.y0
+      );
+    }
+    toggleEffectsPanel();
+  }
+
+  // Extract Words and Draw Boxes
+  function extractWords(image) {
+    Tesseract.recognize(image.src, languages).then(({ data }) => {
+      const words = data.words;
+      words.forEach((word) => {
+        const box = document.createElement('div');
+        box.classList.add('word-box');
+        box.style.left = `${word.bbox.x0}px`;
+        box.style.top = `${word.bbox.y0}px`;
+        box.style.width = `${word.bbox.x1 - word.bbox.x0}px`;
+        box.style.height = `${word.bbox.y1 - word.bbox.y0}px`;
+        box.title = word.text;
+
+        // Toggle selection
+        box.addEventListener('click', () => toggleBoxSelection(box, word));
+
+        imageContainer.appendChild(box);
+      });
+    });
+  }
+
+
+box.addEventListener('click', () => {
+  toggleSelection(box);
+});
+
+// إضافة دعم للأحداث على الهاتف
+box.addEventListener('touchstart', (event) => {
+  event.preventDefault(); // لمنع التفاعل المزدوج
+  toggleSelection(box);
+});
+
+// دالة لتغيير حالة التحديد
+function toggleSelection(box) {
+  if (box.classList.toggle('selected')) {
+    selectedBoxes.push(word.bbox);
+  } else {
+    selectedBoxes = selectedBoxes.filter(
+      (b) => b.x0 !== word.bbox.x0 || b.y0 !== word.bbox.y0
+    );
+  }
+  toggleEffectsPanel();
+}
+
+  </script>
+
+</body>
+  </html>
