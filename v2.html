@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Photo Editor</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.11/dist/cropper.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mui/system/css/stack.css" />  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+
+    <style>
+::-webkit-scrollbar {
+    width: 12px; /* Set the width of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #2196F3; /* Set the color of the scrollbar thumb */
+}
+
+::-webkit-scrollbar-track {
+    background-color: #f4f4f4; /* Set the color of the scrollbar track */
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 70px;
+    align-items: flex-start;
+    width: max-content;
+    margin: 70px auto 0;
+    position: absolute;
+    left: 71px;
+}
+
+
+        canvas {
+            margin-top: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+.fixed-fullwidth-container {
+    position: static;
+    width: auto;
+    background-color: #f4f4f4;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    margin: 15px;
+    padding: 16px;
+}
+/* Style for the buttons */
+button {
+    background-color: #2196F3; /* Material-UI primary color */
+    color: white;
+    padding: 10px 20px;
+    margin: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #1565C0; /* Darker shade on hover */
+}
+/* Style for text input */
+input[type="text"] {
+    padding: 10px;
+    margin: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Style for color input */
+input[type="color"] {
+    padding: 8px;
+    margin: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Style for range input */
+input[type="range"] {
+    width: 100%;
+    padding: 8px;
+    margin: 8px;
+    box-sizing: border-box;
+}
+
+/* Style for number input */
+input[type="number"] {
+    padding: 10px;
+    margin: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Style for file input */
+input[type="file"] {
+    margin: 8px;
+}
+.fixed-tools-container {
+    position: fixed;
+    bottom: 0px;
+    top: 55px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: none;
+    z-index: 1000;
+    padding: 10px;
+    overflow: auto;
+    height: auto;
+    margin: 2px auto;
+    left: 68px;
+    right: 0;
+}
+
+        /* Style for the button that shows/hides tools */
+        #toggleToolsButton {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            margin: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #toggleToolsButton:hover {
+            background-color: #1565C0;
+        }
+        /* Style for the close button */
+        .close-button {
+            background-color: #f44336; /* Red color for close button */
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .close-button:hover {
+            background-color: #d32f2f; /* Darker red on hover */
+        }
+
+
+button#download-btn:hover {
+    background-color: #45a049;
+}
+button#download-btn {
+    background-color: #4CAF50;
+    font-weight: 600;
+}
+   body {
+
+            font-family: 'Roboto', sans-serif;
+
+            margin: 0;
+
+            padding: 0px;
+
+            background-color: #446FAA1A;
+    overflow-y: scroll; /* Vertical scrollbar on the left side */
+    overflow-x: scroll; /* Horizontal scrollbar on the top side */
+        }
+
+
+    #navbar {
+
+      position: fixed;
+
+      top: 0px;
+
+      left: 0;
+
+      width: 100%;
+
+      background-color: white;
+
+      padding: 10px;
+
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+      z-index: 3;
+
+    }
+
+
+
+    #menuToggle {
+
+      cursor: pointer;
+
+      transition: transform 0.3s;
+
+      padding: 5px;
+
+      width: 20px;
+
+      box-sizing: content-box;
+
+    }
+
+
+
+    #menuIcon {
+
+      font-size: 24px;
+
+      color: #1976D2;
+
+    }
+
+
+
+    #menuIcon.close {
+
+      transform: rotate(180deg);
+
+    }
+
+
+
+    #menuOverlay {
+
+      position: fixed;
+
+      top: 0px;
+
+      left: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      background-color: rgba(0, 0, 0, 0.5);
+
+      display: none;
+
+      z-index: 2;
+
+      overflow-y: auto;
+
+    }
+
+
+
+    #repoList {
+
+      display: flex;
+
+      flex-wrap: wrap;
+
+      justify-content: space-around;
+
+      padding: 0;
+
+      max-width: 800px;
+
+      margin: 70px auto auto;
+
+    }
+
+
+
+    .repoCard {
+
+      background-color: white;
+
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+      margin: 10px;
+
+      padding: 20px;
+
+      width: 100%;
+
+      border-radius: 8px;
+
+      transition: box-shadow 0.3s;
+
+      cursor: pointer;
+
+    }
+
+
+
+    .repoCard:hover {
+
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+
+    }
+
+
+
+    .repoTitle {
+
+      font-size: 1.5rem;
+
+      color: #1976D2;
+
+      margin-bottom: 10px;
+
+    }
+
+
+
+    .repoDescription {
+
+      color: #555;
+
+      margin-bottom: 15px;
+
+    }
+
+
+
+    .repoLink {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: flex-start;
+
+      margin-top: 15px;
+
+    }
+
+
+
+    .repoLink a {
+
+      color: white;
+
+      text-decoration: none;
+
+      background-color: #1976D2;
+
+      padding: 10px 15px;
+
+      border-radius: 5px;
+
+      display: inline-block;
+
+      transition: background-color 0.3s;
+
+    }
+
+
+
+    .repoLink a:hover {
+
+      background-color: #1565C0;
+
+    }
+
+
+
+    .repoLink i {
+
+      margin-left: 5px;
+
+    }
+
+
+
+    .center {
+
+      color: white;
+
+      text-decoration: none;
+
+      background-color: #1976D2;
+
+      padding: 10px 15px;
+
+      border-radius: 5px;
+
+      display: inline-block;
+
+      transition: background-color 0.3s;
+
+      margin: 10px;
+
+    }
+.sidebar {
+    position: fixed;
+    top: 55px;
+    left: 0;
+    height: 100%;
+    width: 66px;
+    background-color: #fff;
+    padding-top: 0px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    align-items: center;
+
+        /* Style for the buttons in the sidebar */
+        .sidebar button {
+            background-color: #555; /* Button background color */
+            color: white;
+            padding: 10px;
+            margin: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .sidebar button:hover {
+            background-color: #777; /* Darker shade on hover */
+        }
+    </style>
+</head>
+
+<body>
+
+  <div id="navbar">
+
+    <div id="menuToggle" onclick="toggleMenu()">
+
+      <i id="menuIcon" class="fas fa-bars"></i>
+
+    </div>
+
+  </div>
+
+
+
+  <div id="menuOverlay" onclick="toggleMenu()">
+
+    <div id="repoList"></div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+    <div class="container">
+        <input type="file" id="imageInput" accept="image/*">
+        <canvas id="canvas"></canvas>
+ <!-- Toggle button for showing/hiding tools -->
+
+
+
+
+    <div class="sidebar">
+        <button id="toggleToolsButton" onclick="toggleTools()"><i class="fas fa-tools"></i></button>
+        <button onclick="undo()"><i class="fas fa-undo"></i></button>
+        <button onclick="resetImage()"><i class="fas fa-sync-alt"></i></button>
+        <button id="download-btn" onclick="downloadImage()"><i class="fas fa-download"></i></button>
+    </div>
+
+
+
+
+        <!-- Fixed tools container at the bottom -->
+        <div class="fixed-tools-container">
+            <button class="close-button" onclick="toggleTools()">Close</button>
+<h2>Image Filters</h2>
+        <div style="border: 1px solid #ddd;padding: 20px;">
+            <button onclick="applyFilter('grayscale')">Grayscale</button>
+            <button onclick="applyFilter('sepia')">Sepia</button>
+            <button onclick="applyFilter('invert')">Invert Colors</button>
+            <button onclick="applyFilter('brightness')">Adjust Brightness</button>
+            <button onclick="applyFilter('blur')">Blur</button>
+        </div>
+
+
+<h2>Image Filp</h2>
+        <div style="border: 1px solid #ddd;padding: 20px;">
+    <button onclick="flipImage('horizontal')">Flip Horizontal</button>
+    <button onclick="flipImage('vertical')">Flip Vertical</button>
+        </div>
+
+            <h2>Magical Eraser</h2>
+<div style="border: 1px solid #ddd; padding: 20px;">
+    <button id="magicalEraserToggleButton" onclick="activateMagicalEraser()">Toggle Magical Eraser</button>
+</div>
+
+
+
+            
+
+<h2>Drawing Tools</h2>
+        <div style="border: 1px solid #ddd;padding: 20px;">
+            <button id="penToggleButton" onclick="activatePen()">Toggle Pen</button>
+            <label for="colorPicker">Color:</label>
+            <input type="color" id="colorPicker" value="#000000" onchange="updatePenColor(this.value)">
+            <label for="sizeSlider">Size:</label>
+            <input type="range" id="sizeSlider" min="1" max="50" value="10" onchange="updatePenSize(this.value)">
+        </div>
+
+<h2>Text Options</h2>
+        <div style="border: 1px solid #ddd;padding: 20px;">
+            <label for="text">Text:</label>
+            <input type="text" id="text" placeholder="Enter text">
+            <label for="textColor">Text Color:</label>
+            <input type="color" id="textColor" value="#000000" onchange="updateTextColor(this.value)">
+            <label for="fontSize">Font Size:</label>
+            <input type="number" id="fontSize" min="1" max="100" value="16" onchange="updateFontSize(this.value)">
+            <button onclick="addTextAtMousePosition()">Add Text at Mouse Position</button>
+        </div>
+
+
+<h2>Crop Image</h2>
+<div class="fixed-fullwidth-container">
+    <img id="cropperImage" style="max-width: 100%;" />
+    <button onclick="cancelCrop()">SHOW/Cancel Crop</button>
+    <button onclick="cropImage()">Crop Image</button>
+</div>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/cropperjs@1.5.11/dist/cropper.min.js"></script>
+    <script>
+
+  const currentPageLocation = window.location.href;
+
+  let displayedRepos = 0; // Counter for displayed repositories
+
+
+
+  // Fetch data from GitHub API
+
+  fetch('https://api.github.com/users/hoodaatwa/repos')
+
+    .then(response => response.json())
+
+    .then(data => {
+
+      // Extract topics of the current repository
+
+      const currentRepoTopics = data
+
+        .filter(repo => repo.homepage === currentPageLocation)
+
+        .flatMap(repo => repo.topics || []);
+
+
+
+      // Create Material-UI card for each repository with the same topics
+
+      const repoList = document.getElementById('repoList');
+
+      data.forEach(repo => {
+
+        const repoTopics = repo.topics || [];
+
+
+
+        if (
+
+          displayedRepos >= 4 ||
+
+          repo.homepage === currentPageLocation ||
+
+          !repoTopics.some(topic => currentRepoTopics.includes(topic))
+
+        ) {
+
+          // Skip creating card if reached the limit, homepage matches current page location,
+
+          // or repository has no common topics
+
+          return;
+
+        }
+
+
+
+        const repoCard = document.createElement('div');
+
+        repoCard.classList.add('repoCard');
+
+        repoCard.innerHTML = `
+
+          <div class="repoTitle">${repo.name}</div>
+
+          <div class="repoDescription">${repo.description}</div>
+
+          <div class="repoLink">
+
+            <a href="${repo.homepage}" target="_blank">Homepage <i class="fas fa-external-link-alt"></i></a>
+
+          </div>
+
+        `;
+
+        repoList.appendChild(repoCard);
+
+
+
+        displayedRepos++;
+
+      });
+
+
+
+      // Find the "Main" repository and create a special card with a dynamic link
+
+      const mainRepo = data.find(repo => repo.name.toLowerCase() === 'main');
+
+      if (mainRepo) {
+
+        const mainRepoCard = document.createElement('div');
+
+
+
+        mainRepoCard.innerHTML = `
+
+          <a class="center" href="${mainRepo.homepage}" target="_blank">Go to Main Page <i class="fas fa-external-link-alt"></i></a>
+
+        `;
+
+        repoList.appendChild(mainRepoCard);
+
+      }
+
+    })
+
+    .catch(error => console.error('Error fetching data:', error));
+
+
+
+  function toggleMenu() {
+
+    const menuOverlay = document.getElementById('menuOverlay');
+
+    const body = document.body;
+
+    const menuIcon = document.getElementById('menuIcon');
+
+
+
+    if (menuOverlay.style.display === 'block') {
+
+      menuOverlay.style.display = 'none';
+
+      body.style.overflow = 'auto';
+
+      menuIcon.classList.replace('fa-times', 'fa-bars');
+
+    } else {
+
+      menuOverlay.style.display = 'block';
+
+      body.style.overflow = 'hidden';
+
+      menuIcon.classList.replace('fa-bars', 'fa-times');
+
+    }
+
+  }
+
+</script>
+    <script>
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let imageInput = document.getElementById('imageInput');
+        let img = new Image();
+        let originalImageData;
+        let dynamicBrightness = 0;
+        let dynamicBlur = 0;
+        let dynamicBrightnessIncrement = 20;
+        let dynamicBlurIncrement = 2;
+        let penActive = false;
+        let eraseActive = false;
+        let brushActive = false;
+        let textActive = false;
+        let penColor = '#000000';
+        let penSize = 10;
+        let drawingActions = []; // Array to store drawing actions
+
+        let text = '';
+        let textColor = '#000000';
+        let fontSize = 16;
+
+        // Initialize cropper
+        let cropper;
+
+        imageInput.addEventListener('change', handleImage);
+
+        function handleImage(e) {
+            let reader = new FileReader();
+
+            reader.onload = function (event) {
+                img.onload = function () {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    saveSnapshot();
+
+                    // Set up cropper
+                    document.getElementById('cropperImage').src = event.target.result;
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    cropper = new Cropper(document.getElementById('cropperImage'), {
+                        viewMode: 1,
+                        autoCropArea: 1, // Adjust the initial crop area size
+                        crop(event) {
+                            // Crop event handling
+                        },
+                        movable: false,
+                        rotatable: false,
+                        scalable: false,
+                        zoomable: true,
+                        autoCrop: false,
+                        autoCropArea: 1,
+                        resizable: false, // Make the cropping area resizable from all points
+                    });
+                }
+                img.src = event.target.result;
+            }
+
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+        // Function to toggle the visibility of tools
+        function toggleTools() {
+            let toolsContainer = document.querySelector('.fixed-tools-container');
+            toolsContainer.style.display = toolsContainer.style.display === 'none' ? 'block' : 'none';
+        }
+
+
+
+
+
+
+
+
+
+
+        let magicalEraserActive = false;
+
+function activateMagicalEraser() {
+    let toggleButton = document.getElementById('magicalEraserToggleButton');
+    toggleButton.textContent = magicalEraserActive ? 'Magical Eraser is disabled' : 'Magical Eraser is enabled';
+
+    if (!magicalEraserActive) {
+        magicalEraserActive = true;
+        canvas.addEventListener('mousedown', startMagicalEraser);
+        canvas.addEventListener('touchstart', startMagicalEraser);
+    } else {
+        magicalEraserActive = false;
+        canvas.removeEventListener('mousedown', startMagicalEraser);
+        canvas.removeEventListener('touchstart', startMagicalEraser);
+    }
+}
+
+function startMagicalEraser(e) {
+    if (magicalEraserActive) {
+        let clientX, clientY;
+
+        if (e.type.startsWith('touch')) {
+            clientX = e.touches[0].clientX - canvas.offsetLeft;
+            clientY = e.touches[0].clientY - canvas.offsetTop;
+        } else {
+            clientX = e.clientX - canvas.offsetLeft;
+            clientY = e.clientY - canvas.offsetTop;
+        }
+
+        // Get the color of the pixel at the clicked position
+        let pixelColor = getPixelColor(clientX, clientY);
+
+        // Apply the magical eraser by removing pixels of the same color
+        applyMagicalEraser(pixelColor);
+    }
+}
+
+function getPixelColor(x, y) {
+    let pixel = ctx.getImageData(x, y, 1, 1).data;
+    return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+}
+
+function applyMagicalEraser(targetColor) {
+    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        let pixelColor = `rgb(${data[i]}, ${data[i + 1]}, ${data[i + 2]})`;
+
+        // Check if the pixel color matches the target color
+        if (pixelColor === targetColor) {
+            // Make the pixel transparent
+            data[i + 3] = 0;
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    saveSnapshot();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        function cropImage() {
+            // Get the cropped data
+            let croppedImageData = cropper.getCroppedCanvas().toDataURL();
+            
+            // Clear the canvas and draw the cropped image
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            img.src = croppedImageData;
+
+            // Scroll back to the top
+             window.scrollTo(0, 0);
+        }
+
+function cancelCrop() {
+    // Clear the canvas and redraw the original image
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+    // Also reset the cropper
+    if (cropper) {
+        cropper.destroy();
+        cropper = new Cropper(document.getElementById('cropperImage'), {
+            viewMode: 1,
+            autoCropArea: 1,
+            crop(event) {
+                // Crop event handling
+            },
+            movable: true,
+            rotatable: true,
+            scalable: false,
+            zoomable: true,
+            autoCrop: false,
+            autoCropArea: 1,
+            resizable: false,
+        });
+    }
+}
+
+
+
+
+        function applyFilter(filterType) {
+            // Apply the selected filter with gradual increase
+            switch (filterType) {
+                case 'grayscale':
+                    applyGrayscale();
+                    break;
+                case 'sepia':
+                    applySepia();
+                    break;
+                case 'invert':
+                    applyInvert();
+                    break;
+                case 'brightness':
+                    dynamicBrightness += dynamicBrightnessIncrement;
+                    applyBrightness(dynamicBrightness);
+                    break;
+                case 'blur':
+                    dynamicBlur += dynamicBlurIncrement;
+                    applyBlur(dynamicBlur);
+                    break;
+                // Add more cases for additional filters
+                default:
+                    break;
+            }
+        }
+
+        function applyGrayscale() {
+            // Grayscale filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = avg;
+                data[i + 1] = avg;
+                data[i + 2] = avg;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applySepia() {
+            // Sepia filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                let red = data[i];
+                let green = data[i + 1];
+                let blue = data[i + 2];
+
+                data[i] = Math.min(255, 0.393 * red + 0.769 * green + 0.189 * blue);
+                data[i + 1] = Math.min(255, 0.349 * red + 0.686 * green + 0.168 * blue);
+                data[i + 2] = Math.min(255, 0.272 * red + 0.534 * green + 0.131 * blue);
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applyInvert() {
+            // Invert colors filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = 255 - data[i];       // Invert red
+                data[i + 1] = 255 - data[i + 1]; // Invert green
+                data[i + 2] = 255 - data[i + 2]; // Invert blue
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applyBrightness(adjustment) {
+            // Brightness filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] += adjustment;       // Adjust red
+                data[i + 1] += adjustment;   // Adjust green
+                data[i + 2] += adjustment;   // Adjust blue
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applyBlur(blurRadius) {
+            // Blur filter logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    let redTotal = 0;
+                    let greenTotal = 0;
+                    let blueTotal = 0;
+                    let pixelCount = 0;
+
+                    for (let dy = -blurRadius; dy <= blurRadius; dy++) {
+                        for (let dx = -blurRadius; dx <= blurRadius; dx++) {
+                            let nx = x + dx;
+                            let ny = y + dy;
+
+                            if (nx >= 0 && nx < canvas.width && ny >= 0 && ny < canvas.height) {
+                                let index = (ny * canvas.width + nx) * 4;
+                                redTotal += data[index];
+                                greenTotal += data[index + 1];
+                                blueTotal += data[index + 2];
+                                pixelCount++;
+                            }
+                        }
+                    }
+
+                    let currentIndex = (y * canvas.width + x) * 4;
+                    data[currentIndex] = redTotal / pixelCount;
+                    data[currentIndex + 1] = greenTotal / pixelCount;
+                    data[currentIndex + 2] = blueTotal / pixelCount;
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function flipImage(direction) {
+            // Flip image logic
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            if (direction === 'horizontal') {
+                for (let y = 0; y < canvas.height; y++) {
+                    for (let x = 0; x < canvas.width / 2; x++) {
+                        let index1 = (y * canvas.width + x) * 4;
+                        let index2 = (y * canvas.width + canvas.width - x - 1) * 4;
+
+                        // Swap pixel colors for horizontal flip
+                        for (let i = 0; i < 4; i++) {
+                            let temp = data[index1 + i];
+                            data[index1 + i] = data[index2 + i];
+                            data[index2 + i] = temp;
+                        }
+                    }
+                }
+            } else if (direction === 'vertical') {
+                for (let y = 0; y < canvas.height / 2; y++) {
+                    for (let x = 0; x < canvas.width; x++) {
+                        let index1 = (y * canvas.width + x) * 4;
+                        let index2 = ((canvas.height - y - 1) * canvas.width + x) * 4;
+
+                        // Swap pixel colors for vertical flip
+                        for (let i = 0; i < 4; i++) {
+                            let temp = data[index1 + i];
+                            data[index1 + i] = data[index2 + i];
+                            data[index2 + i] = temp;
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        
+ function resetImage() {
+            ctx.putImageData(originalImageData, 0, 0);
+            dynamicBrightness = 0;
+            dynamicBlur = 0;
+        }
+
+       <!-- ... Existing code ... -->
+
+        function downloadImage() {
+            let downloadLink = document.createElement('a');
+            downloadLink.href = canvas.toDataURL("image/png");
+            downloadLink.download = 'edited_image.png';
+            downloadLink.click();
+        }
+
+        let drawing = false;
+        let lastX, lastY;
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        canvas.addEventListener('touchstart', startPosition);
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', draw);
+
+        function startPosition(e) {
+            if (penActive || eraseActive || brushActive) {
+                drawing = true;
+                draw(e);
+            }
+        }
+
+        function endPosition() {
+            drawing = false;
+            ctx.beginPath();
+        }
+
+    
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+function draw(e) {
+    if (!drawing) return;
+
+    ctx.lineWidth = penSize;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = penColor;
+
+    if (eraseActive) {
+        ctx.globalCompositeOperation = 'destination-out';
+    } else {
+        ctx.globalCompositeOperation = 'source-over';
+    }
+
+let rect = canvas.getBoundingClientRect();
+let clientX, clientY;
+
+if (e.type.startsWith('touch')) {
+    clientX = e.touches[0].clientX - rect.left;
+    clientY = e.touches[0].clientY - rect.top;
+} else {
+    clientX = e.clientX - rect.left;
+    clientY = e.clientY - rect.top;
+}
+
+
+    if (penActive || activateMagicalEraser|| brushActive) {
+        ctx.lineTo(clientX, clientY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(clientX, clientY, penSize / 2, 0, Math.PI * 2);
+        ctx.fillStyle = penColor;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(clientX, clientY);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+        function activatePen() {
+    let toggleButton = document.getElementById('penToggleButton');
+    toggleButton.textContent = penActive ? 'Pen is disabled' : 'Pen is enabled'; 
+            if (!penActive) {
+                penActive = true;
+              canvas.removeEventListener('mousedown', startBrush);
+                canvas.removeEventListener('touchstart', startBrush);
+ 
+            } else {
+
+                // Toggle off if it was the same button
+                penActive = false;
+            }
+        }
+
+        function updatePenColor(color) {
+            penColor = color;
+        }
+
+        function updatePenSize(size) {
+            penSize = parseInt(size);
+        }
+
+        function addTextAtMousePosition() {
+            text = document.getElementById('text').value;
+            canvas.addEventListener('click', addTextOnClick);
+        }
+
+        function addTextOnClick(event) {
+    let rect = canvas.getBoundingClientRect();
+    let x = event.clientX - rect.left;
+    let y = event.clientY - rect.top;
+
+    drawText(x, y);
+    saveSnapshot();
+    canvas.removeEventListener('click', addTextOnClick);
+}
+
+        function drawText(x, y) {
+            ctx.font = fontSize + 'px Arial';
+            ctx.fillStyle = textColor;
+            ctx.fillText(text, x, y);
+        }
+
+        function updateTextColor(color) {
+            textColor = color;
+            saveSnapshot();
+        }
+
+        function updateFontSize(size) {
+            fontSize = parseInt(size);
+            saveSnapshot();
+        }
+
+ let undoStack = [];
+        let lastSnapshot;
+
+        function saveSnapshot() {
+            // Save the current canvas state to the undo stack
+            undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        }
+        function undo() {
+            // Undo the last change
+            if (undoStack.length > 0) {
+                // Pop the last snapshot from the stack
+                lastSnapshot = undoStack.pop();
+                ctx.putImageData(lastSnapshot, 0, 0);
+            }
+        }
+        canvas.addEventListener('mousedown', function() {
+            // Save a snapshot before making a change
+            saveSnapshot();
+        });
+        canvas.addEventListener('touchstart', function() {
+            // Save a snapshot before making a change
+            saveSnapshot();
+        });
+        canvas.addEventListener('mouseup', function() {
+            // Save a snapshot when the mouse is released after using any tool
+            saveSnapshot();
+        });
+        canvas.addEventListener('touchend', function() {
+            // Save a snapshot when the touch ends after using any tool
+            saveSnapshot();
+        });
+        // ... Additional functionalities for Erase can be added here.
+    </script>
+</body>
+</html>
