@@ -248,10 +248,8 @@
             return `https://${username}.github.io/${repo}/${path}`;
         }
 
-        // Fetch repositories for the sidebar
+// Fetch repositories for the sidebar
 async function fetchRepositories() {
-    const repoInfo = getRepoInfoFromUrl();
-    
     try {
         const response = await fetch(`https://raw.githubusercontent.com/hoodaatwa/hoodaatwa.github.io/refs/heads/main/publicRepos.json`);
         
@@ -261,7 +259,7 @@ async function fetchRepositories() {
         
         const repos = await response.json();
         repoList.innerHTML = '';
-        
+
         // Check if any repos exist
         if (repos.length === 0) {
             repoList.innerHTML = `
@@ -272,17 +270,13 @@ async function fetchRepositories() {
             `;
             return;
         }
-        
+
         // Render each repository with improved styling
         repos.forEach(repo => {
             const item = document.createElement('a');
             item.className = 'block px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all';
-            item.href = convertToGitHubPagesUrl(repoInfo.username, repo.name, '');
-            
-            // Format updated time
-            const updatedAt = new Date(repo.updated_at || new Date());
-            const timeAgo = getTimeAgo(updatedAt);
-            
+            item.href = `https://${repo.owner.login}.github.io/${repo.name}/`;
+
             item.innerHTML = `
                 <div class="flex items-start space-x-3">
                     <span class="material-icons text-gray-400 dark:text-gray-500 mt-1">
@@ -293,26 +287,11 @@ async function fetchRepositories() {
                         <div class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
                             ${repo.description || 'No description provided'}
                         </div>
-                        <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                            <div class="flex items-center">
-                                <span class="material-icons text-xs mr-1">star</span>
-                                ${repo.stargazers_count || 0}
-                            </div>
-                            <div class="flex items-center">
-                                <span class="material-icons text-xs mr-1">fork_right</span>
-                                ${repo.forks_count || 0}
-                            </div>
-                            <div class="flex items-center">
-                                <span class="material-icons text-xs mr-1">access_time</span>
-                                Updated ${timeAgo}
-                            </div>
-                        </div>
                     </div>
                 </div>
             `;
             repoList.appendChild(item);
         });
-        
     } catch (error) {
         console.error('Error fetching repositories:', error);
         repoList.innerHTML = `
@@ -326,6 +305,7 @@ async function fetchRepositories() {
         `;
     }
 }
+
 // Helper function to format time ago
         function getTimeAgo(date) {
             const now = new Date();
