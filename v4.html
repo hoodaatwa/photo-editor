@@ -976,12 +976,18 @@ function resetAllTools() {
 function pickColorFromPoint(x, y) {
     const context = canvas.getContext('2d');
     const canvasZoom = canvas.getZoom();
-    const adjustedX = x / canvasZoom;
-    const adjustedY = y / canvasZoom;
-    
+    const viewportTransform = canvas.viewportTransform || [1, 0, 0, 1, 0, 0];
+
+    // Adjust coordinates for zoom and pan
+    const adjustedX = (x - viewportTransform[4]) / canvasZoom;
+    const adjustedY = (y - viewportTransform[5]) / canvasZoom;
+
     try {
         const pixelData = context.getImageData(adjustedX, adjustedY, 1, 1).data;
         const color = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
+
+        console.log('Clicked:', x, y, 'Adjusted:', adjustedX, adjustedY, 'Color:', color);
+        
         updateColorPickers(color);
         enableSelectTool();
     } catch (error) {
@@ -990,6 +996,7 @@ function pickColorFromPoint(x, y) {
         enableSelectTool();
     }
 }
+
 
 function rgbToHex(r, g, b) {
     return '#' + [r, g, b].map(x => {
