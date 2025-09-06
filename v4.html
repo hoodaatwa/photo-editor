@@ -376,6 +376,8 @@
       
       <!-- Right Properties Panel -->
       <div class="properties-panel">
+
+<div id="color-palette-container" style="display:flex;flex-wrap:wrap;margin-top:10px;"></div>
         <!-- Canvas Settings -->
         <div class="tool-group" id="canvas-controls" style="display: none;">
           <div class="tool-group-title">Canvas Settings</div>
@@ -979,28 +981,65 @@ function resetAllTools() {
 }
 
 function pickColorFromPoint(x, y) {
-    const context = canvas.getContext('2d');
-    const canvasZoom = canvas.getZoom();
-    const viewportTransform = canvas.viewportTransform || [1, 0, 0, 1, 0, 0];
+    const zoom = canvas.getZoom();
+    const transform = canvas.viewportTransform || [1, 0, 0, 1, 0, 0];
 
-    // Adjust coordinates for zoom and pan
-    const adjustedX = (x - viewportTransform[4]) / canvasZoom;
-    const adjustedY = (y - viewportTransform[5]) / canvasZoom;
+    const adjustedX = (x - transform[4]) / zoom;
+    const adjustedY = (y - transform[5]) / zoom;
 
     try {
-        const pixelData = context.getImageData(adjustedX, adjustedY, 1, 1).data;
-        const color = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
+        const ctx = canvas.lowerCanvasEl.getContext('2d');
+        const size = 30; // حجم المنطقة لاستخراج الباليت
+        const imageData = ctx.getImageData(adjustedX - size/2, adjustedY - size/2, size, size);
 
-        console.log('Clicked:', x, y, 'Adjusted:', adjustedX, adjustedY, 'Color:', color);
-        
-        updateColorPickers(color);
-        enableSelectTool();
+        // Canvas مؤقت
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = size;
+        tempCanvas.height = size;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.putImageData(imageData, 0, 0);
+
+        const tempImg = new Image();
+        tempImg.onload = () => {
+            const colorThief = new ColorThief();
+            const palette = colorThief.getPalette(tempImg, 5); // 5 ألوان
+
+            showPaletteOptions(palette); // نعرض للمستخدم يختار
+        };
+        tempImg.src = tempCanvas.toDataURL();
     } catch (error) {
         console.error('Error picking color:', error);
-        alert('Could not pick color. This may happen with external images due to security restrictions.');
+        alert('تعذر تحديد اللون.');
         enableSelectTool();
     }
 }
+function showPaletteOptions(palette) {
+    const container = document.getElementById('color-palette-container');
+    container.innerHTML = ''; // امسح القديم
+
+    palette.forEach(rgb => {
+        const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+        const btn = document.createElement('button');
+        btn.style.backgroundColor = hex;
+        btn.style.width = '30px';
+        btn.style.height = '30px';
+        btn.style.margin = '5px';
+        btn.style.border = '2px solid #fff';
+        btn.style.cursor = 'pointer';
+        btn.title = hex;
+
+        btn.onclick = () => {
+            updateColorPickers(hex); // ✅ يطبق اللون على Brush و Text و RemoveColor
+            enableSelectTool(); // يرجع للأداة العادية
+            container.innerHTML = ''; // يمسح الباليت بعد الاختيار
+        };
+
+        container.appendChild(btn);
+    });
+}
+
+
+
 
 
 function rgbToHex(r, g, b) {
