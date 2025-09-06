@@ -513,6 +513,29 @@ let canvasWidth = 800;
 let canvasHeight = 600;
 let canvasBackgroundColor = '#FFFFFF';
 
+// ربط الأزرار بالـ functions
+document.getElementById("delete-object").onclick = deleteSelectedObject;
+document.getElementById("clone-object").onclick = cloneSelectedObject;
+document.getElementById("flip-h-object").onclick = flipHorizontally;
+document.getElementById("flip-v-object").onclick = flipVertically;
+document.getElementById("unselect-object").onclick = unselectObject;
+document.getElementById("lock-object").onclick = lockObject;
+document.getElementById("unlock-object").onclick = unlockObject;
+document.getElementById("send-to-back").onclick = sendToBack;
+document.getElementById("bring-to-front").onclick = bringToFront;
+document.getElementById("toggle-visibility").onclick = toggleVisibility;
+
+document.getElementById("align-left").onclick = alignLeft;
+document.getElementById("align-center").onclick = alignCenter;
+document.getElementById("align-right").onclick = alignRight;
+document.getElementById("align-top").onclick = alignTop;
+document.getElementById("rotate-left").onclick = rotateLeft;
+document.getElementById("rotate-right").onclick = rotateRight;
+document.getElementById("scale-up").onclick = scaleUp;
+document.getElementById("scale-down").onclick = scaleDown;
+
+
+
 const fontFamilies = ['Cairo', 'Tajawal', 'Almarai', 'Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Georgia', 'Verdana', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald'];
 
 function initCanvas() {
