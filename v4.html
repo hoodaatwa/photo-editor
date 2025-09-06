@@ -852,16 +852,28 @@ function updateSelectedText() {
     saveCanvasState();
 }
 
+let isRestoring = false; // فلاغ يمنع التسجيل أثناء الاسترجاع
+
 function saveCanvasState() {
+    if (isRestoring) return; // ✅ ممنوع نسجل أثناء Undo/Redo
+
     if (historyIndex < canvasHistory.length - 1) {
         canvasHistory = canvasHistory.slice(0, historyIndex + 1);
     }
-    
-    const json = JSON.stringify(canvas.toJSON(['selectable', 'evented', 'isLayer']));
+
+    const json = JSON.stringify(canvas.toJSON([
+        'selectable', 
+        'evented', 
+        'isLayer',
+        'filters',
+        'src'
+    ]));
+
     canvasHistory.push(json);
     historyIndex = canvasHistory.length - 1;
     updateHistoryButtons();
 }
+
 
 function updateHistoryButtons() {
     const undoBtn = document.getElementById('undo-action');
@@ -877,16 +889,26 @@ function undoAction() {
 }
 
 function loadCanvasState() {
+    if (historyIndex < 0 || historyIndex >= canvasHistory.length) return;
+
+    isRestoring = true; // ✅ نمنع الحفظ مؤقتاً
     canvas.loadFromJSON(canvasHistory[historyIndex], function() {
+        canvas.getObjects().forEach(obj => {
+            if (obj.filters && obj.filters.length > 0) {
+                obj.applyFilters();
+            }
+        });
         canvas.renderAll();
-        updateHistoryButtons();
-        
+
         layers = [];
         canvas.forEachObject(function(obj) {
             if (obj.isLayer) {
                 layers.push(obj);
             }
         });
+
+        updateHistoryButtons();
+        isRestoring = false; // ✅ بعد ما نخلص، نرجع الوضع العادي
     });
 }
 
