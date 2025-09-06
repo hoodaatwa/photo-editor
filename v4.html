@@ -7,6 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
 <style>
   /* Base Styles */
   * {
@@ -449,6 +450,7 @@
             
             <!-- Filter Controls -->
             <div class="control-item" style="flex-wrap: wrap;max-width: calc(100% - 50px);">
+              <button id="clear-filters">Clear Filters</button>
               <button id="sharpen-filter">Sharpen</button>
               <button id="emboss-filter">Emboss</button>
               <button id="sepia-filter">Sepia</button>
@@ -1362,219 +1364,132 @@ function scaleDown() {
 
 
 
+function applyFilter(filterType, options = {}) {
+  const selectedObject = canvas.getActiveObject();
+  if (selectedObject && selectedObject.type === 'image') {
+    let filter;
 
-// Toggle Sharpen Filter
-function toggleSharpen() {
-    const selectedObject = canvas.getActiveObject();
-    if (selectedObject && selectedObject.type === 'image') {
-        const filters = selectedObject.filters;
-        const sharpenFilterIndex = filters.findIndex(f => f && f.type === 'Convolute');
-
-        if (sharpenFilterIndex > -1) {
-            // Remove filter if it exists
-            filters.splice(sharpenFilterIndex, 1);
-        } else {
-            // Apply Sharpen filter
-            const sharpenFilter = new fabric.Image.filters.Convolute({
-                matrix: [  
-                    0, -1,  0,
-                    -1,  5, -1,
-                    0, -1,  0
-                ]
-            });
-            filters.push(sharpenFilter);
-        }
-
-        selectedObject.applyFilters();
-        canvas.requestRenderAll();
-    }
-}
-
-// Toggle Emboss Filter
-function toggleEmboss() {
-    const selectedObject = canvas.getActiveObject();
-    if (selectedObject && selectedObject.type === 'image') {
-        const filters = selectedObject.filters;
-        const embossFilterIndex = filters.findIndex(f => f && f.type === 'Convolute');
-
-        if (embossFilterIndex > -1) {
-            // Remove filter if it exists
-            filters.splice(embossFilterIndex, 1);
-        } else {
-            // Apply Emboss filter
-            const embossFilter = new fabric.Image.filters.Convolute({
-                matrix: [  
-                    1, 1, 1,
-                    1, 0.7, -1,
-                    -1, -1, -1
-                ]
-            });
-            filters.push(embossFilter);
-        }
-
-        selectedObject.applyFilters();
-        canvas.requestRenderAll();
-    }
-}
-// Function to toggle Fabric.js filters
-function toggleFilter(filterType, filterInstance) {
-    const selectedObject = canvas.getActiveObject();
-    if (selectedObject && selectedObject.type === 'image') {
-        const filters = selectedObject.filters;
-        const existingFilterIndex = filters.findIndex(f => f && f.type === filterType);
-
-        if (existingFilterIndex > -1) {
-            // Remove filter if it exists
-            filters.splice(existingFilterIndex, 1);
-        } else {
-            // Apply filter
-            filters.push(filterInstance);
-        }
-
-        selectedObject.applyFilters();
-        canvas.requestRenderAll();
-    }
-}
-
-// Filter toggle functions
-function toggleSepia() {
-    toggleFilter('Sepia', new fabric.Image.filters.Sepia());
-}
-
-function toggleBlackWhite() {
-    toggleFilter('Grayscale', new fabric.Image.filters.Grayscale());
-}
-
-function toggleBrownie() {
-    toggleFilter('Brownie', new fabric.Image.filters.Brownie());
-}
-
-function toggleVintage() {
-    toggleFilter('Vintage', new fabric.Image.filters.Vintage());
-}
-
-function toggleKodachrome() {
-    toggleFilter('Kodachrome', new fabric.Image.filters.Kodachrome());
-}
-
-function toggleTechnicolor() {
-    toggleFilter('Technicolor', new fabric.Image.filters.Technicolor());
-}
-
-function togglePolaroid() {
-    toggleFilter('Polaroid', new fabric.Image.filters.Polaroid());
-}
-
-function applyFilter(filterInstance) {
-    const selectedObject = canvas.getActiveObject();
-    if (selectedObject && selectedObject.type === 'image') {
-        selectedObject.filters.push(filterInstance);
-        selectedObject.applyFilters();
-        canvas.requestRenderAll();
-    }
-}
-
-// Brightness filter
-function toggleBrightness() {
-    applyFilter(new fabric.Image.filters.Brightness({ brightness: 0.2 }));
-}
-
-// Gamma filter (adjust red, green, blue)
-function toggleGamma() {
-    applyFilter(new fabric.Image.filters.Gamma({ gamma: [1.2, 1.2, 1.2] }));
-}
-
-// Contrast filter
-function toggleContrast() {
-    applyFilter(new fabric.Image.filters.Contrast({ contrast: 0.3 }));
-}
-
-// Saturation filter
-function toggleSaturation() {
-    applyFilter(new fabric.Image.filters.Saturation({ saturation: 0.5 }));
-}
-
-// Vibrance filter
-function toggleVibrance() {
-    applyFilter(new fabric.Image.filters.Vibrance({ vibrance: 0.4 }));
-}
-
-// Hue filter
-function toggleHue() {
-    applyFilter(new fabric.Image.filters.HueRotation({ rotation: 0.5 }));
-}
-
-// Noise filter
-function toggleNoise() {
-    applyFilter(new fabric.Image.filters.Noise({ noise: 50 }));
-}
-
-// Pixelate filter
-function togglePixelate() {
-    applyFilter(new fabric.Image.filters.Pixelate({ blocksize: 8 }));
-}
-
-// Blur filter
-function toggleBlur() {
-    applyFilter(new fabric.Image.filters.Blur({ blur: 0.1 }));
-}
-
-
-function removeColorFilter() {
-    const selectedObject = canvas.getActiveObject();
-    if (selectedObject && selectedObject.type === 'image') {
-        const colorToRemove = document.getElementById('remove-color').value;
-        const distance = parseFloat(document.getElementById('remove-color-distance').value);
-
-        const removeColor = new fabric.Image.filters.RemoveColor({
-            color: colorToRemove,
-            distance: distance, // Adjust filter distance
+    switch (filterType) {
+      case 'sharpen':
+        filter = new fabric.Image.filters.Convolute({
+          matrix: [0, -1, 0, -1, 5, -1, 0, -1, 0]
         });
-
-        selectedObject.filters = selectedObject.filters.filter(filter => !(filter instanceof fabric.Image.filters.RemoveColor)); 
-        selectedObject.filters.push(removeColor);
-        selectedObject.applyFilters();
-        canvas.requestRenderAll();
+        break;
+      case 'emboss':
+        filter = new fabric.Image.filters.Convolute({
+          matrix: [1, 1, 1, 1, 0.7, -1, -1, -1, -1]
+        });
+        break;
+      case 'sepia':
+        filter = new fabric.Image.filters.Sepia();
+        break;
+      case 'bw':
+        filter = new fabric.Image.filters.Grayscale();
+        break;
+      case 'brownie':
+        filter = new fabric.Image.filters.Brownie();
+        break;
+      case 'vintage':
+        filter = new fabric.Image.filters.Vintage();
+        break;
+      case 'kodachrome':
+        filter = new fabric.Image.filters.Kodachrome();
+        break;
+      case 'technicolor':
+        filter = new fabric.Image.filters.Technicolor();
+        break;
+      case 'polaroid':
+        filter = new fabric.Image.filters.Polaroid();
+        break;
+      case 'brightness':
+        filter = new fabric.Image.filters.Brightness({ brightness: 0.1 });
+        break;
+      case 'gamma':
+        filter = new fabric.Image.filters.Gamma({ gamma: [1.1, 1.1, 1.1] });
+        break;
+      case 'contrast':
+        filter = new fabric.Image.filters.Contrast({ contrast: 0.1 });
+        break;
+      case 'saturation':
+        filter = new fabric.Image.filters.Saturation({ saturation: 0.2 });
+        break;
+      case 'vibrance':
+        filter = new fabric.Image.filters.Vibrance({ vibrance: 0.2 });
+        break;
+      case 'hue':
+        filter = new fabric.Image.filters.HueRotation({ rotation: 0.5 });
+        break;
+      case 'noise':
+        filter = new fabric.Image.filters.Noise({ noise: 200 });
+        break;
+      case 'pixelate':
+        filter = new fabric.Image.filters.Pixelate({ blocksize: 4 });
+        break;
+      case 'blur':
+        filter = new fabric.Image.filters.Blur({ blur: 0.2 });
+        break;
+      case 'removeColor':
+        filter = new fabric.Image.filters.RemoveColor({
+          color: options.color || '#FFFFFF',
+          distance: options.distance || 0.3
+        });
+        break;
     }
+
+    if (filter) {
+      // ✅ إضافة الفلتر بدل استبداله
+      selectedObject.filters.push(filter);
+      selectedObject.applyFilters();
+      canvas.renderAll();
+      saveCanvasState();
+    }
+  }
 }
 
-// Event Listeners
-document.getElementById('apply-remove-color').addEventListener('click', removeColorFilter);
-document.getElementById('remove-color-distance').addEventListener('input', function() {
-    document.getElementById('remove-color-distance-value').textContent = this.value;
-});
-document.getElementById('brightness-filter').addEventListener('click', toggleBrightness);
-document.getElementById('gamma-filter').addEventListener('click', toggleGamma);
-document.getElementById('contrast-filter').addEventListener('click', toggleContrast);
-document.getElementById('saturation-filter').addEventListener('click', toggleSaturation);
-document.getElementById('vibrance-filter').addEventListener('click', toggleVibrance);
-document.getElementById('hue-filter').addEventListener('click', toggleHue);
-document.getElementById('noise-filter').addEventListener('click', toggleNoise);
-document.getElementById('pixelate-filter').addEventListener('click', togglePixelate);
-document.getElementById('blur-filter').addEventListener('click', toggleBlur);
-document.getElementById('sepia-filter').addEventListener('click', toggleSepia);
-document.getElementById('bw-filter').addEventListener('click', toggleBlackWhite);
-document.getElementById('brownie-filter').addEventListener('click', toggleBrownie);
-document.getElementById('vintage-filter').addEventListener('click', toggleVintage);
-document.getElementById('kodachrome-filter').addEventListener('click', toggleKodachrome);
-document.getElementById('technicolor-filter').addEventListener('click', toggleTechnicolor);
-document.getElementById('polaroid-filter').addEventListener('click', togglePolaroid);
-document.getElementById('sharpen-filter').addEventListener('click', toggleSharpen);
-document.getElementById('emboss-filter').addEventListener('click', toggleEmboss);
-document.getElementById('toggle-visibility').addEventListener('click', toggleVisibility);
-document.getElementById('unselect-object').addEventListener('click', unselectObject);
-document.getElementById('lock-object').addEventListener('click', lockObject);
-document.getElementById('unlock-object').addEventListener('click', unlockObject);
-document.getElementById('send-to-back').addEventListener('click', sendToBack);
-document.getElementById('bring-to-front').addEventListener('click', bringToFront);
-document.getElementById('align-left').addEventListener('click', alignLeft);
-document.getElementById('align-center').addEventListener('click', alignCenter);
-document.getElementById('align-right').addEventListener('click', alignRight);
-document.getElementById('align-top').addEventListener('click', alignTop);
-document.getElementById('rotate-left').addEventListener('click', rotateLeft);
-document.getElementById('rotate-right').addEventListener('click', rotateRight);
-document.getElementById('scale-up').addEventListener('click', scaleUp);
-document.getElementById('scale-down').addEventListener('click', scaleDown);
+// ربط الأزرار بالفلتر
+document.getElementById('sharpen-filter').onclick = () => applyFilter('sharpen');
+document.getElementById('emboss-filter').onclick = () => applyFilter('emboss');
+document.getElementById('sepia-filter').onclick = () => applyFilter('sepia');
+document.getElementById('bw-filter').onclick = () => applyFilter('bw');
+document.getElementById('brownie-filter').onclick = () => applyFilter('brownie');
+document.getElementById('vintage-filter').onclick = () => applyFilter('vintage');
+document.getElementById('kodachrome-filter').onclick = () => applyFilter('kodachrome');
+document.getElementById('technicolor-filter').onclick = () => applyFilter('technicolor');
+document.getElementById('polaroid-filter').onclick = () => applyFilter('polaroid');
+document.getElementById('brightness-filter').onclick = () => applyFilter('brightness');
+document.getElementById('gamma-filter').onclick = () => applyFilter('gamma');
+document.getElementById('contrast-filter').onclick = () => applyFilter('contrast');
+document.getElementById('saturation-filter').onclick = () => applyFilter('saturation');
+document.getElementById('vibrance-filter').onclick = () => applyFilter('vibrance');
+document.getElementById('hue-filter').onclick = () => applyFilter('hue');
+document.getElementById('noise-filter').onclick = () => applyFilter('noise');
+document.getElementById('pixelate-filter').onclick = () => applyFilter('pixelate');
+document.getElementById('blur-filter').onclick = () => applyFilter('blur');
+
+// ✅ إزالة لون مع اختيار من الـ color picker
+document.getElementById('apply-remove-color').onclick = () => {
+  const color = document.getElementById('remove-color').value;
+  const distance = parseFloat(document.getElementById('remove-color-distance').value);
+  applyFilter('removeColor', { color, distance });
+};
+
+// تحديث قيمة الـ distance
+document.getElementById('remove-color-distance').oninput = function() {
+  document.getElementById('remove-color-distance-value').innerText = this.value;
+};
+
+// زر مسح الفلاتر
+document.getElementById('clear-filters').onclick = () => {
+  const selectedObject = canvas.getActiveObject();
+  if (selectedObject && selectedObject.type === 'image') {
+    selectedObject.filters = [];  // ✅ إفراغ كل الفلاتر
+    selectedObject.applyFilters();
+    canvas.renderAll();
+    saveCanvasState();
+  }
+};
+
+
 
 
 
